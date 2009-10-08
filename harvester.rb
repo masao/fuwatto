@@ -9,23 +9,41 @@ require "oai"
 
 module Zubatto
    class Harvester
+      HARVEST_DIR = "harvest"
       attr_reader :sites, :conf
       def initialize( config_file )
          @conf = YAML.load_file( config_file )
          @sites = @conf.keys
       end
       def start
-         time = Time.now
+         now = Time.now
          sites.each do |site|
             puts site
-            puts conf[ site ][ "url" ]
-            options = build_options_hash( conf[ site ] )
-            oai = OAI::Client.new( conf[ site ][ "url" ], options )
-            # provider_config = oai.identify
-            # p provider_config
-            options.delete( :url )
-            response = oai.list_records( options )
-            open( "#{ site }-#{ time.to_i }.xml", "w" ) do |io|
+            opts = build_options_hash( conf[ site ] )
+            opts[ :until ] = now.utc.xmlschema
+            last_updated = last_harvest_time( site )
+            # p last_updated
+            if last_updated != 0
+               opts[ :from ] = Time.at( last_updated ).utc.xmlschema
+            end
+            puts opts[ :url ]
+            period = 60 * 60 * 24 # default rotation is "daily".
+            case opts[ :period ]
+            when "daily"
+               period = 60 * 60 * 24
+            when "weekly"
+               period = 60 * 60 * 24 * 7
+            end
+            if ( now.to_i - last_updated ) < period # and false
+               puts "interval skip: last updated at #{ Time.at( last_updated ).iso8601 }"
+               next
+            end
+            p opts
+            oai = OAI::Client.new( opts[ :url ], opts )
+            opts.delete( :url )
+            opts.delete( :period )
+            response = oai.list_records( opts )
+            open( "#{ HARVEST_DIR }/#{ site }/#{ now.to_i }.xml", "w" ) do |io|
                io.print response.doc
             end
             count = 2
@@ -40,20 +58,24 @@ module Zubatto
          end
       end
       def last_harvest_time( site )
-         files = Dir.glob( "#{site}-*.xml" )
+         files = Dir.glob( "#{ HARVEST_DIR }/#{ site }/*.xml" )
+         # p "#{ HARVEST_DIR }/#{ site }/*.xml"
+         # p files
          if files.nil? or files.empty?
+            puts "Files not found. This is the first harvesting!"
             nil
          else
-            files.sort_by{|e|
-               e =~ /\A#{ site }-(\d+)\.xml\Z/
-               $0.to_i
-            }[-1]
+            files = files.map{|e|
+               /\A(\d+)\.xml\Z/ =~ File.basename( e )
+               $1.to_i
+            }.compact
+            # p files
+            files.sort[-1]
          end
       end
       def build_options_hash( site )
          options = { :url => site['url'] }
          options[:set] = site['set'] if site['set']
-         options[:from] = site['last'].utc.xmlschema if site['last']
          options[:metadata_prefix] = site['prefix'] if site['prefix']
          options
       end
