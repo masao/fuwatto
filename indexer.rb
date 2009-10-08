@@ -40,8 +40,10 @@ if $0 == __FILE__
             junii2 = record.find( "oai:metadata/irdb:junii2",
                                   ["irdb:http://irdb.nii.ac.jp/oai",
                                    "oai:http://www.openarchives.org/OAI/2.0/" ])
+            next if junii2.empty?
             junii2.each do |md|
                data = Hash.new( "" )
+               data[ "identifier" ] = identifier
                md.children.each do |e|
                   case e.name
                   when "text"
@@ -51,7 +53,7 @@ if $0 == __FILE__
                      data[ e.name ] = str
                   end
                end
-               %w[  description title jtitle creator alternative subject NIIsubject publisher contributor type source ].each do |e|
+               %w[  description title jtitle creator alternative subject NIIsubject publisher contributor type source identifier ].each do |e|
                   filename = "ZBT.#{ e }"
                   open( filename, "a" ) do |io|
                      io.puts data[ e ]
