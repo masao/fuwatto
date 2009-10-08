@@ -56,7 +56,7 @@ module Zubatto
             while response.resumption_token
                puts "resumptionToken: #{ response.resumption_token }"
                response = oai.list_records( :resumptionToken => response.resumption_token )
-               open( "#{ HARVEST_DIR }/#{ site }/#{ now.to_i }.xml", "w" ) do |io|
+               open( "#{ HARVEST_DIR }/#{ site }/#{ now.to_i }-#{ count }.xml", "w" ) do |io|
                   io.print response.doc
                end
                count += 1
