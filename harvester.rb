@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 # $Id$
 
+require "fileutils"
 require "time"
 require "yaml"
 require "rubygems"
@@ -23,8 +24,12 @@ module Zubatto
             opts[ :until ] = now.utc.xmlschema
             last_updated = last_harvest_time( site )
             # p last_updated
-            if last_updated != 0
+            unless last_updated.nil? or last_updated == 0
                opts[ :from ] = Time.at( last_updated ).utc.xmlschema
+               puts "last updated: #{ opts[ :from ] }"
+            else
+               opts[ :from ] = earliest( opts[:url] )
+               last_updated = 0
             end
             puts opts[ :url ]
             period = 60 * 60 * 24 # default rotation is "daily".
@@ -43,6 +48,7 @@ module Zubatto
             opts.delete( :url )
             opts.delete( :period )
             response = oai.list_records( opts )
+            FileUtils.mkdir_p( File.join( HARVEST_DIR, site ) )
             open( "#{ HARVEST_DIR }/#{ site }/#{ now.to_i }.xml", "w" ) do |io|
                io.print response.doc
             end
@@ -50,7 +56,7 @@ module Zubatto
             while response.resumption_token
                puts "resumptionToken: #{ response.resumption_token }"
                response = oai.list_records( :resumptionToken => response.resumption_token )
-               open( "#{ site }-#{ time.to_i }-#{ count }.xml", "w" ) do |io|
+               open( "#{ site }-#{ now.to_i }-#{ count }.xml", "w" ) do |io|
                   io.print response.doc
                end
                count += 1
@@ -71,6 +77,16 @@ module Zubatto
             }.compact
             # p files
             files.sort[-1]
+         end
+      end
+      # Get earliest timestamp from repository
+      def earliest(url)
+         client = OAI::Client.new url
+         identify = client.identify
+         if "YYYY-MM-DD" == identify.granularity
+            Time.parse(identify.earliest_datestamp).strftime("%Y-%m-%d")
+         else
+            Time.parse(identify.earliest_datestamp).xmlschema
          end
       end
       def build_options_hash( site )
