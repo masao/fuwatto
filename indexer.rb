@@ -37,9 +37,20 @@ if $0 == __FILE__
                                 "oai:http://www.openarchives.org/OAI/2.0/" )
             identifier = node.first.content
             p identifier
-            junii2 = record.find( "oai:metadata/irdb:junii2",
-                                  ["irdb:http://irdb.nii.ac.jp/oai",
+            junii2 = record.find( "oai:metadata/ju:junii2",
+                                  ["ju:http://ju.nii.ac.jp/junii2",
                                    "oai:http://www.openarchives.org/OAI/2.0/" ])
+            if junii2.empty?
+               junii2 = record.find( "oai:metadata/irdb:junii2",
+                                     ["irdb:http://irdb.nii.ac.jp/oai",
+                                      "oai:http://www.openarchives.org/OAI/2.0/" ])
+            end
+            if junii2.empty?
+               # ad-hoc workaround for Tulips-R
+               junii2 = record.find( "oai:metadata/irdb:meta",
+                                     ["irdb:http://irdb.nii.ac.jp/dspace-oai",
+                                      "oai:http://www.openarchives.org/OAI/2.0/" ])
+            end
             next if junii2.empty?
             junii2.each do |md|
                data = Hash.new( "" )
@@ -50,7 +61,11 @@ if $0 == __FILE__
                      next
                   when "description", "title", "jtitle", "creator", "alternative", "subject", "NIIsubject", "publisher", "contributor", "type", "source"
                      str = Util.space_normalizer( e.content )
-                     data[ e.name ] = str
+                     if data[ e.name ].empty?
+                        data[ e.name ] = str
+                     else
+                        data[ e.name ] << " " << str
+                     end
                   end
                end
                %w[  description title jtitle creator alternative subject NIIsubject publisher contributor type source identifier ].each do |e|
