@@ -7,6 +7,15 @@ require "yaml"
 require "rubygems"
 require "libxml"
 
+begin
+   require 'sqlite3'
+   DBTYPE = SQLite3::Database
+rescue LoadError
+   require 'dbi'
+   DBTYPE = DBI
+end
+
+require "database.rb"
 require "harvester.rb"
 
 module Zubatto
@@ -25,6 +34,7 @@ if $0 == __FILE__
    harvester = Harvester.new( "harvester.conf" )
    harvester.sites.each do |site|
       p site
+      logfile = open("log/indexer.#{site}.#{Time.now.strftime("%Y%m%d%H%M%S")}", "w")
       Dir.glob( "#{ Harvester::HARVEST_DIR  }/#{ site }/*.xml" ) do |file|
          p file
          parser = LibXML::XML::Parser.file( file )
@@ -36,7 +46,7 @@ if $0 == __FILE__
             node = record.find( "oai:header/oai:identifier",
                                 "oai:http://www.openarchives.org/OAI/2.0/" )
             identifier = node.first.content
-            p identifier
+            #p identifier
             junii2 = record.find( "oai:metadata/ju:junii2",
                                   ["ju:http://ju.nii.ac.jp/junii2",
                                    "oai:http://www.openarchives.org/OAI/2.0/" ])
@@ -68,12 +78,17 @@ if $0 == __FILE__
                      end
                   end
                end
-               %w[  description title jtitle creator alternative subject NIIsubject publisher contributor type source identifier ].each do |e|
-                  filename = "ZBT.#{ e }"
-                  open( filename, "a" ) do |io|
-                     io.puts data[ e ]
-                  end
+               db = Database.new( DBTYPE )
+               indexed_data = %w[ identifier description title jtitle creator alternative subject NIIsubject publisher contributor type source ].map{|e| data[e] }
+               db.transaction do
+                  sth = db.prepare("INSERT INTO md VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                  sth.execute( 0, *indexed_data )
+                  logfile.puts [ data[ "identifier"], data[ "title" ] ].join("\t")
                end
+               #p [ indexed_data, indexed_data.size ]
+               #rows = db.execute( "SELECT * from md" )
+               #p rows.size
+               #sleep 5
             end
             # puts "---"
          end
