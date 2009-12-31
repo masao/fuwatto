@@ -19,7 +19,7 @@ module Zubatto
       lines = lines.map{|e| [ e[0], e[1], e[2].to_i + min.abs + 1 ] }
       count = Hash.new( 0 )
       lines.each_with_index do |line, idx|
-         next if line[0] =~ /\A[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]\Z/
+         next if line[0] =~ /\A[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]\Z/ # ASCII symbol chars
          #p line[2].to_i
          #puts line
          score = 1 / Math.log( line[2] + 1 )
