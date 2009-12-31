@@ -1,0 +1,10 @@
+<div class="cinii_search">
+<div class="cinii_title"><strong>CiNii Search - <%=h data[:q] %></strong></div>
+<ol>
+<% data[ :entries ][0..5].each do |entry| %>
+  <li><span class="cinii_title"><a href="<%=h entry[:url] %>"><%=h entry[:title] %></a></span><br>
+      <span class="cinii_author"><%=h entry[:author] %></span>
+<% end %>
+</ol>
+<div class="cinii_frame"><a href="<%=h data[:url] %>">More results</a></div>
+</div>
