@@ -72,8 +72,9 @@ if $0 == __FILE__
    mode = cgi.params["mode"][0] || "mecab"
    content = open( url ){|io| io.read }
    content = content.toeuc
+   #puts content
    content = ExtractContent::analyse( content )[0]
-   content = NKF.nkf( "-EeZ1", content )
+   content = NKF.nkf( "-EeZ1", content ).strip
    #content = content.toeuc
    #puts content
    keywords = []
