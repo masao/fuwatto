@@ -50,6 +50,7 @@ if $0 == __FILE__
    include Zubatto
    keyword = ARGV[0] || "information seeking"
    data = cinii_search( keyword, { :format => "atom" } )
+   data[ :count ] = 5
    rhtml = open("cinii.rhtml"){|io| io.read }
    include ERB::Util
    puts ERB::new( rhtml, $SAFE, 2 ).result( binding )

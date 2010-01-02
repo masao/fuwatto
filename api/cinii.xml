@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?> 
 <Module>
-  <Content type="url" href="http://localhost/~masao/private/cvswork/zubatto/api/cinii.rb"/>
+  <ModulePrefs title="CiNii関連検索" />
+  <Content type="url" href="http://masao.jpn.org/software/zubatto/api/cinii.rb"/>
 </Module>

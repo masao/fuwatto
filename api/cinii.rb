@@ -35,8 +35,9 @@ module Zubatto
    def extract_keywords_mecab( str )
       mecab = MeCab::Tagger.new( '--node-format=%m\t%H\t%c\n --unk-format=%m\tUNK\t%c\n' )
       lines = mecab.parse( str )
+      #puts lines
       lines = lines.split( /\n/ ).map{|l| l.split(/\t/) }
-      lines = lines.select{|l| l[2] and l[1] =~ /^名詞|UNK/ and l[1] !~ /接[頭尾]/ }
+      lines = lines.select{|l| l[2] and l[1] =~ /^名詞|UNK|形容詞/ and l[1] !~ /接[頭尾]|非自立/ }
       #pp lines
       min = lines.map{|e| e[2].to_i }.min
       lines = lines.map{|e| [ e[0], e[1], e[2].to_i + min.abs + 1 ] } if min < 0
@@ -46,8 +47,9 @@ module Zubatto
          next if line[0].size < 3
          #p line[2]
          #puts line
-         #score = 1 / Math.log( line[2] + 1 )
-         score = Math.log( line[2].to_i + 1 )
+         #score = 1 / Math.log( line[2].to_i + 1 )
+         score = Math.log10( line[2].to_i + 10 )
+         #score = line[2].to_i
          #pp [ line[0], score, idx ]
          count[ line[0] ] += score / Math.log10( idx + 10 )
       end
@@ -64,14 +66,17 @@ if $0 == __FILE__
    include Zubatto
    cgi = CGI.new
    puts "Content-Type: text/html\n\n"
-   url = cgi.referer || cgi.params["url"][0]
+   url = cgi.referer || URI.escape( cgi.params["url"][0] )
+   count = cgi.params["count"][0].to_i
+   count = 5 if count < 1
+   mode = cgi.params["mode"][0] || "mecab"
    content = open( url ){|io| io.read }
    content = content.toeuc
    content = ExtractContent::analyse( content )[0]
+   content = NKF.nkf( "-EeZ1", content )
    #content = content.toeuc
    #puts content
    keywords = []
-   mode = cgi.params["mode"][0] || "mecab"
    case mode
    when "yahoo"
       keywords = extract_keywords_yahooapi( content )
@@ -80,7 +85,6 @@ if $0 == __FILE__
    end
    #puts keywords
    data = nil
-   TIMES = 10
    keywords.dup.each do |k|
       if cinii_search( k.toutf8, { :format => "atom" } )[ :totalResults ] < 1
          keywords.shift
@@ -88,11 +92,24 @@ if $0 == __FILE__
          break
       end
    end
+   TIMES = 10
+   keyword = ""
+   entries = []
    TIMES.times do |i|
       keyword = keywords[ 0..(TIMES-i-1) ].join( " " ).toutf8
+      STDERR.puts keyword
       data = cinii_search( keyword, { :format => "atom" } )
-      break if data[ :totalResults ].to_i > 0
+      if data[ :totalResults ].to_i > 0
+         if data[ :totalResults ].to_i < count
+            entries += data[ :entries ]
+            next
+         else
+            data[ :entries ] = ( entries + data[ :entries ] ).uniq
+         end
+         break
+      end
    end
+   data[ :count ] = count
    rhtml = open("../cinii.rhtml"){|io| io.read }
    include ERB::Util
    puts ERB::new( rhtml, $SAFE, 2 ).result( binding )
