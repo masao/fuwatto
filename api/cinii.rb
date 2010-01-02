@@ -2,6 +2,7 @@
 # -*- coding: euc-jp -*-
 # $Id$
 
+require "net/http"
 require "cgi"
 require "kconv"
 require "MeCab"
@@ -43,7 +44,7 @@ module Zubatto
       lines = lines.map{|e| [ e[0], e[1], e[2].to_i + min.abs + 1 ] } if min < 0
       count = Hash.new( 0 )
       lines.each_with_index do |line, idx|
-         #next if line[0] =~ /\A[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]\Z/ # ASCII symbol chars
+         next if line[0] =~ /\A[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]+\Z/ # ASCII symbol chars
          next if line[0].size < 3
          #p line[2]
          #puts line
@@ -67,14 +68,21 @@ if $0 == __FILE__
    cgi = CGI.new
    puts "Content-Type: text/html\n\n"
    url = cgi.referer || URI.escape( cgi.params["url"][0] )
+   url = URI.parse( url )
    count = cgi.params["count"][0].to_i
    count = 5 if count < 1
    mode = cgi.params["mode"][0] || "mecab"
-   content = open( url ){|io| io.read }
-   content = content.toeuc
-   #puts content
-   content = ExtractContent::analyse( content ).join( "\n" )
-   #content = ExtractContent::analyse( content )[0]
+   http = Net::HTTP.new( url.host, url.port )
+   http_response, = http.get( url.request_uri )
+   content = http_response.body
+   case http_response[ "content-type" ]
+   when /^text\/html\b/
+      content = content.toeuc
+      #puts content
+      content = ExtractContent::analyse( content ).join( "\n" )
+   else
+      raise ArgumentError( "Unknown content-type: #{ http_response[ "content-type" ] }" )
+   end
    content = NKF.nkf( "-EeZ1", content ).strip
    #puts content.toutf8
    keywords = []
