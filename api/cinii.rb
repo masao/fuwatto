@@ -73,10 +73,10 @@ if $0 == __FILE__
    content = open( url ){|io| io.read }
    content = content.toeuc
    #puts content
-   content = ExtractContent::analyse( content )[0]
+   content = ExtractContent::analyse( content ).join( "\n" )
+   #content = ExtractContent::analyse( content )[0]
    content = NKF.nkf( "-EeZ1", content ).strip
-   #content = content.toeuc
-   #puts content
+   #puts content.toutf8
    keywords = []
    case mode
    when "yahoo"
