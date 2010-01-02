@@ -78,12 +78,12 @@ if $0 == __FILE__
    case http_response[ "content-type" ]
    when /^text\/html\b/
       content = content.toeuc
-      #puts content
       content = ExtractContent::analyse( content ).join( "\n" )
+      #puts content
    else
-      raise ArgumentError( "Unknown content-type: #{ http_response[ "content-type" ] }" )
+      raise "Unknown Content-Type: #{ http_response[ "content-type" ] }"
    end
-   content = NKF.nkf( "-EeZ1", content ).strip
+   content = NKF.nkf( "-EeZ1", content ).downcase.strip
    #puts content.toutf8
    keywords = []
    case mode
