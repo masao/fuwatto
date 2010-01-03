@@ -88,57 +88,73 @@ if $0 == __FILE__
    TIMES = 10
    include Zubatto
    cgi = CGI.new
-   puts "Content-Type: text/html\n\n"
    url = cgi.referer || URI.escape( cgi.params["url"][0] )
    url = URI.parse( url )
    count = cgi.params["count"][0].to_i
    count = 5 if count < 1
    mode = cgi.params["mode"][0] || "mecab"
-   response = http_get( url )
-   content = response.body
-   case response[ "content-type" ]
-   when /^text\/html\b/
-      content = content.toeuc
-      content = ExtractContent::analyse( content ).join( "\n" )
-      #puts content
-   else
-      raise "Unknown Content-Type: #{ response[ "content-type" ] }"
-   end
-   content = NKF.nkf( "-EeZ1", content ).downcase.strip
-   #puts content.toutf8
-   keywords = []
-   case mode
-   when "yahoo"
-      keywords = extract_keywords_yahooapi( content )
-   else
-      keywords = extract_keywords_mecab( content )
-   end
-   #puts keywords
-   data = nil
-   keywords = keywords.select{|e| not e.nil? and not e.empty? }
-   keywords[0,TIMES].dup.each do |k|
-      if cinii_search( k.toutf8 )[ :totalResults ] < 1
-         keywords.delete( k )
+   begin
+      response = http_get( url )
+      content = response.body
+      case response[ "content-type" ]
+      when /^text\/html\b/
+         content = content.toeuc
+         content = ExtractContent::analyse( content ).join( "\n" )
+         #puts content
+      else
+         raise "Unknown Content-Type: #{ response[ "content-type" ] }"
       end
-   end
-   keyword = ""
-   entries = []
-   TIMES.times do |i|
-      keyword = keywords[ 0..(TIMES-i-1) ].join( " " ).toutf8
-      STDERR.puts keyword
-      data = cinii_search( keyword )
-      if data[ :totalResults ].to_i > 0
-         if data[ :totalResults ].to_i < count
-            entries += data[ :entries ]
-            next
-         else
-            data[ :entries ] = ( entries + data[ :entries ] ).uniq
+      content = NKF.nkf( "-EeZ1", content ).downcase.strip
+      #puts content.toutf8
+      keywords = []
+      case mode
+      when "yahoo"
+         keywords = extract_keywords_yahooapi( content )
+      else
+         keywords = extract_keywords_mecab( content )
+      end
+      #puts keywords
+      data = nil
+      keywords = keywords.select{|e| not e.nil? and not e.empty? }
+      keywords[0,TIMES].dup.each do |k|
+         if cinii_search( k.toutf8 )[ :totalResults ] < 1
+            keywords.delete( k )
          end
-         break
       end
+      keyword = ""
+      entries = []
+      TIMES.times do |i|
+         keyword = keywords[ 0..(TIMES-i-1) ].join( " " ).toutf8
+         STDERR.puts keyword
+         data = cinii_search( keyword )
+         if data[ :totalResults ].to_i > 0
+            if data[ :totalResults ].to_i < count
+               entries += data[ :entries ]
+               next
+            else
+               data[ :entries ] = ( entries + data[ :entries ] ).uniq
+            end
+            break
+         end
+      end
+      data[ :count ] = count
+      print cgi.header
+      rhtml = open("../cinii.rhtml"){|io| io.read }
+      include ERB::Util
+      puts ERB::new( rhtml, $SAFE, "<>" ).result( binding )
+   rescue Exception
+      if cgi then
+         print cgi.header( 'status' => CGI::HTTP_STATUS['SERVER_ERROR'], 'type' => 'text/html' )
+      else
+         print "Status: 500 Internal Server Error\n"
+         print "Content-Type: text/html\n\n"
+      end
+      puts "<h1>500 Internal Server Error</h1>"
+      puts "<pre>"
+      puts CGI::escapeHTML( "#{$!} (#{$!.class})" )
+      puts ""
+      puts CGI::escapeHTML( $@.join( "\n" ) )
+      puts "</pre>"
+      puts "<div>#{' ' * 500}</div>"
    end
-   data[ :count ] = count
-   rhtml = open("../cinii.rhtml"){|io| io.read }
-   include ERB::Util
-   puts ERB::new( rhtml, $SAFE, "<>" ).result( binding )
 end
