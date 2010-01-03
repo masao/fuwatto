@@ -64,6 +64,7 @@ module Zubatto
 end
 
 if $0 == __FILE__
+   TIMES = 10
    include Zubatto
    cgi = CGI.new
    puts "Content-Type: text/html\n\n"
@@ -94,14 +95,11 @@ if $0 == __FILE__
    end
    #puts keywords
    data = nil
-   keywords.dup.each do |k|
+   keywords[0,TIMES].dup.each do |k|
       if cinii_search( k.toutf8, { :format => "atom" } )[ :totalResults ] < 1
-         keywords.shift
-      else
-         break
+         keywords.delete( k )
       end
    end
-   TIMES = 10
    keyword = ""
    entries = []
    TIMES.times do |i|
