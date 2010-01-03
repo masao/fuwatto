@@ -52,7 +52,7 @@ module Zubatto
          score = Math.log10( line[2].to_i + 10 )
          #score = line[2].to_i
          #pp [ line[0], score, idx ]
-         count[ line[0] ] += score / Math.log10( idx + 10 )
+         count[ line[0] ] += score #/ Math.log10( idx + 10 )
       end
       #pp count
       ranks = count.keys.sort_by{|e| count[e] }.reverse
