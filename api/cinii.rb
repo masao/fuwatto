@@ -61,6 +61,27 @@ module Zubatto
       #   puts [ i+1, ranks[i], count[ ranks[i] ] ].join( "\t" )
       #end
    end
+   # Supports redirect
+   def http_get( uri, limit = 3 )
+      raise "Too many redirects: #{ uri }" if limit < 0
+      http = Net::HTTP.new( uri.host, uri.port )
+      response, = http.get( uri.request_uri )
+      #if response.code !~ /^2/
+      #   response.each do |k,v|
+      #      p [ k, v ]
+      #   end
+      #end
+      case response
+      when Net::HTTPSuccess
+         response
+      when Net::HTTPRedirection
+         uri = URI.parse( response['Location'] )
+         STDERR.puts "redirect to #{ uri } (#{limit})"
+         http_get( uri, limit - 1 )
+      else
+         response.error!
+      end
+   end
 end
 
 if $0 == __FILE__
@@ -73,16 +94,15 @@ if $0 == __FILE__
    count = cgi.params["count"][0].to_i
    count = 5 if count < 1
    mode = cgi.params["mode"][0] || "mecab"
-   http = Net::HTTP.new( url.host, url.port )
-   http_response, = http.get( url.request_uri )
-   content = http_response.body
-   case http_response[ "content-type" ]
+   response = http_get( url )
+   content = response.body
+   case response[ "content-type" ]
    when /^text\/html\b/
       content = content.toeuc
       content = ExtractContent::analyse( content ).join( "\n" )
       #puts content
    else
-      raise "Unknown Content-Type: #{ http_response[ "content-type" ] }"
+      raise "Unknown Content-Type: #{ response[ "content-type" ] }"
    end
    content = NKF.nkf( "-EeZ1", content ).downcase.strip
    #puts content.toutf8
