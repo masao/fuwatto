@@ -139,5 +139,5 @@ if $0 == __FILE__
    data[ :count ] = count
    rhtml = open("../cinii.rhtml"){|io| io.read }
    include ERB::Util
-   puts ERB::new( rhtml, $SAFE, 2 ).result( binding )
+   puts ERB::new( rhtml, $SAFE, "<>" ).result( binding )
 end
