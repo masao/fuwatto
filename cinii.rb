@@ -25,7 +25,8 @@ module Zubatto
       data = {}
       parser = LibXML::XML::Parser.string( cont )
       doc = parser.parse
-      #puts doc.find( "//opensearch:totalResults" )[0].content
+      # ref. http://ci.nii.ac.jp/info/ja/if_opensearch.html
+      #puts keyword
       data[ :q ] = keyword
       data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.sub( /&format=atom\b/, "" )
       data[ :totalResults ] = doc.find( "//opensearch:totalResults" )[0].content.to_i
@@ -35,10 +36,19 @@ module Zubatto
          title = e.find( "./atom:title", "atom:http://www.w3.org/2005/Atom" )[0].content
          url = e.find( "./atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content
          author = e.find( ".//atom:author/atom:name", "atom:http://www.w3.org/2005/Atom" ).to_a.map{|name| name.content }.join( "; " )
+         pubname = e.find( "./prism:publicationName", "prism:http://prismstandard.org/namespaces/basic/2.0/" )[0] #.content
+         if pubname.nil? 
+            pubname = e.find( "./dc:publisher", "dc:http://purl.org/dc/elements/1.1/" )[0].content
+         else
+            pubname = pubname.content
+         end
+         pubdate = e.find( "./prism:publicationDate", "prism:http://prismstandard.org/namespaces/basic/2.0/" )[0].content
          data[ :entries ] << {
             :title => title,
             :url => url,
             :author => author,
+            :publicationName => pubname,
+            :publicationDate => pubdate,
          }
       end
       data

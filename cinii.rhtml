@@ -3,7 +3,9 @@
 <ol>
 <% data[ :entries ][ 0, data[:count] ].each do |entry| %>
   <li><span class="cinii_title"><a href="<%=h entry[:url] %>"><%=h entry[:title] %></a></span><br>
-      <span class="cinii_author"><%=h entry[:author] %></span>
+      <span class="cinii_author"><%=h entry[:author] %></span>,
+      <span class="cinii_publicationName"><%=h entry[:publicationName] %></span>,
+      <span class="cinii_publicationDate"><%=h entry[:publicationDate] %></span>      
 <% end %>
 </ol>
 <div class="cinii_frame"><a href="<%=h data[:link] %>">More results</a></div>
