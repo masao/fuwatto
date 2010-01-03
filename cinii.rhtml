@@ -3,9 +3,8 @@
 <ol>
 <% data[ :entries ][ 0, data[:count] ].each do |entry| %>
   <li><span class="cinii_title"><a href="<%=h entry[:url] %>"><%=h entry[:title] %></a></span><br>
-      <span class="cinii_author"><%=h entry[:author] %></span>,
-      <span class="cinii_publicationName"><%=h entry[:publicationName] %></span>,
-      <span class="cinii_publicationDate"><%=h entry[:publicationDate] %></span>      
+      <% bibdata = [ :author, :publicationName, :publicationDate ].select{|e| entry[e] } %>
+      <%= bibdata = bibdata.map{|e| "<span class=\"cinii_#{ e }\">#{ CGI.escapeHTML entry[e] }</span>" }.join(",\n") %>
 <% end %>
 </ol>
 <div class="cinii_frame"><a href="<%=h data[:link] %>">More results</a></div>
