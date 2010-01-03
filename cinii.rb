@@ -1,4 +1,5 @@
 #!/usr/local/bin/ruby
+# -*- coding: euc-jp -*-
 # $Id$
 
 require "open-uri"
@@ -11,6 +12,8 @@ module Zubatto
    def cinii_search( keyword, opts = {} )
       base_uri = "http://ci.nii.ac.jp/opensearch/search"
       q = URI.escape( keyword )
+      # TODO: Atom/RSSの双方を対象にできるようにすること（現状は Atom のみ）
+      opts[ :format ] = "atom"
       if not opts.empty?
          opts_s = opts.keys.map do |e|
             "#{ e }=#{ URI.escape( opts[e] ) }"
@@ -26,7 +29,7 @@ module Zubatto
       parser = LibXML::XML::Parser.string( cont )
       doc = parser.parse
       # ref. http://ci.nii.ac.jp/info/ja/if_opensearch.html
-      #puts keyword
+      #p keyword
       data[ :q ] = keyword
       data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.sub( /&format=atom\b/, "" )
       data[ :totalResults ] = doc.find( "//opensearch:totalResults" )[0].content.to_i
@@ -60,7 +63,7 @@ if $0 == __FILE__
    puts "Content-Type: text/html\n\n"
    include Zubatto
    keyword = ARGV[0] || "information seeking"
-   data = cinii_search( keyword, { :format => "atom" } )
+   data = cinii_search( keyword )
    data[ :count ] = 5
    rhtml = open("cinii.rhtml"){|io| io.read }
    include ERB::Util

@@ -117,7 +117,7 @@ if $0 == __FILE__
    data = nil
    keywords = keywords.select{|e| not e.nil? and not e.empty? }
    keywords[0,TIMES].dup.each do |k|
-      if cinii_search( k.toutf8, { :format => "atom" } )[ :totalResults ] < 1
+      if cinii_search( k.toutf8 )[ :totalResults ] < 1
          keywords.delete( k )
       end
    end
@@ -126,7 +126,7 @@ if $0 == __FILE__
    TIMES.times do |i|
       keyword = keywords[ 0..(TIMES-i-1) ].join( " " ).toutf8
       STDERR.puts keyword
-      data = cinii_search( keyword, { :format => "atom" } )
+      data = cinii_search( keyword )
       if data[ :totalResults ].to_i > 0
          if data[ :totalResults ].to_i < count
             entries += data[ :entries ]
