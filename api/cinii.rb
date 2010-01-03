@@ -38,7 +38,7 @@ module Zubatto
       lines = mecab.parse( str )
       #puts lines
       lines = lines.split( /\n/ ).map{|l| l.split(/\t/) }
-      lines = lines.select{|l| l[2] and l[1] =~ /^名詞|UNK|形容詞/ and l[1] !~ /接[頭尾]|非自立/ }
+      lines = lines.select{|l| l[2] and l[1] =~ /^名詞|UNK|形容詞/ and l[1] !~ /接[頭尾]|非自立|代名詞/ }
       #pp lines
       min = lines.map{|e| e[2].to_i }.min
       lines = lines.map{|e| [ e[0], e[1], e[2].to_i + min.abs + 1 ] } if min < 0
