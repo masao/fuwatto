@@ -115,6 +115,7 @@ if $0 == __FILE__
    end
    #puts keywords
    data = nil
+   keywords = keywords.select{|e| not e.nil? and not e.empty? }
    keywords[0,TIMES].dup.each do |k|
       if cinii_search( k.toutf8, { :format => "atom" } )[ :totalResults ] < 1
          keywords.delete( k )
