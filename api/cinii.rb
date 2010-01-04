@@ -101,6 +101,8 @@ if $0 == __FILE__
          content = content.toeuc
          content = ExtractContent::analyse( content ).join( "\n" )
          #puts content
+      when /^text\/plain/
+         content = content.toeuc
       else
          raise "Unknown Content-Type: #{ response[ "content-type" ] }"
       end
