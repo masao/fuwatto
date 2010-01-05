@@ -6,29 +6,46 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rev="made" href="mailto:tmasao@acm.org" />
 <link rel="stylesheet" href="default.css" type="text/css" />
+<link rel="stylesheet" href="seltab.css" type="text/css" />
+<script language="JavaScript"  src="seltab.js" type="text/javascript"></script>
 <title>ふわっと CiNii 関連検索</title>
 </head>
-<body>
+<body onload="seltab('box', 'head', 10, 1)">
 <!-- hhmts start -->
-<div class="last-update">最終更新日: 2010年01月05日</div>
+<div class="last-update">最終更新日: 2010年01月06日</div>
 <!-- hhmts end -->
+<!--
 <div class="top-navi">
 <a href="#">このサービスについて</a>
 <a href="#">ヘルプ</a>
 </div>
+-->
 <h1>ふわっと CiNii 関連検索</h1>
 <div class="form">
-<form action="<%=h @cgi.script_name %>" method="POST" style="vertical-align:text-top;">
-<textarea rows="3" cols="45"  name="sentence"><%=h content %></textarea>
+<div class="tabheader"><div id="head1"><a href="javascript:seltab('box', 'head', 10, 1)">自然文から検索</a></div><div class="space">&nbsp;</div><div id="head2"><a href="javascript:seltab('box', 'head', 10, 2)">ウェブページから検索</a></div><div class="restspace">&nbsp;</div></div>
+<div class="tabbody">
+<div id="box1">
+<form action="<%=h @cgi.script_name %>" method="POST">
+<textarea rows="3" cols="45"  name="text"><%=h content %></textarea>
 <input type="submit" value="  論 文 検 索  ">
 <input type="hidden" name="count" value="20">
 </form>
+</div>
+<div id="box2">
+<form action="<%=h @cgi.script_name %>" method="POST">
+<input type="text" name="url" value="<%=h url or "http://" %>" size="100">
+<input type="submit" value="  論 文 検 索  ">
+<input type="hidden" name="count" value="20">
+</form>
+</div>
+</div>
+</div>
 </div>
 <% if cinii_result %>
 <%= cinii_result %>
 <% else %>
 <p class="help-text">
-うえに入力したテキストに関連した論文を<a href="http://ci.nii.ac.jp">CiNii</a>で検索します。
+入力したテキストに関連した論文を<a href="http://ci.nii.ac.jp">CiNii</a>で検索します。
 長いテキストやURLで指定したページからでも関連キーワードを自動的に抜き出して論文検索できるのが特徴です。
 </p>
 <% end %>

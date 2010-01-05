@@ -16,11 +16,12 @@ div.top-navi a {
   margin-left: .5em;
 }
 
-h1, .form {
+h1 {
   text-align: center;
 }
 .form {
-  vertical-align: super;
+  margin-left: 5em;
+  margin-right: 5em;
 }
 textarea {
   display: inline;
