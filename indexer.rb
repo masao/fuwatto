@@ -81,8 +81,16 @@ if $0 == __FILE__
                db = Database.new( DBTYPE )
                indexed_data = %w[ identifier description title jtitle creator alternative subject NIIsubject publisher contributor type source ].map{|e| data[e] }
                db.transaction do
-                  sth = db.prepare("INSERT INTO md VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                  sth.execute( 0, *indexed_data )
+                  begin
+                     sth = db.prepare("INSERT INTO md VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                     sth.execute( 0, *indexed_data )
+                  rescue SQLite3::SQLException => e
+                     open( "error.tmp", "w" ) do |io|
+                        io.puts indexed_data.inspect
+                        io.puts indexed_data.size
+                     end
+                     raise e
+                  end
                   logfile.puts [ data[ "identifier"], data[ "title" ] ].join("\t")
                end
                #p [ indexed_data, indexed_data.size ]
