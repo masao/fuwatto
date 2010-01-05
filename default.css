@@ -26,6 +26,10 @@ h1 {
 textarea {
   display: inline;
 }
+input[type="text"] {
+  font-size: larger;
+}
+input { padding: 2px; }
 
 .help-text {
   width: 70%;
