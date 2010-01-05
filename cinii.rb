@@ -117,6 +117,7 @@ module Fuwatto
       #3.times do |i|
       #   puts [ i+1, ranks[i], count[ ranks[i] ] ].join( "\t" )
       #end
+      ranks
    end
    # Supports redirect
    def http_get( uri, limit = 3 )
@@ -167,7 +168,7 @@ if $0 == __FILE__
    @cgi = CGI.new
    begin
       url = @cgi.params["url"][0]
-      content = @cgi.params["sentence"][0]
+      content = @cgi.params["text"][0]
       if url.nil? and content.nil?
       else
          if url
