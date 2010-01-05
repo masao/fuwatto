@@ -3,6 +3,7 @@
 # $Id$
 
 require "open-uri"
+require "net/http"
 #require "pp"
 require "erb"
 require "cgi"
@@ -11,6 +12,7 @@ require "kconv"
 require "rubygems"
 require "libxml"
 require "MeCab"
+require "extractcontent"
 
 module Fuwatto
    def cinii_search( keyword, opts = {} )

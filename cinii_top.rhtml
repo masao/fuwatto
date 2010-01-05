@@ -22,7 +22,7 @@
 -->
 <h1>ふわっと CiNii 関連検索</h1>
 <div class="form">
-<div class="tabheader"><div id="head1"><a href="javascript:seltab('box', 'head', 10, 1)">自然文から検索</a></div><div class="space">&nbsp;</div><div id="head2"><a href="javascript:seltab('box', 'head', 10, 2)">ウェブページから検索</a></div><div class="restspace">&nbsp;</div></div>
+<div class="tabheader"><div id="head1"><a href="javascript:seltab('box', 'head', 10, 1)">自然文から検索</a></div><div class="space">&nbsp;</div><div id="head2"><a href="javascript:seltab('box', 'head', 10, 2)">ウェブページから検索</a></div><div class="space">&nbsp;</div></div>
 <div class="tabbody">
 <div id="box1">
 <form action="<%=h @cgi.script_name %>" method="POST">
@@ -33,7 +33,7 @@
 </div>
 <div id="box2">
 <form action="<%=h @cgi.script_name %>" method="POST">
-<input type="text" name="url" value="<%=h url or "http://" %>" size="100">
+<input type="text" name="url" value="<%=h( url || "http://" ) %>" size="100">
 <input type="submit" value="  論 文 検 索  ">
 <input type="hidden" name="count" value="20">
 </form>
@@ -50,9 +50,11 @@
 </p>
 <% end %>
 <hr />
+<div id="footer">
 <address>高久雅生 (Masao Takaku)<br />
 <a href="http://masao.jpn.org/">http://masao.jpn.org/</a>,
 <a href="mailto:tmasao@acm.org">tmasao@acm.org</a></address>
+</div>
 <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
 </script>
 <script type="text/javascript">

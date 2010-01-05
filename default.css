@@ -32,3 +32,8 @@ textarea {
   margin-left: auto;
   margin-right: auto;
 }
+
+#footer {
+  font-size: smaller;
+  text-align: right;
+}
