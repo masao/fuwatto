@@ -106,13 +106,16 @@ end
 if $0 == __FILE__
    TIMES = 10
    include Fuwatto
-   cgi = CGI.new
-   url = cgi.referer || URI.escape( cgi.params["url"][0] )
-   url = URI.parse( url )
-   count = cgi.params["count"][0].to_i
-   count = 5 if count < 1
-   mode = cgi.params["mode"][0] || "mecab"
+   @cgi = CGI.new
    begin
+      url = @cgi.referer || @cgi.params["url"][0]
+      if url.nil?
+         raise "empty URL"
+      end
+      url = URI.parse( url )
+      count = @cgi.params["count"][0].to_i
+      count = 5 if count < 1
+      mode = @cgi.params["mode"][0] || "mecab"
       response = http_get( url )
       content = response.body
       case response[ "content-type" ]
@@ -149,13 +152,13 @@ if $0 == __FILE__
          end
       end
       data[ :count ] = count
-      print cgi.header
+      print @cgi.header
       rhtml = open("../cinii.rhtml"){|io| io.read }
       include ERB::Util
       puts ERB::new( rhtml, $SAFE, "<>" ).result( binding )
    rescue Exception
-      if cgi then
-         print cgi.header( 'status' => CGI::HTTP_STATUS['SERVER_ERROR'], 'type' => 'text/html' )
+      if @cgi then
+         print @cgi.header( 'status' => CGI::HTTP_STATUS['SERVER_ERROR'], 'type' => 'text/html' )
       else
          print "Status: 500 Internal Server Error\n"
          print "Content-Type: text/html\n\n"
