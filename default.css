@@ -1,0 +1,33 @@
+body {
+  /* ref:http://www.colordic.org/colorsample/2173.html */
+  background-color: #fcd575;
+  padding: 1%;
+}
+
+div.last-update {
+  text-align: right;
+  font-size: smaller;
+}
+div.top-navi {
+  text-align: right;
+  font-size: smaller;
+}
+div.top-navi a {
+  margin-left: .5em;
+}
+
+h1, .form {
+  text-align: center;
+}
+.form {
+  vertical-align: super;
+}
+textarea {
+  display: inline;
+}
+
+.help-text {
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+}
