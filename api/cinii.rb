@@ -31,7 +31,7 @@ module Fuwatto
       #keywords.each do |e|
       #   p e.content
       #end
-      keywords
+      keywords.select{|e| not e.nil? and not e.empty? }
    end
    def extract_keywords_mecab( str )
       mecab = MeCab::Tagger.new( '--node-format=%m\t%H\t%c\n --unk-format=%m\tUNK\t%c\n' )
@@ -83,6 +83,24 @@ module Fuwatto
          response.error!
       end
    end
+
+   # Bag of Words による文書表現
+   class Document < Array
+      attr_reader :content
+      def initialize( content, mode = "default" )
+         super()
+         @content = NKF.nkf( "-em0XZ1", content ).gsub( /\s+/, " " ).strip
+         normalized_content = @content.downcase.strip
+         clear
+         case mode
+         when "yahoo"
+            self.push( *extract_keywords_yahooapi( normalized_content ) )
+         else
+            self.push( *extract_keywords_mecab( normalized_content ) )
+         end
+         #puts self
+      end
+   end
 end
 
 if $0 == __FILE__
@@ -107,27 +125,17 @@ if $0 == __FILE__
       else
          raise "Unknown Content-Type: #{ response[ "content-type" ] }"
       end
-      content = NKF.nkf( "-EeZ1", content ).downcase.strip
-      #puts content.toutf8
-      keywords = []
-      case mode
-      when "yahoo"
-         keywords = extract_keywords_yahooapi( content )
-      else
-         keywords = extract_keywords_mecab( content )
-      end
-      #puts keywords
+      vector = Document.new( content )
       data = nil
-      keywords = keywords.select{|e| not e.nil? and not e.empty? }
-      keywords[0,TIMES].dup.each do |k|
+      vector[0, TIMES].dup.each do |k|
          if cinii_search( k.toutf8 )[ :totalResults ] < 1
-            keywords.delete( k )
+            vector.delete( k )
          end
       end
       keyword = ""
       entries = []
       TIMES.times do |i|
-         keyword = keywords[ 0..(TIMES-i-1) ].join( " " ).toutf8
+         keyword = vector[ 0..(TIMES-i-1) ].join( " " ).toutf8
          STDERR.puts keyword
          data = cinii_search( keyword )
          if data[ :totalResults ].to_i > 0
