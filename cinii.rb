@@ -96,6 +96,7 @@ module Fuwatto
       lines = lines.split( /\n/ ).map{|l| l.split(/\t/) }
       lines = lines.select{|l| l[2] and l[1] =~ /^名詞|UNK|形容詞/ and l[1] !~ /接[頭尾]|非自立|代名詞/ }
       #pp lines
+      raise "Extracting keywords from a text failed." if lines.empty?
       min = lines.map{|e| e[2].to_i }.min
       lines = lines.map{|e| [ e[0], e[1], e[2].to_i + min.abs + 1 ] } if min < 0
       count = Hash.new( 0 )
@@ -199,12 +200,14 @@ if $0 == __FILE__
          end
          keyword = ""
          entries = []
+         total_count = 0
          TERMS.times do |i|
             keyword = vector[ 0..(TERMS-i-1) ].join( " " ).toutf8
             STDERR.puts keyword
             data = cinii_search( keyword )
             if data[ :totalResults ].to_i > 0
-               if data[ :totalResults ].to_i < count
+               total_count += data[ :totalResults ]
+               if total_count <= count
                   entries += data[ :entries ]
                   next
                else
@@ -213,6 +216,7 @@ if $0 == __FILE__
                break
             end
          end
+         data[ :totalCount ] = total_count
          data[ :count ] = count
          data[ :searchTime ] = "%0.02f" % ( Time.now - time_pre )
          rhtml = open( "./cinii.rhtml" ){|io| io.read }
