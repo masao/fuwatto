@@ -1,5 +1,8 @@
 <div class="cinii_search">
-<div class="cinii_title"><strong>CiNii関連検索 - <%=h data[:q] %></strong> (<%=h data[:totalResults] %> Hits)</div>
+<div class="cinii_title">CiNii関連検索 <strong><%=h data[:q] %></strong>
+<%=h data[ :entries ].size %>件中 1 - <%=h data[ :count ] %>件目・・
+検索にかかった時間<%= sprintf( '%.02f', data[ :searchTime ] ) %>秒
+</div>
 <ol>
 <% data[ :entries ][ 0, data[:count] ].each do |entry| %>
   <li><span class="cinii_title"><a href="<%=h entry[:url] %>"><%=h entry[:title] %></a></span><br>

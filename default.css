@@ -41,3 +41,12 @@ input { padding: 2px; }
   font-size: smaller;
   text-align: right;
 }
+
+div.cinii_title {
+  font-size: smaller;
+  background-color: #3366cc;
+  color: white;
+  text-align: right;
+  padding: 2px;
+  margin: 1ex;
+}

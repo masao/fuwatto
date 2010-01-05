@@ -166,6 +166,7 @@ if $0 == __FILE__
    include Fuwatto
    include ERB::Util
    @cgi = CGI.new
+   time_pre = Time.new
    begin
       url = @cgi.params["url"][0]
       content = @cgi.params["text"][0]
@@ -213,6 +214,7 @@ if $0 == __FILE__
             end
          end
          data[ :count ] = count
+         data[ :searchTime ] = "%0.02f" % ( Time.now - time_pre )
          rhtml = open( "./cinii.rhtml" ){|io| io.read }
          cinii_result = ERB::new( rhtml, $SAFE, "<>" ).result( binding )
       end
