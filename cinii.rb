@@ -8,7 +8,7 @@ require "erb"
 require "rubygems"
 require "libxml"
 
-module Zubatto
+module Fuwatto
    def cinii_search( keyword, opts = {} )
       base_uri = "http://ci.nii.ac.jp/opensearch/search"
       q = URI.escape( keyword )
@@ -63,8 +63,9 @@ module Zubatto
 end
 
 if $0 == __FILE__
+   require "cgi"
    puts "Content-Type: text/html\n\n"
-   include Zubatto
+   include Fuwatto
    keyword = ARGV[0] || "information seeking"
    data = cinii_search( keyword )
    data[ :count ] = 5

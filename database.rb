@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # $Id$
 
-module Zubatto
+module Fuwatto
    class Database
       DATABASE_NAME = "md.db"
       CREATE_TABLE = <<-EOF

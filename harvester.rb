@@ -8,7 +8,7 @@ require "rubygems"
 require "oai"
 # require "oai/harvester"
 
-module Zubatto
+module Fuwatto
    class Harvester
       HARVEST_DIR = "harvest"
       attr_reader :sites, :conf
@@ -99,7 +99,7 @@ module Zubatto
 end
 
 if $0 == __FILE__
-   crawler = Zubatto::Harvester.new( "harvester.conf" )
+   crawler = Fuwatto::Harvester.new( "harvester.conf" )
    crawler.start
    # conf = YAML.load_file( "harvester.conf" )
    # crawler = OAI::Harvester::Harvest.new

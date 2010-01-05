@@ -10,7 +10,7 @@ require "extractcontent"
 
 require "../cinii.rb"
 
-module Zubatto
+module Fuwatto
    YAHOO_KEYWORD_BASEURI = "http://jlp.yahooapis.jp/KeyphraseService/V1/extract"
    YAHOO_APPID = "W11oHSWxg65mAdRwjBT4ylIdfS9PkHPjVvtJzx9Quwy.um8e1LPf_b.4usSBcmI-"
    def extract_keywords_yahooapi( str )
@@ -87,7 +87,7 @@ end
 
 if $0 == __FILE__
    TIMES = 10
-   include Zubatto
+   include Fuwatto
    cgi = CGI.new
    url = cgi.referer || URI.escape( cgi.params["url"][0] )
    url = URI.parse( url )

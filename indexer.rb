@@ -18,7 +18,7 @@ end
 require "database.rb"
 require "harvester.rb"
 
-module Zubatto
+module Fuwatto
    class Util
       def self.ja_char_normalizer( str )
          NKF.nkf( "-tXZ1", str ).gsub( /\s+/, " " ).strip
@@ -30,7 +30,7 @@ module Zubatto
 end
 
 if $0 == __FILE__
-   include Zubatto
+   include Fuwatto
    harvester = Harvester.new( "harvester.conf" )
    harvester.sites.each do |site|
       p site
