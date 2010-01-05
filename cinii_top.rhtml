@@ -10,7 +10,7 @@
 <script language="JavaScript"  src="seltab.js" type="text/javascript"></script>
 <title>ふわっと CiNii 関連検索</title>
 </head>
-<body onload="seltab('box', 'head', 10, 1)">
+<body onload="seltab('box', 'head', 10, <%= url ? 2 : 1 %>)">
 <!-- hhmts start -->
 <div class="last-update">最終更新日: 2010年01月06日</div>
 <!-- hhmts end -->
@@ -26,13 +26,13 @@
 <div class="tabbody">
 <div id="box1">
 <form action="<%=h @cgi.script_name %>" method="POST">
-<textarea rows="3" cols="45"  name="text"><%=h content %></textarea>
+<textarea rows="3" cols="45"  name="text"><%=h content.to_s.toutf8 %></textarea>
 <input type="submit" value="  論 文 検 索  ">
 <input type="hidden" name="count" value="20">
 </form>
 </div>
 <div id="box2">
-<form action="<%=h @cgi.script_name %>" method="POST">
+<form action="<%=h @cgi.script_name %>" method="GET">
 <input type="text" name="url" value="<%=h( url || "http://" ) %>" size="100">
 <input type="submit" value="  論 文 検 索  ">
 <input type="hidden" name="count" value="20">
