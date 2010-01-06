@@ -26,16 +26,15 @@
 <div class="tabheader"><div id="head1"><a href="javascript:seltab('box', 'head', 10, 1)">文章から検索</a></div><div class="space">&nbsp;</div><div id="head2"><a href="javascript:seltab('box', 'head', 10, 2)">ウェブページから検索</a></div><div class="space">&nbsp;</div></div>
 <div class="tabbody">
 <div id="box1">
-<form action="<%=h @cgi.script_name %>" method="POST">
+<form action="<%=h @cgi.script_name %>" method="POST" name="text">
 <textarea rows="4" cols="45"  name="text"><%=h content.to_s.toutf8 %></textarea>
 <input type="submit" value="  論 文 検 索  ">
 </form>
 </div>
 <div id="box2">
-<form action="<%=h @cgi.script_name %>" method="GET">
+<form action="<%=h @cgi.script_name %>" method="GET" name="url">
 <input type="text" name="url" value="<%=h( url || "http://" ) %>" size="70">
 <input type="submit" value="  論 文 検 索  ">
-<input type="hidden" name="count" value="20">
 </form>
 </div>
 </div>
@@ -43,6 +42,26 @@
 </div>
 <% if cinii_result %>
 <%= cinii_result %>
+<p class="page">ページ:
+<% MAX_PAGE = 10 # ページネイションに表示されるアイテム数 %>
+<% first_page = data[ :page ] - MAX_PAGE / 2 %>
+<% first_page = 0 if first_page < 0 %>
+<% last_page  = data[ :totalResults ] / data[ :count ] %>
+<% last_page  = data[:page] + MAX_PAGE / 2 if last_page - first_page > MAX_PAGE %>
+<% if first_page != 0 %>
+...
+<% end %>
+<% ( first_page .. last_page ).each do |i| %>
+<%    if i == data[ :page ] %>
+         [<%= i + 1 %>]
+<%    else %>
+         <a href="<%=h @cgi.script_name %>?<%= @cgi.query_string.to_s.gsub( /[;&]page=\w*\b/, "" ) %>;page=<%=h i %>">[<%=h i+1 %>]</a>
+<%    end %>
+<% end %>
+<% if last_page != 0 and last_page * data[:count] > data[:totalResults] %>
+...
+<% end %>
+</p>
 <% else %>
 <p class="help-text">
 入力したテキストまたはウェブページに関連した論文を<a href="http://ci.nii.ac.jp">CiNii</a>で検索します。

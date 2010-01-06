@@ -41,7 +41,7 @@ module Fuwatto
       opts[ :format ] = "atom"
       if not opts.empty?
          opts_s = opts.keys.map do |e|
-            "#{ e }=#{ URI.escape( opts[e] ) }"
+            "#{ e }=#{ URI.escape( opts[e].to_s ) }"
          end.join( "&" )
       end
       cont = nil
@@ -204,6 +204,7 @@ if $0 == __FILE__
          end
          count = @cgi.params["count"][0].to_i
          count = 20 if count < 1
+         page = @cgi.params["page"][0].to_i
          mode = @cgi.params["mode"][0] || "mecab"
          vector = Document.new( content )
          data = nil
@@ -222,20 +223,29 @@ if $0 == __FILE__
             data = cinii_search( keyword )
             if data[ :totalResults ].to_i > 0
                total_count += data[ :totalResults ]
-               if total_count <= count
-                  entries += data[ :entries ]
+               entries = ( entries + data[ :entries ] ).uniq
+               if total_count <= count * ( page + 1 )
                   additional_keywords.unshift( vector[ TERMS - i - 1 ].toutf8 )
                   #p additional_keywords
                   next
                else
-                  data[ :entries ] = ( entries + data[ :entries ] ).uniq
+                  start = count * page + 1
+                  while data[ :totalResults ].to_i > start and entries.size < count * ( page + 1 ) do
+                     #p [ entries.size, start ]
+                     data = cinii_search( keyword, { :start => start } )
+                     total_count += data[ :totalResults ]
+                     entries = ( entries + data[ :entries ] ).uniq
+                     start += count * page
+                  end
                end
                break
             end
          end
+         data[ :entries ] = entries
          data[ :additional_keywords ] = additional_keywords
          data[ :totalCount ] = total_count
          data[ :count ] = count
+         data[ :page ] = page
          data[ :searchTime ] = "%0.02f" % ( Time.now - time_pre )
          rhtml = open( "./cinii.rhtml" ){|io| io.read }
          cinii_result = ERB::new( rhtml, $SAFE, "<>" ).result( binding )
