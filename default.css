@@ -50,3 +50,7 @@ div.cinii_title {
   padding: 2px;
   margin: 1ex;
 }
+.additional_keywords {
+  font-size: smaller;
+  color: #ddd;
+}

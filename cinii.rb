@@ -171,7 +171,7 @@ if $0 == __FILE__
    begin
       url = @cgi.params["url"][0]
       content = @cgi.params["text"][0]
-      if url.nil? and content.nil?
+      if ( url.nil? or url.empty? or url == "http://" ) and ( content.nil? or content.empty? )
       else
          if url
             url = URI.parse( url ) 
@@ -201,6 +201,7 @@ if $0 == __FILE__
          keyword = ""
          entries = []
          total_count = 0
+         additional_keywords = []
          TERMS.times do |i|
             keyword = vector[ 0..(TERMS-i-1) ].join( " " ).toutf8
             STDERR.puts keyword
@@ -209,6 +210,8 @@ if $0 == __FILE__
                total_count += data[ :totalResults ]
                if total_count <= count
                   entries += data[ :entries ]
+                  additional_keywords << vector[ TERMS - i - 1 ].toutf8
+                  #p additional_keywords
                   next
                else
                   data[ :entries ] = ( entries + data[ :entries ] ).uniq
@@ -216,6 +219,7 @@ if $0 == __FILE__
                break
             end
          end
+         data[ :additional_keywords ] = additional_keywords
          data[ :totalCount ] = total_count
          data[ :count ] = count
          data[ :searchTime ] = "%0.02f" % ( Time.now - time_pre )
