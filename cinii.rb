@@ -5,6 +5,7 @@
 require "open-uri"
 require "net/http"
 #require "pp"
+require "tempfile"
 require "erb"
 require "cgi"
 require "nkf"
@@ -15,6 +16,24 @@ require "MeCab"
 require "extractcontent"
 
 module Fuwatto
+   # Bag of Words による文書表現
+   class Document < Array
+      attr_reader :content
+      def initialize( content, mode = "default" )
+         super()
+         @content = NKF.nkf( "-em0XZ1", content ).gsub( /\s+/, " " ).strip
+         normalized_content = @content.downcase.strip
+         clear
+         case mode
+         when "yahoo"
+            self.push( *extract_keywords_yahooapi( normalized_content ) )
+         else
+            self.push( *extract_keywords_mecab( normalized_content ) )
+         end
+         #puts self
+      end
+   end
+
    def cinii_search( keyword, opts = {} )
       base_uri = "http://ci.nii.ac.jp/opensearch/search"
       q = URI.escape( keyword )
@@ -31,7 +50,6 @@ module Fuwatto
          cont = res.read
       end
       #open( "result.xml", "w" ){|io| io.puts cont }
-
       data = {}
       parser = LibXML::XML::Parser.string( cont )
       doc = parser.parse
@@ -67,6 +85,16 @@ module Fuwatto
       data
    end
 
+   def pdftotext( pdf_str )
+      pdf_file = Tempfile.new( [ "pdf", ".pdf" ] )
+      pdf_file.print pdf_str
+      pdf_file.flush
+      #p pdf_file.size
+      IO.popen( "pdftotext -raw -enc EUC-JP #{ pdf_file.path } -" ) do |io|
+         io.read
+      end
+   end
+
    YAHOO_KEYWORD_BASEURI = "http://jlp.yahooapis.jp/KeyphraseService/V1/extract"
    YAHOO_APPID = "W11oHSWxg65mAdRwjBT4ylIdfS9PkHPjVvtJzx9Quwy.um8e1LPf_b.4usSBcmI-"
    def extract_keywords_yahooapi( str )
@@ -89,6 +117,7 @@ module Fuwatto
       #end
       keywords.select{|e| not e.nil? and not e.empty? }
    end
+
    def extract_keywords_mecab( str )
       mecab = MeCab::Tagger.new( '--node-format=%m\t%H\t%c\n --unk-format=%m\tUNK\t%c\n' )
       lines = mecab.parse( str )
@@ -120,6 +149,7 @@ module Fuwatto
       #end
       ranks
    end
+
    # Supports redirect
    def http_get( uri, limit = 3 )
       raise "Too many redirects: #{ uri }" if limit < 0
@@ -139,24 +169,6 @@ module Fuwatto
          http_get( uri, limit - 1 )
       else
          response.error!
-      end
-   end
-
-   # Bag of Words による文書表現
-   class Document < Array
-      attr_reader :content
-      def initialize( content, mode = "default" )
-         super()
-         @content = NKF.nkf( "-em0XZ1", content ).gsub( /\s+/, " " ).strip
-         normalized_content = @content.downcase.strip
-         clear
-         case mode
-         when "yahoo"
-            self.push( *extract_keywords_yahooapi( normalized_content ) )
-         else
-            self.push( *extract_keywords_mecab( normalized_content ) )
-         end
-         #puts self
       end
    end
 end
@@ -182,14 +194,16 @@ if $0 == __FILE__
                content = content.toeuc
                content = ExtractContent::analyse( content ).join( "\n" )
                #puts content
-            when /^text\/plain/
+            when /^text\/plain\b/
                content = content.toeuc
+            when /^application\/pdf\b/
+               content = pdftotext( content ) #.toeuc
             else
                raise "Unknown Content-Type: #{ response[ "content-type" ] }"
             end
          end
          count = @cgi.params["count"][0].to_i
-         count = 5 if count < 1
+         count = 20 if count < 1
          mode = @cgi.params["mode"][0] || "mecab"
          vector = Document.new( content )
          data = nil
@@ -210,7 +224,7 @@ if $0 == __FILE__
                total_count += data[ :totalResults ]
                if total_count <= count
                   entries += data[ :entries ]
-                  additional_keywords << vector[ TERMS - i - 1 ].toutf8
+                  additional_keywords.unshift( vector[ TERMS - i - 1 ].toutf8 )
                   #p additional_keywords
                   next
                else

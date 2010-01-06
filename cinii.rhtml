@@ -2,6 +2,7 @@
 <div class="cinii_title">
 <strong><%=h data[:q] %>
 <span class="additional_keywords"><%=h data[ :additional_keywords ].join("\n") %></span></strong>
+&nbsp;
 <%=h data[ :totalCount ] %>件中 1 - <%=h data[ :entries ].size %>件目・・
 検索にかかった時間<%= sprintf( '%.02f', data[ :searchTime ] ) %>秒
 </div>
