@@ -2,8 +2,9 @@
 <div class="cinii_title">
 <strong><%=h data[:q] %>
 <span class="additional_keywords"><%=h data[ :additional_keywords ].join("\n") %></span></strong>
+<a class="cinii" href="<%=h data[:link] %>"><img src="./cinii.png" alt="[CiNii]" title="Link to CiNii"></a>
 &nbsp;
-<%=h data[ :totalCount ] %>件中 1 - <%=h data[ :entries ].size %>件目・・
+<%=h data[ :totalCount ] %>件中 1 - <%=h data[ :count ] %>件目・・
 検索にかかった時間<%= sprintf( '%.02f', data[ :searchTime ] ) %>秒
 </div>
 <ol>
@@ -12,5 +13,5 @@
       <%= [ :author, :publicationName, :publicationDate ].select{|e| entry[e] }.map{|e| "<span class=\"cinii_#{ e }\">#{ CGI.escapeHTML entry[e] }</span>" }.join(",\n") %>
 <% end %>
 </ol>
-<div class="cinii_frame"><a href="<%=h data[:link] %>">More results</a></div>
+<div class="cinii_frame"></div>
 </div>
