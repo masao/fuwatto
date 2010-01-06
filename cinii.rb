@@ -215,16 +215,14 @@ if $0 == __FILE__
          end
          keyword = ""
          entries = []
-         total_count = 0
          additional_keywords = []
          TERMS.times do |i|
             keyword = vector[ 0..(TERMS-i-1) ].join( " " ).toutf8
             STDERR.puts keyword
             data = cinii_search( keyword )
             if data[ :totalResults ].to_i > 0
-               total_count += data[ :totalResults ]
                entries = ( entries + data[ :entries ] ).uniq
-               if total_count <= count * ( page + 1 )
+               if entries.size < count and entries.size <= count * ( page + 1 )
                   additional_keywords.unshift( vector[ TERMS - i - 1 ].toutf8 )
                   #p additional_keywords
                   next
@@ -233,9 +231,8 @@ if $0 == __FILE__
                   while data[ :totalResults ].to_i > start and entries.size < count * ( page + 1 ) do
                      #p [ entries.size, start ]
                      data = cinii_search( keyword, { :start => start } )
-                     total_count += data[ :totalResults ]
                      entries = ( entries + data[ :entries ] ).uniq
-                     start += count * page
+                     start += count
                   end
                end
                break
@@ -243,7 +240,6 @@ if $0 == __FILE__
          end
          data[ :entries ] = entries
          data[ :additional_keywords ] = additional_keywords
-         data[ :totalCount ] = total_count
          data[ :count ] = count
          data[ :page ] = page
          data[ :searchTime ] = "%0.02f" % ( Time.now - time_pre )

@@ -4,7 +4,7 @@
 <span class="additional_keywords"><%=h data[ :additional_keywords ].join("\n") %></span></strong>
 <a class="cinii" href="<%=h data[:link] %>"><img src="./cinii.png" alt="[CiNii]" title="Link to CiNii"></a>
 &nbsp;
-<%=h data[ :totalCount ] %>件中
+<%=h data[ :totalResults ] %>件中
 <%=h data[ :count ] * data[ :page ] + 1 %>
 - <%=h data[ :page ] * data[ :count ] + data[ :count ] %>件目・・
 検索にかかった時間<%= sprintf( '%.02f', data[ :searchTime ] ) %>秒

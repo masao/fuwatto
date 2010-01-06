@@ -42,7 +42,7 @@
 </div>
 <% if cinii_result %>
 <%= cinii_result %>
-<p class="page">ページ:
+<p class="pagination">ページ:
 <% MAX_PAGE = 10 # ページネイションに表示されるアイテム数 %>
 <% first_page = data[ :page ] - MAX_PAGE / 2 %>
 <% first_page = 0 if first_page < 0 %>
@@ -53,9 +53,11 @@
 <% end %>
 <% ( first_page .. last_page ).each do |i| %>
 <%    if i == data[ :page ] %>
-         [<%= i + 1 %>]
+         <span class="idx"><%= i + 1 %></span>
+<%    elsif i == 0 %>
+         <a href="<%=h @cgi.script_name %>?<%= @cgi.query_string.to_s.gsub( /[;&]page=\w*\b/, "" ) %>">1</a>
 <%    else %>
-         <a href="<%=h @cgi.script_name %>?<%= @cgi.query_string.to_s.gsub( /[;&]page=\w*\b/, "" ) %>;page=<%=h i %>">[<%=h i+1 %>]</a>
+         <a href="<%=h @cgi.script_name %>?<%= @cgi.query_string.to_s.gsub( /[;&]page=\w*\b/, "" ) %>;page=<%=h i %>"><%=h i+1 %></a>
 <%    end %>
 <% end %>
 <% if last_page != 0 and last_page * data[:count] > data[:totalResults] %>

@@ -37,11 +37,6 @@ input { padding: 2px; }
   margin-right: auto;
 }
 
-#footer {
-  font-size: smaller;
-  text-align: right;
-}
-
 div.cinii_title {
   font-size: smaller;
   background-color: #3366cc;
@@ -57,4 +52,27 @@ div.cinii_title a.cinii img {
 .additional_keywords {
   font-size: smaller;
   color: #ddd;
+}
+
+.pagination {
+  font-size: 130%;
+}
+.pagination span.idx, .pagination a {
+  margin: 2px;
+  border: 1px solid #66d;
+  padding: 0.25em 0.4em;
+}
+.pagination span.idx {
+  font-weight: bold;
+  background-color: #eee;
+}
+.pagination a:hover {
+  background: #039;
+  border-color: #00d;
+  color: #fff;
+}
+
+#footer {
+  font-size: smaller;
+  text-align: right;
 }
