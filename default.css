@@ -2,6 +2,7 @@ body {
   /* ref:http://www.colordic.org/colorsample/2173.html */
   background-color: #fcd575;
   padding: 1%;
+  font-family: Tahoma, Verdana, sans-serif;
 }
 
 div.last-update {
@@ -37,7 +38,7 @@ input { padding: 2px; }
   margin-right: auto;
 }
 
-div.cinii_title {
+div.cinii_headline {
   font-size: smaller;
   background-color: #3366cc;
   color: white;
@@ -45,13 +46,20 @@ div.cinii_title {
   padding: 2px;
   margin: 1ex;
 }
-div.cinii_title a.cinii img {
+div.cinii_headline a.cinii img {
   border: none;
   vertical-align: text-bottom;
 }
 .additional_keywords {
   font-size: smaller;
   color: #ddd;
+}
+.cinii_title {
+  padding: 2px;
+  margin-right: 1ex;
+}
+.cinii_author, .cinii_publicationName, .cinii_publicationDate {
+  font-size: smaller;
 }
 
 .pagination {

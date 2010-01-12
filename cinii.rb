@@ -10,18 +10,19 @@ require "erb"
 require "cgi"
 require "nkf"
 require "kconv"
+
 require "rubygems"
 require "libxml"
 require "MeCab"
 require "extractcontent"
 
 module Fuwatto
-   # Bag of Words ¤Ë¤è¤ëÊ¸½ñÉ½¸½
+   # Bag of Words ã«ã‚ˆã‚‹æ–‡æ›¸è¡¨ç¾
    class Document < Array
       attr_reader :content
-      def initialize( content, mode = "default" )
+      def initialize( content, mode = "mecab" )
          super()
-         @content = NKF.nkf( "-em0XZ1", content ).gsub( /\s+/, " " ).strip
+         @content = NKF.nkf( "-wm0XZ1", content ).gsub( /\s+/, " " ).strip
          normalized_content = @content.downcase.strip
          clear
          case mode
@@ -37,7 +38,7 @@ module Fuwatto
    def cinii_search( keyword, opts = {} )
       base_uri = "http://ci.nii.ac.jp/opensearch/search"
       q = URI.escape( keyword )
-      # TODO: Atom/RSS¤ÎÁĞÊı¤òÂĞ¾İ¤Ë¤Ç¤­¤ë¤è¤¦¤Ë¤¹¤ë¤³¤È¡Ê¸½¾õ¤Ï Atom ¤Î¤ß¡Ë
+      # TODO: Atom/RSSã®åŒæ–¹ã‚’å¯¾è±¡ã«ã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹ã“ã¨ï¼ˆç¾çŠ¶ã¯ Atom ã®ã¿ï¼‰
       opts[ :format ] = "atom"
       if not opts.empty?
          opts_s = opts.keys.map do |e|
@@ -90,7 +91,7 @@ module Fuwatto
       pdf_file.print pdf_str
       pdf_file.flush
       #p pdf_file.size
-      IO.popen( "pdftotext -raw -enc EUC-JP #{ pdf_file.path } -" ) do |io|
+      IO.popen( "/usr/local/bin/pdftotext -raw -enc EUC-JP #{ pdf_file.path } -" ) do |io|
          io.read
       end
    end
@@ -100,6 +101,7 @@ module Fuwatto
    def extract_keywords_yahooapi( str )
       #cont = open( "?appid=#{ YAHOO_APPID }&sentence=#{ URI.escape( str ) }&output=xml" ){|io| io.read }
       uri = URI.parse( YAHOO_KEYWORD_BASEURI )
+      response = http_get( uri )
       http = Net::HTTP.new( uri.host, uri.port )
       xml = nil
       http.start do |conn|
@@ -120,10 +122,10 @@ module Fuwatto
 
    def extract_keywords_mecab( str )
       mecab = MeCab::Tagger.new( '--node-format=%m\t%H\t%c\n --unk-format=%m\tUNK\t%c\n' )
-      lines = mecab.parse( str )
+      lines = mecab.parse( str.toeuc )
       #puts lines
-      lines = lines.split( /\n/ ).map{|l| l.split(/\t/) }
-      lines = lines.select{|l| l[2] and l[1] =~ /^Ì¾»ì|UNK|·ÁÍÆ»ì/ and l[1] !~ /ÀÜ[Æ¬Èø]|Èó¼«Î©|ÂåÌ¾»ì/ }
+      lines = lines.toutf8.split( /\n/ ).map{|l| l.split(/\t/) }
+      lines = lines.select{|l| l[2] and l[1] =~ /^åè©|UNK|å½¢å®¹è©/o and l[1] !~ /æ¥[é ­å°¾]|éè‡ªç«‹|ä»£åè©/o }
       #pp lines
       raise "Extracting keywords from a text failed." if lines.empty?
       min = lines.map{|e| e[2].to_i }.min
@@ -153,32 +155,41 @@ module Fuwatto
    # Supports redirect
    def http_get( uri, limit = 3 )
       raise "Too many redirects: #{ uri }" if limit < 0
-      http = Net::HTTP.new( uri.host, uri.port )
-      response, = http.get( uri.request_uri )
-      #if response.code !~ /^2/
-      #   response.each do |k,v|
-      #      p [ k, v ]
-      #   end
-      #end
-      case response
-      when Net::HTTPSuccess
-         response
-      when Net::HTTPRedirection
-         uri = URI.parse( response['Location'] )
-         STDERR.puts "redirect to #{ uri } (#{limit})"
-         http_get( uri, limit - 1 )
-      else
-         response.error!
+      http_proxy = ENV[ "http_proxy" ]
+      proxy, proxy_port = nil
+      if http_proxy
+         proxy_uri = URI.parse( http_proxy )
+         proxy = proxy_uri.host
+         proxy_port = proxy_uri.port
+      end
+      Net::HTTP.Proxy( proxy, proxy_port ).start( uri.host, uri.port ) do |http|
+         response, = http.get( uri.request_uri )
+         #if response.code !~ /^2/
+         #   response.each do |k,v|
+         #      p [ k, v ]
+         #   end
+         #end
+         case response
+         when Net::HTTPSuccess
+            response
+         when Net::HTTPRedirection
+            uri = URI.parse( response['Location'] )
+            STDERR.puts "redirect to #{ uri } (#{limit})"
+            http_get( uri, limit - 1 )
+         else
+            response.error!
+         end
       end
    end
 end
 
 if $0 == __FILE__
-   # ¸¡º÷¤Ë»ÈÍÑ¤¹¤ëºÇÂç¥­¡¼¥ï¡¼¥É¿ô
+   # æ¤œç´¢ã«ä½¿ç”¨ã™ã‚‹æœ€å¤§ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰æ•°
    TERMS = 10
    include Fuwatto
    include ERB::Util
    @cgi = CGI.new
+   ENV[ 'http_proxy' ] = 'http://wwwout.nims.go.jp:8888' if @cgi.host == "kagaku.nims.go.jp"
    time_pre = Time.new
    begin
       url = @cgi.params["url"][0]
@@ -194,7 +205,7 @@ if $0 == __FILE__
                content = content.toeuc
                content = ExtractContent::analyse( content ).join( "\n" )
                #puts content
-            when /^text\/plain\b/
+            when /^text\//
                content = content.toeuc
             when /^application\/pdf\b/
                content = pdftotext( content ) #.toeuc
@@ -206,7 +217,7 @@ if $0 == __FILE__
          count = 20 if count < 1
          page = @cgi.params["page"][0].to_i
          mode = @cgi.params["mode"][0] || "mecab"
-         vector = Document.new( content )
+         vector = Document.new( content, mode )
          data = nil
          vector[0, TERMS].dup.each do |k|
             if cinii_search( k.toutf8 )[ :totalResults ] < 1
@@ -222,13 +233,13 @@ if $0 == __FILE__
             data = cinii_search( keyword )
             if data[ :totalResults ].to_i > 0
                entries = ( entries + data[ :entries ] ).uniq
-               if entries.size < count and entries.size <= count * ( page + 1 )
+               if entries.size < count and entries.size <= count * ( page + 1 ) and vector.size > (TERMS-i)
                   additional_keywords.unshift( vector[ TERMS - i - 1 ].toutf8 )
                   #p additional_keywords
                   next
                else
-                  start = count * page + 1
-                  while data[ :totalResults ].to_i > start and entries.size < count * ( page + 1 ) do
+                  start = count + 1
+                  while data[ :totalResults ].to_i >= start and entries.size < count * ( page + 1 ) do
                      #p [ entries.size, start ]
                      data = cinii_search( keyword, { :start => start } )
                      entries = ( entries + data[ :entries ] ).uniq

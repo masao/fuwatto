@@ -27,13 +27,13 @@
 <div class="tabheader"><div id="head1"><a href="javascript:seltab('box', 'head', 10, 1)">文章から検索</a></div><div class="space">&nbsp;</div><div id="head2"><a href="javascript:seltab('box', 'head', 10, 2)">ウェブページから検索</a></div><div class="space">&nbsp;</div></div>
 <div class="tabbody">
 <div id="box1">
-<form action="<%=h @cgi.script_name %>" method="POST" name="text">
+<form action="<%=h @cgi.script_name %>" method="POST" name="text1">
 <textarea rows="4" cols="45"  name="text"><%=h content.to_s.toutf8 %></textarea>
 <input type="submit" value="  論 文 検 索  ">
 </form>
 </div>
 <div id="box2">
-<form action="<%=h @cgi.script_name %>" method="GET" name="url">
+<form action="<%=h @cgi.script_name %>" method="GET" name="url1">
 <input type="text" name="url" value="<%=h( url || "http://" ) %>" size="70">
 <input type="submit" value="  論 文 検 索  ">
 </form>
@@ -49,23 +49,19 @@
 <% first_page = 0 if first_page < 0 %>
 <% last_page  = data[ :totalResults ] / data[ :count ] %>
 <% last_page  = data[:page] + MAX_PAGE / 2 if last_page - first_page > MAX_PAGE %>
-<% if first_page != 0 %>
-...
-<% end %>
 <% ( first_page .. last_page ).each do |i| %>
-<% if url.nil? %>
-<%    onclick = " onclick=\"submit_page_text(#{i})\"" %>
-<% end %>
+<%    href = "#{ @cgi.script_name }?#{ @cgi.query_string.to_s.gsub( /[;&]?page=\w*\b/, "" ) }" %>
+<%    if url.nil? %>
+<%       onclick = " onclick=\"submit_page_text(#{i});return false;\"" %>
+<%       href = "#" %>
+<%    end %>
 <%    if i == data[ :page ] %>
          <span class="idx"><%= i + 1 %></span>
 <%    elsif i == 0 %>
-         <a href="<%=h @cgi.script_name %>?<%= @cgi.query_string.to_s.gsub( /[;&]?page=\w*\b/, "" ) %>"<%= onclick %>>1</a>
+         <a href="<%=h href %>"<%= onclick %>>1</a>
 <%    else %>
-         <a href="<%=h @cgi.script_name %>?<%= @cgi.query_string.to_s.gsub( /[;&]?page=\w*\b/, "" ) %>;page=<%=h i %>"<%= onclick %>><%=h i+1 %></a>
+         <a href="<%=h href %>;page=<%=h i %>"<%= onclick %>><%=h i+1 %></a>
 <%    end %>
-<% end %>
-<% if last_page != 0 and last_page * data[:count] > data[:totalResults] %>
-...
 <% end %>
 </p>
 <% else %>
