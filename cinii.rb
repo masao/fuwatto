@@ -1,5 +1,5 @@
 #!/usr/local/bin/ruby
-# -*- coding: euc-jp -*-
+# -*- coding: utf-8 -*-
 # $Id$
 
 require "open-uri"
@@ -17,6 +17,10 @@ require "MeCab"
 require "extractcontent"
 
 module Fuwatto
+   VERSION = '0.1'
+   BASE_URI = 'http://kagaku.nims.go.jp/~masao/fuwatto/cinii.rb'
+   USER_AGENT = 'Fuwatto Search/#{ VERSION }; #{ BASE_URI }'
+
    # Bag of Words による文書表現
    class Document < Array
       attr_reader :content
@@ -163,7 +167,7 @@ module Fuwatto
          proxy_port = proxy_uri.port
       end
       Net::HTTP.Proxy( proxy, proxy_port ).start( uri.host, uri.port ) do |http|
-         response, = http.get( uri.request_uri )
+         response, = http.get( uri.request_uri, { 'User-Agent'=>USER_AGENT } )
          #if response.code !~ /^2/
          #   response.each do |k,v|
          #      p [ k, v ]
