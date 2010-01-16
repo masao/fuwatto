@@ -177,9 +177,9 @@ module Fuwatto
          when Net::HTTPSuccess
             response
          when Net::HTTPRedirection
-            uri = URI.parse( response['Location'] )
-            STDERR.puts "redirect to #{ uri } (#{limit})"
-            http_get( uri, limit - 1 )
+            redirect_uri = URI.parse( response['Location'] )
+            STDERR.puts "redirect to #{ redirect_uri } (#{limit})"
+            http_get( uri + redirect_uri, limit - 1 )
          else
             response.error!
          end
