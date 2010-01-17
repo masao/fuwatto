@@ -14,7 +14,7 @@
 </head>
 <body onload="seltab('box', 'head', 10, <%= url ? 2 : 1 %>)">
 <!-- hhmts start -->
-<div class="last-update">最終更新日: 2010年01月07日</div>
+<div class="last-update">最終更新日: 2010年01月17日</div>
 <!-- hhmts end -->
 <!--
 <div class="top-navi">
@@ -65,10 +65,17 @@
 <% end %>
 </p>
 <% else %>
-<p class="help-text">
+<div class="help-text">
+<p>
 入力したテキストまたはウェブページに関連した論文を<a href="http://ci.nii.ac.jp">CiNii</a>で検索します。
 長いテキストやURLで指定したページからでも関連キーワードを自動的に抜き出して論文検索できるのが特徴です。
 </p>
+<p>
+例:
+<a href="<%=h @cgi.script_name %>?url=http://www.asahi.com/paper/editorial.html">朝日新聞社説</a> <span style="font-size:smaller;">（<a href="http://www.asahi.com/paper/editorial.html">元記事(asahi.com)</a>）</span>, 
+<a href="<%=h @cgi.script_name %>?url=http://www.nikkei.co.jp/news/shasetsu/">日本経済新聞社説</a> <span style="font-size:smaller;">（<a href="http://www.nikkei.co.jp/news/shasetsu/">元記事(nikkei.co.jp)</a>）</span>
+</p>
+</div>
 <% end %>
 <hr />
 <div id="footer">
