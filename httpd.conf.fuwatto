@@ -1,0 +1,14 @@
+DocumentRoot /home/masao/cvswork/fuwatto/
+DirectoryIndex index.html index.cgi
+
+<Directory /home/masao/cvswork/fuwatto>
+Options All MultiViews
+AllowOverride All
+</Directory>
+ScriptAlias /cinii /home/masao/cvswork/fuwatto/cinii.rb
+
+# conf.d/welcome.conf disabled
+<LocationMatch "^/+$">
+Options Indexes
+</LocationMatch>
+
