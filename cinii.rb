@@ -255,7 +255,7 @@ if $0 == __FILE__
             data = cinii_search( keyword )
             if data[ :totalResults ] > 0
                entries = ( entries + data[ :entries ] ).uniq
-               if entries.size < count and entries.size <= count * ( page + 1 ) and vector.size > (TERMS-i)
+               if entries.size < count and entries.size <= count * ( page + 1 ) and vector.size >= (TERMS-i)
                   additional_keywords.unshift( vector[ TERMS - i - 1 ].toutf8 )
                   #p additional_keywords
                   next
