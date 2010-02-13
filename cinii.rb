@@ -25,7 +25,7 @@ end
 module Fuwatto
    VERSION = '0.1'
    BASE_URI = 'http://kagaku.nims.go.jp/~masao/fuwatto/cinii.rb'
-   USER_AGENT = 'Fuwatto Search/#{ VERSION }; #{ BASE_URI }'
+   USER_AGENT = "Fuwatto Search/#{ VERSION }; #{ BASE_URI }"
 
    # Bag of Words による文書表現
    class Document < Array
