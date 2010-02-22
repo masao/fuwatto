@@ -12,6 +12,7 @@ require "nkf"
 require "kconv"
 
 require "rubygems"
+require "json"
 require "libxml"
 require "MeCab"
 require "extractcontent"
@@ -234,6 +235,7 @@ if $0 == __FILE__
          count = 20 if count < 1
          page = @cgi.params["page"][0].to_i
          mode = @cgi.params["mode"][0] || "mecab"
+         format = @cgi.params["format"][0] || "html"
          vector = Document.new( content, mode )
          data = nil
          vector1 = {}
@@ -276,12 +278,26 @@ if $0 == __FILE__
          data[ :count ] = count
          data[ :page ] = page
          data[ :searchTime ] = "%0.02f" % ( Time.now - time_pre )
-         rhtml = open( "./cinii.rhtml" ){|io| io.read }
-         cinii_result = ERB::new( rhtml, $SAFE, "<>" ).result( binding )
+         case format
+         when "html"
+            rhtml = open( "./cinii.rhtml" ){|io| io.read }
+            cinii_result = ERB::new( rhtml, $SAFE, "<>" ).result( binding )
+         when "json"
+            cinii_result = JSON::generate( data )
+         else
+            raise "unknown format specified: #{ format }"
+         end
       end
-      print @cgi.header
-      rhtml = open("./cinii_top.rhtml"){|io| io.read }
-      puts ERB::new( rhtml, $SAFE, "<>" ).result( binding )
+
+      case format
+      when "html"
+         print @cgi.header
+         rhtml = open("./cinii_top.rhtml"){|io| io.read }
+         puts ERB::new( rhtml, $SAFE, "<>" ).result( binding )
+      when "json"
+         print @cgi.header "application/json"
+         print cinii_result
+      end
    rescue Exception
       if @cgi then
          print @cgi.header( 'status' => CGI::HTTP_STATUS['SERVER_ERROR'], 'type' => 'text/html' )
