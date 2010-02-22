@@ -207,11 +207,17 @@ if $0 == __FILE__
    include Fuwatto
    include ERB::Util
    @cgi = CGI.new
-   ENV[ 'http_proxy' ] = 'http://wwwout.nims.go.jp:8888' if @cgi.host == "kagaku.nims.go.jp"
+   case @cgi.host
+   when "kagaku.nims.go.jp"
+      ENV[ 'http_proxy' ] = 'http://wwwout.nims.go.jp:8888'
+   when "fuwat.to", "kaede.nier.go.jp"
+      ENV[ 'http_proxy' ] = 'http://ifilter2.nier.go.jp:12080/'
+   end
    time_pre = Time.new
    begin
       url = @cgi.params["url"][0]
       content = @cgi.params["text"][0]
+      format = @cgi.params["format"][0] || "html"
       if ( url.nil? or url.empty? or url == "http://" ) and ( content.nil? or content.empty? )
       else
          if url
@@ -235,7 +241,6 @@ if $0 == __FILE__
          count = 20 if count < 1
          page = @cgi.params["page"][0].to_i
          mode = @cgi.params["mode"][0] || "mecab"
-         format = @cgi.params["format"][0] || "html"
          vector = Document.new( content, mode )
          data = nil
          vector1 = {}
