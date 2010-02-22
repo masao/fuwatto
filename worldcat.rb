@@ -324,7 +324,7 @@ if $0 == __FILE__
          data[ :searchTime ] = "%0.02f" % ( Time.now - time_pre )
          case format
          when "html"
-            rhtml = open( "./cinii.rhtml" ){|io| io.read }
+            rhtml = open( "./worldcat.rhtml" ){|io| io.read }
             cinii_result = ERB::new( rhtml, $SAFE, "<>" ).result( binding )
          when "json"
             cinii_result = JSON::generate( data )
