@@ -46,7 +46,7 @@ div.cinii_headline {
   padding: 2px;
   margin: 1ex;
 }
-div.cinii_headline a.cinii img {
+div.cinii_headline a.cinii,a.worldcat img {
   border: none;
   vertical-align: text-bottom;
 }

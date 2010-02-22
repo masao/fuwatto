@@ -70,7 +70,7 @@ module Fuwatto
       # ref. http://ci.nii.ac.jp/info/ja/if_opensearch.html
       #puts keyword.toeuc
       data[ :q ] = keyword
-      data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.sub( /&format=atom\b/, "" )
+      data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.sub( /&format=atom\b/, "" ).sub( /&wskey=\w+/, "" )
       data[ :totalResults ] = doc.find( "//opensearch:totalResults" )[0].content.to_i
       entries = doc.find( "//atom:entry", "atom:http://www.w3.org/2005/Atom" )
       data[ :entries ] = []
