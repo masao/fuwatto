@@ -46,7 +46,7 @@ module Fuwatto
       end
    end
 
-   WORLDCAT_BASIC_WSKEY = "82JqHGg9sR29FSeY3KKz4liH8yhZXU0Qy853UE9iQ5wX1EMbN00p5m7KzyIcL34oQzPa9qxwdTiGQs69"
+   WORLDCAT_BASIC_WSKEY = "5lIR8i5bSQQNg4Xb3ro6QbOzXiGSs6PrGGJ02BKolP9qTUQRcui2Ze9AsQIlM8IzV0E9XMcrWWieWvrM"
    def worldcat_search( keyword, opts = {} )
       base_uri = "http://worldcat.org/webservices/catalog/search/opensearch"
       q = URI.escape( keyword )
@@ -70,7 +70,8 @@ module Fuwatto
       # ref. http://ci.nii.ac.jp/info/ja/if_opensearch.html
       #puts keyword.toeuc
       data[ :q ] = keyword
-      data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.sub( /&format=atom\b/, "" ).sub( /&wskey=\w+/, "" )
+      # data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.sub( /&format=atom\b/, "" ).sub( /&wskey=\w+/, "" )
+      data[ :link ] = "http://www.worldcat.org/search?q=#{ q }"
       data[ :totalResults ] = doc.find( "//opensearch:totalResults" )[0].content.to_i
       entries = doc.find( "//atom:entry", "atom:http://www.w3.org/2005/Atom" )
       data[ :entries ] = []
