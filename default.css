@@ -58,7 +58,13 @@ div.cinii_headline a img {
   padding: 2px;
   margin-right: 1ex;
 }
-.cinii_author, .cinii_publicationName, .cinii_publicationDate, .cinii_description {
+.cinii_author, .cinii_publicationName, .cinii_publicationDate, .cinii_publisher, .cinii_date {
+  font-size: smaller;
+}
+.cinii_description {
+  font-size: x-small;
+}
+.ndl_dpid {
   font-size: smaller;
 }
 

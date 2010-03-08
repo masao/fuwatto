@@ -13,8 +13,8 @@
 <% data[ :entries ][ data[:count] * data[:page], data[:count] ].each do |entry| %>
   <li><div class="cinii_title"><a href="<%=h entry[:url] %>"><%=h entry[:title] %></a></div>
   <div class="cinii_author"><%=h entry[ :author ] %></div>
-  <span class="cinii_publicationName"><%=h entry[ :publisher ] %></span>
-  <span class="cinii_publicationDate"><%=h entry[ :date ] %></span>
+  <span class="ndl_dpid">(<%=h DPID_LABEL[ entry[:dpid] ] %>)</span>
+  <%= [ :publicationName, :source, :publisher, :date ].select{|e| entry[e] and not entry[e].empty? }.map{|e| "<span class=\"cinii_#{ e }\">#{ CGI.escapeHTML entry[e] }</span>" }.join( ", " ) %>
   <div class="cinii_description"><%=h entry[ :description ] %></a></div>
 <% end %>
 </ol>
