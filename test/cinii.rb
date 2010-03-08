@@ -23,16 +23,23 @@ end
 
 class TestCinii < Test::Unit::TestCase
    def setup
+      ENV[ "REQUEST_METHOD" ] = "GET"
       @cgi = CGI.new( nil )
    end
    def test_execute
       @cgi.params["url"] = [ "http://yahoo.co.jp" ]
       cinii = Fuwatto::CiniiApp.new( @cgi )
-      assert( cinii.execute )
+      result = cinii.execute
+      assert( result )
+      assert( result[ :totalResults ] > 0 )
+      assert( result[ :totalResults ] > 20 )
    end
    def test_execute2
       @cgi.params[ "text" ] = [ "»ùÆ¸µÔÂÔ¤ÈÁêÃÌ½ê¤Î±¿±Ä" ]
-      cinii = Fuwatto::CiniiApp.new( @cgi )      
-      assert( cinii.execute )
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      result = cinii.execute
+      assert( result )
+      assert( result[ :totalResults ] > 0 )
+      # assert( result[ :totalResults ] > 20 )
    end
 end
