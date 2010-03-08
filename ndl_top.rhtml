@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:tmasao@acm.org" />
+<link rel="stylesheet" href="default.css" type="text/css" />
+<link rel="stylesheet" href="seltab.css" type="text/css" />
+<script language="JavaScript" src="default.js" type="text/javascript"></script>
+<script language="JavaScript" src="seltab.js" type="text/javascript"></script>
+<title>
+ふわっと NDL 関連検索
+</title>
+</head>
+<body onload="seltab('box', 'head', 10, <%= url ? 2 : 1 %>)">
+<!-- hhmts start -->
+<div class="last-update">最終更新日: 2010年03月08日</div>
+<!-- hhmts end -->
+<div class="last-update"><a href="history.html">(更新履歴)</a></div>
+<!--
+<div class="top-navi">
+<a href="#">このサービスについて</a>
+<a href="#">ヘルプ</a>
+</div>
+-->
+<h1>
+ふわっと NDL 関連検索<br>
+</h1>
+<div class="form">
+<div class="tabheader"><div id="head1"><a href="javascript:seltab('box', 'head', 10, 1)">文章から検索 (by Text)</a></div><div class="space">&nbsp;</div><div id="head2"><a href="javascript:seltab('box', 'head', 10, 2)">ウェブページから検索 (by URL)</a></div><div class="space">&nbsp;</div></div>
+<div class="tabbody">
+<div id="box1">
+<form action="<%=h @cgi.script_name %>" method="POST" name="text1">
+<textarea rows="4" cols="45"  name="text"><%=h content.to_s.toutf8 %></textarea>
+<input type="submit" value="  論 文 検 索 (Search) ">
+</form>
+</div>
+<div id="box2">
+<form action="<%=h @cgi.script_name %>" method="GET" name="url1">
+<input type="text" name="url" value="<%=h( url || "http://" ) %>" size="70">
+<input type="submit" value="  論 文 検 索 (Search) ">
+</form>
+</div>
+</div>
+</div>
+</div>
+<% if cinii_result %>
+<%= cinii_result %>
+<p class="pagination">ページ:
+<% MAX_PAGE = 19 # ページネイションに表示されるアイテム数 %>
+<% first_page = data[ :page ] - MAX_PAGE / 2 %>
+<% first_page = 0 if first_page < 0 %>
+<% last_page  = ( data[ :totalResults ] - 1 ) / data[ :count ] %>
+<% last_page  = data[:page] + MAX_PAGE / 2 if last_page - first_page > MAX_PAGE %>
+<% ( first_page .. last_page ).each do |i| %>
+<%    href = "#{ @cgi.script_name }?#{ @cgi.query_string.to_s.gsub( /[;&]?page=\w*\b/, "" ) }" %>
+<%    if url.nil? %>
+<%       onclick = " onclick=\"submit_page_text(#{i});return false;\"" %>
+<%       href = "#" %>
+<%    end %>
+<%    if i == data[ :page ] %>
+         <span class="idx"><%= i + 1 %></span>
+<%    elsif i == 0 %>
+         <a href="<%=h href %>"<%= onclick %>>1</a>
+<%    else %>
+         <a href="<%=h href %>;page=<%=h i %>"<%= onclick %>><%=h i+1 %></a>
+<%    end %>
+<% end %>
+</p>
+<% else %>
+<div class="help-text">
+<p>
+入力したテキストまたはウェブページに関連した文献を<a href="http://porta.ndl.go.jp">NDL PORTA</a>で検索します。
+長いテキストやURLで指定したページからでも関連キーワードを自動的に抜き出して文献検索できるのが特徴です。
+</p>
+<p>
+例:
+<a href="<%=h @cgi.script_name %>?url=http://www.asahi.com/paper/editorial.html">朝日新聞社説</a> <span style="font-size:smaller;">（<a href="http://www.asahi.com/paper/editorial.html">元記事(asahi.com)</a>）</span>, 
+<a href="<%=h @cgi.script_name %>?url=http://www.nikkei.co.jp/news/shasetsu/">日本経済新聞社説</a> <span style="font-size:smaller;">（<a href="http://www.nikkei.co.jp/news/shasetsu/">元記事(nikkei.co.jp)</a>）</span>,
+<a href="<%=h @cgi.script_name %>?url=http://mainichi.jp/select/opinion/eye/">毎日新聞「記者の目」</a> <span style="font-size:smaller;">（<a href="http://mainichi.jp/select/opinion/eye/">元記事(mainichi.jp)</a>）</span>
+</p>
+</div>
+<% end %>
+<hr />
+<div id="footer">
+<address>高久雅生 (Masao Takaku)<br />
+<a href="http://masao.jpn.org/">http://masao.jpn.org/</a>,
+<a href="mailto:tmasao@acm.org">tmasao@acm.org</a></address>
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-389547-4";
+urchinTracker();
+</script>
+</body>
+</html>
