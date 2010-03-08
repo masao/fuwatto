@@ -28,18 +28,18 @@
 ふわっと NDL 関連検索<br>
 </h1>
 <div class="form">
-<div class="tabheader"><div id="head1"><a href="javascript:seltab('box', 'head', 10, 1)">文章から検索 (by Text)</a></div><div class="space">&nbsp;</div><div id="head2"><a href="javascript:seltab('box', 'head', 10, 2)">ウェブページから検索 (by URL)</a></div><div class="space">&nbsp;</div></div>
+<div class="tabheader"><div id="head1"><a href="javascript:seltab('box', 'head', 10, 1)">文章から検索</a></div><div class="space">&nbsp;</div><div id="head2"><a href="javascript:seltab('box', 'head', 10, 2)">ウェブページから検索</a></div><div class="space">&nbsp;</div></div>
 <div class="tabbody">
 <div id="box1">
 <form action="<%=h @cgi.script_name %>" method="POST" name="text1">
 <textarea rows="4" cols="45"  name="text"><%=h content.to_s.toutf8 %></textarea>
-<input type="submit" value="  論 文 検 索 (Search) ">
+<input type="submit" value="  論 文 検 索  ">
 </form>
 </div>
 <div id="box2">
 <form action="<%=h @cgi.script_name %>" method="GET" name="url1">
 <input type="text" name="url" value="<%=h( url || "http://" ) %>" size="70">
-<input type="submit" value="  論 文 検 索 (Search) ">
+<input type="submit" value="  論 文 検 索  ">
 </form>
 </div>
 </div>

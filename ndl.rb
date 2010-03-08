@@ -37,16 +37,42 @@ module Fuwatto
          title = e.find( "./title" )[0].content
          #puts title.toeuc
          url = e.find( "./link" )[0].content
-         author = e.find( "./author" )
+         author = e.find( ".//author" )
          if author and author[0]
             author = author[0].content
          else
             author = ""
          end
+         date = e.find( "./dcterms:issued", "http://purl.org/dc/terms/" )
+         if date and date[0]
+            date = date[0].content
+         else
+            date = e.find( "./dcterms:modified", "http://purl.org/dc/terms/" )
+            if date and date[0]
+               date = date[0].content
+            else
+               date = nil
+            end
+         end
+         publisher = e.find( "./dc:publisher", "http://purl.org/dc/elements/1.1/" )
+         if publisher and publisher[0]
+            publisher = publisher[0].content
+         else
+            publisher = ""
+         end
+         description = e.find( "./description" )
+         if description and description[0]
+            description = description[0].content
+         else
+            description = ""
+         end
          data[ :entries ] << {
             :title => title,
             :url => url,
             :author => author,
+            :date => date,
+            :publisher => publisher,
+            :description => description,
          }
       end
       data
