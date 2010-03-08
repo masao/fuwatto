@@ -24,12 +24,13 @@ module Math
 end
 
 module Fuwatto
-   VERSION = '0.1'
-   BASE_URI = 'http://kagaku.nims.go.jp/~masao/fuwatto/cinii.rb'
+   VERSION = '0.2'
+   BASE_URI = 'http://fuwat.to/'
    USER_AGENT = "Fuwatto Search/#{ VERSION }; #{ BASE_URI }"
 
    # Bag of Words による文書表現
    class Document < Array
+      include Fuwatto
       attr_reader :content
       def initialize( content, mode = "mecab" )
          super()
@@ -43,67 +44,6 @@ module Fuwatto
             self.push( *extract_keywords_mecab( normalized_content ) )
          end
          #puts self
-      end
-   end
-
-   def cinii_search( keyword, opts = {} )
-      base_uri = "http://ci.nii.ac.jp/opensearch/search"
-      q = URI.escape( keyword )
-      # TODO: Atom/RSSの双方を対象にできるようにすること（現状は Atom のみ）
-      opts[ :format ] = "atom"
-      if not opts.empty?
-         opts_s = opts.keys.map do |e|
-            "#{ e }=#{ URI.escape( opts[e].to_s ) }"
-         end.join( "&" )
-      end
-      cont = nil
-      opensearch_url = "#{ base_uri }?q=#{ q }&#{ opts_s }"
-      open( opensearch_url ) do |res|
-         cont = res.read
-      end
-      #open( "result.xml", "w" ){|io| io.puts cont }
-      data = {}
-      parser = LibXML::XML::Parser.string( cont )
-      doc = parser.parse
-      # ref. http://ci.nii.ac.jp/info/ja/if_opensearch.html
-      #puts keyword.toeuc
-      data[ :q ] = keyword
-      data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.sub( /&format=atom\b/, "" )
-      data[ :totalResults ] = doc.find( "//opensearch:totalResults" )[0].content.to_i
-      entries = doc.find( "//atom:entry", "atom:http://www.w3.org/2005/Atom" )
-      data[ :entries ] = []
-      entries.each do |e|
-         title = e.find( "./atom:title", "atom:http://www.w3.org/2005/Atom" )[0].content
-         #puts title.toeuc
-         url = e.find( "./atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content
-         author = e.find( ".//atom:author/atom:name", "atom:http://www.w3.org/2005/Atom" ).to_a.map{|name| name.content }.join( "; " )
-         pubname = e.find( "./prism:publicationName", "prism:http://prismstandard.org/namespaces/basic/2.0/" )[0]
-         if pubname.nil?
-            pubname = e.find( "./dc:publisher", "dc:http://purl.org/dc/elements/1.1/" )[0]
-            pubname = pubname.content if pubname
-         else
-            pubname = pubname.content
-         end
-         pubdate = e.find( "./prism:publicationDate", "prism:http://prismstandard.org/namespaces/basic/2.0/" )[0] #.content
-         pubdate = pubdate.nil? ? "" : pubdate.content
-         data[ :entries ] << {
-            :title => title,
-            :url => url,
-            :author => author,
-            :publicationName => pubname,
-            :publicationDate => pubdate,
-         }
-      end
-      data
-   end
-
-   def pdftotext( pdf_str )
-      pdf_file = Tempfile.new( [ "pdf", ".pdf" ] )
-      pdf_file.print pdf_str
-      pdf_file.flush
-      #p pdf_file.size
-      IO.popen( "/usr/local/bin/pdftotext -raw -enc EUC-JP #{ pdf_file.path } -" ) do |io|
-         io.read
       end
    end
 
@@ -199,53 +139,120 @@ module Fuwatto
          end
       end
    end
-end
 
-if $0 == __FILE__
-   # 検索に使用する最大キーワード数
-   TERMS = 10
-   include Fuwatto
-   include ERB::Util
-   @cgi = CGI.new
-   case @cgi.host
-   when "kagaku.nims.go.jp"
-      ENV[ 'http_proxy' ] = 'http://wwwout.nims.go.jp:8888'
-   when "fuwat.to", "kaede.nier.go.jp"
-      ENV[ 'http_proxy' ] = 'http://ifilter2.nier.go.jp:12080/'
+   def pdftotext( pdf_str )
+      pdf_file = Tempfile.new( [ "pdf", ".pdf" ] )
+      pdf_file.print pdf_str
+      pdf_file.flush
+      #p pdf_file.size
+      IO.popen( "/usr/local/bin/pdftotext -raw -enc EUC-JP #{ pdf_file.path } -" ) do |io|
+         io.read
+      end
    end
-   time_pre = Time.new
-   begin
-      url = @cgi.params["url"][0]
-      content = @cgi.params["text"][0]
-      format = @cgi.params["format"][0] || "html"
-      if ( url.nil? or url.empty? or url == "http://" ) and ( content.nil? or content.empty? )
-      else
-         if url
-            url = URI.parse( url ) 
-            response = http_get( url )
-            content = response.body
+
+   def cinii_search( keyword, opts = {} )
+      base_uri = "http://ci.nii.ac.jp/opensearch/search"
+      q = URI.escape( keyword )
+      # TODO: Atom/RSSの双方を対象にできるようにすること（現状は Atom のみ）
+      opts[ :format ] = "atom"
+      if not opts.empty?
+         opts_s = opts.keys.map do |e|
+            "#{ e }=#{ URI.escape( opts[e].to_s ) }"
+         end.join( "&" )
+      end
+      cont = nil
+      opensearch_url = "#{ base_uri }?q=#{ q }&#{ opts_s }"
+      open( opensearch_url ) do |res|
+         cont = res.read
+      end
+      #open( "result.xml", "w" ){|io| io.puts cont }
+      data = {}
+      parser = LibXML::XML::Parser.string( cont )
+      doc = parser.parse
+      # ref. http://ci.nii.ac.jp/info/ja/if_opensearch.html
+      #puts keyword.toeuc
+      data[ :q ] = keyword
+      data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.sub( /&format=atom\b/, "" )
+      data[ :totalResults ] = doc.find( "//opensearch:totalResults" )[0].content.to_i
+      entries = doc.find( "//atom:entry", "atom:http://www.w3.org/2005/Atom" )
+      data[ :entries ] = []
+      entries.each do |e|
+         title = e.find( "./atom:title", "atom:http://www.w3.org/2005/Atom" )[0].content
+         #puts title.toeuc
+         url = e.find( "./atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content
+         author = e.find( ".//atom:author/atom:name", "atom:http://www.w3.org/2005/Atom" ).to_a.map{|name| name.content }.join( "; " )
+         pubname = e.find( "./prism:publicationName", "prism:http://prismstandard.org/namespaces/basic/2.0/" )[0]
+         if pubname.nil?
+            pubname = e.find( "./dc:publisher", "dc:http://purl.org/dc/elements/1.1/" )[0]
+            pubname = pubname.content if pubname
+         else
+            pubname = pubname.content
+         end
+         pubdate = e.find( "./prism:publicationDate", "prism:http://prismstandard.org/namespaces/basic/2.0/" )[0] #.content
+         pubdate = pubdate.nil? ? "" : pubdate.content
+         data[ :entries ] << {
+            :title => title,
+            :url => url,
+            :author => author,
+            :publicationName => pubname,
+            :publicationDate => pubdate,
+         }
+      end
+      data
+   end
+
+   class BaseApp
+      attr_reader :format, :content, :url
+      attr_reader :count, :page, :mode
+      def initialize( cgi )
+         @cgi = cgi
+         @url = @cgi.params["url"][0]
+         @content = @cgi.params["text"][0]
+         @format = @cgi.params["format"][0] || "html"
+         @count = @cgi.params["count"][0].to_i
+         @count = 20 if count < 1
+         @page = @cgi.params["page"][0].to_i
+         @mode = @cgi.params["mode"][0] || "mecab"
+      end
+
+      def query_url?
+         not url.nil? and not url.empty? and url != "http://"
+      end
+      def query_text?
+         not content.nil? and not content.empty?
+      end
+      def query?
+         query_url? or query_text?
+      end
+
+      include Fuwatto
+      def execute( search_method, terms )
+         data = {}
+         if not query?
+            return data
+         end
+         time_pre = Time.now
+         if query_url?
+            uri = URI.parse( url )
+            response = http_get( uri )
+            @content = response.body
             case response[ "content-type" ]
             when /^text\/html\b/
-               content = content.toeuc
-               content = ExtractContent::analyse( content ).join( "\n" )
+               @content = @content.toeuc
+               @content = ExtractContent::analyse( @content ).join( "\n" )
                #puts content
             when /^text\//
-               content = content.toeuc
+               @content = @content.toeuc
             when /^application\/pdf\b/
-               content = pdftotext( content ) #.toeuc
+               @content = pdftotext( @content ) #.toeuc
             else
                raise "Unknown Content-Type: #{ response[ "content-type" ] }"
             end
          end
-         count = @cgi.params["count"][0].to_i
-         count = 20 if count < 1
-         page = @cgi.params["page"][0].to_i
-         mode = @cgi.params["mode"][0] || "mecab"
          vector = Document.new( content, mode )
-         data = nil
          vector1 = {}
          vector.each_with_index do |k, i|
-            res = cinii_search( k[0].toutf8 )
+            res = send( search_method, k[0].toutf8 )
             next if res[ :totalResults ] < 1
             score = k[1] * 1 / Math.log2( res[ :totalResults ] + 1 )
             vector1[ k[0] ] = score
@@ -256,21 +263,21 @@ if $0 == __FILE__
          keyword = ""
          entries = []
          additional_keywords = []
-         TERMS.times do |i|
-            keyword = vector[ 0..(TERMS-i-1) ].join( " " ).toutf8
+         terms.times do |i|
+            keyword = vector[ 0..(terms-i-1) ].join( " " ).toutf8
             STDERR.puts keyword
-            data = cinii_search( keyword )
+            data = send( search_method, keyword )
             if data[ :totalResults ] > 0
                entries = ( entries + data[ :entries ] ).uniq
-               if entries.size < count and entries.size <= count * ( page + 1 ) and vector.size >= (TERMS-i)
-                  additional_keywords.unshift( vector[ TERMS - i - 1 ].toutf8 )
+               if entries.size < count and entries.size <= count * ( page + 1 ) and vector.size >= (terms-i)
+                  additional_keywords.unshift( vector[ terms - i - 1 ].toutf8 )
                   #p additional_keywords
                   next
                else
                   start = count + 1
                   while data[ :totalResults ] >= start and entries.size < count * ( page + 1 ) do
                      #p [ entries.size, start ]
-                     data = cinii_search( keyword, { :start => start } )
+                     data = send( search_method, keyword, { :start => start } )
                      entries = ( entries + data[ :entries ] ).uniq
                      start += count
                   end
@@ -283,26 +290,51 @@ if $0 == __FILE__
          data[ :count ] = count
          data[ :page ] = page
          data[ :searchTime ] = "%0.02f" % ( Time.now - time_pre )
+         data
+      end
+
+      def output( prefix, data = {} )
          case format
          when "html"
-            rhtml = open( "./cinii.rhtml" ){|io| io.read }
-            cinii_result = ERB::new( rhtml, $SAFE, "<>" ).result( binding )
+            result = eval_rhtml( "./#{ prefix }.rhtml", binding ) if query?
+            print @cgi.header
+            print eval_rhtml( "./#{ prefix }_top.rhtml", binding )
          when "json"
-            cinii_result = JSON::generate( data )
+            print @cgi.header "application/json"
+            print JSON::generate( data )
          else
             raise "unknown format specified: #{ format }"
          end
       end
 
-      case format
-      when "html"
-         print @cgi.header
-         rhtml = open("./cinii_top.rhtml"){|io| io.read }
-         puts ERB::new( rhtml, $SAFE, "<>" ).result( binding )
-      when "json"
-         print @cgi.header "application/json"
-         print cinii_result
+      include ERB::Util
+      def eval_rhtml( fname, binding )
+         rhtml = open( fname ){|io| io.read }
+         result = ERB::new( rhtml, $SAFE, "<>" ).result( binding )
       end
+   end
+
+   class CiniiApp < BaseApp
+      TERMS = 10
+      def execute
+         super( :cinii_search, TERMS )
+      end
+   end
+end
+
+if $0 == __FILE__
+   # 検索に使用する最大キーワード数
+   @cgi = CGI.new
+   case @cgi.host
+   when "kagaku.nims.go.jp"
+      ENV[ 'http_proxy' ] = 'http://wwwout.nims.go.jp:8888'
+   when "fuwat.to", "kaede.nier.go.jp"
+      ENV[ 'http_proxy' ] = 'http://ifilter2.nier.go.jp:12080/'
+   end
+   begin
+      app = Fuwatto::CiniiApp.new( @cgi )
+      data = app.execute( :cinii_search )
+      app.output( "cinii", data )
    rescue Exception
       if @cgi then
          print @cgi.header( 'status' => CGI::HTTP_STATUS['SERVER_ERROR'], 'type' => 'text/html' )

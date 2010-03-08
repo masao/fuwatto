@@ -11,9 +11,9 @@
 <script language="JavaScript" src="seltab.js" type="text/javascript"></script>
 <title>ふわっと CiNii 関連検索</title>
 </head>
-<body onload="seltab('box', 'head', 10, <%= url ? 2 : 1 %>)">
+<body onload="seltab('box', 'head', 10, <%= query_url? ? 2 : 1 %>)">
 <!-- hhmts start -->
-<div class="last-update">最終更新日: 2010年02月23日</div>
+<div class="last-update">最終更新日: 2010年03月09日</div>
 <!-- hhmts end -->
 <div class="last-update"><a href="history.html">(更新履歴)</a></div>
 <!--
@@ -41,8 +41,8 @@
 </div>
 </div>
 </div>
-<% if cinii_result %>
-<%= cinii_result %>
+<% if result %>
+<%= result %>
 <p class="pagination">ページ:
 <% MAX_PAGE = 19 # ページネイションに表示されるアイテム数 %>
 <% first_page = data[ :page ] - MAX_PAGE / 2 %>
