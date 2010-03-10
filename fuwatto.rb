@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 # $Id$
 
-require "open-uri"
 require "net/http"
 #require "pp"
 require "tempfile"
@@ -162,10 +161,9 @@ module Fuwatto
          end.join( "&" )
       end
       cont = nil
-      opensearch_url = "#{ base_uri }?q=#{ q }&#{ opts_s }"
-      open( opensearch_url ) do |res|
-         cont = res.read
-      end
+      opensearch_uri = URI.parse( "#{ base_uri }?q=#{ q }&#{ opts_s }" )
+      response = http_get( opensearch_uri )
+      cont = response.body
       #open( "result.xml", "w" ){|io| io.puts cont }
       data = {}
       parser = LibXML::XML::Parser.string( cont )
@@ -215,10 +213,9 @@ module Fuwatto
          end.join( "&" )
       end
       cont = nil
-      opensearch_url = "#{ base_uri }?any=#{ q }&#{ opts_s }"
-      open( opensearch_url ) do |res|
-         cont = res.read
-      end
+      opensearch_uri = URI.parse( "#{ base_uri }?any=#{ q }&#{ opts_s }" )
+      response = http_get( opensearch_uri )
+      cont = response.body
       #open( "result.xml", "w" ){|io| io.puts cont }
       data = {}
       parser = LibXML::XML::Parser.string( cont )
@@ -306,10 +303,9 @@ module Fuwatto
          end.join( "&" )
       end
       cont = nil
-      opensearch_url = "#{ base_uri }?q=#{ q }&#{ opts_s }"
-      open( opensearch_url ) do |res|
-         cont = res.read
-      end
+      opensearch_uri = URI.parse( "#{ base_uri }?q=#{ q }&#{ opts_s }" )
+      response = http_get( opensearch_uri )
+      cont = response.body
       #open( "result.xml", "w" ){|io| io.puts cont }
       data = {}
       parser = LibXML::XML::Parser.string( cont )
