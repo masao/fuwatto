@@ -150,6 +150,194 @@ module Fuwatto
       end
    end
 
+   # CiNii Opensearch APi
+   def cinii_search( keyword, opts = {} )
+      base_uri = "http://ci.nii.ac.jp/opensearch/search"
+      q = URI.escape( keyword )
+      # TODO: Atom/RSSの双方を対象にできるようにすること（現状は Atom のみ）
+      opts[ :format ] = "atom"
+      if not opts.empty?
+         opts_s = opts.keys.map do |e|
+            "#{ e }=#{ URI.escape( opts[e].to_s ) }"
+         end.join( "&" )
+      end
+      cont = nil
+      opensearch_url = "#{ base_uri }?q=#{ q }&#{ opts_s }"
+      open( opensearch_url ) do |res|
+         cont = res.read
+      end
+      #open( "result.xml", "w" ){|io| io.puts cont }
+      data = {}
+      parser = LibXML::XML::Parser.string( cont )
+      doc = parser.parse
+      # ref. http://ci.nii.ac.jp/info/ja/if_opensearch.html
+      #puts keyword.toeuc
+      data[ :q ] = keyword
+      data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.sub( /&format=atom\b/, "" )
+      data[ :totalResults ] = doc.find( "//opensearch:totalResults" )[0].content.to_i
+      entries = doc.find( "//atom:entry", "atom:http://www.w3.org/2005/Atom" )
+      data[ :entries ] = []
+      entries.each do |e|
+         title = e.find( "./atom:title", "atom:http://www.w3.org/2005/Atom" )[0].content
+         #puts title.toeuc
+         url = e.find( "./atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content
+         author = e.find( ".//atom:author/atom:name", "atom:http://www.w3.org/2005/Atom" ).to_a.map{|name| name.content }.join( "; " )
+         pubname = e.find( "./prism:publicationName", "prism:http://prismstandard.org/namespaces/basic/2.0/" )[0]
+         if pubname.nil?
+            pubname = e.find( "./dc:publisher", "dc:http://purl.org/dc/elements/1.1/" )[0]
+            pubname = pubname.content if pubname
+         else
+            pubname = pubname.content
+         end
+         pubdate = e.find( "./prism:publicationDate", "prism:http://prismstandard.org/namespaces/basic/2.0/" )[0] #.content
+         pubdate = pubdate.nil? ? "" : pubdate.content
+         data[ :entries ] << {
+            :title => title,
+            :url => url,
+            :author => author,
+            :publicationName => pubname,
+            :publicationDate => pubdate,
+         }
+      end
+      data
+   end
+
+   # NDL Porta Opensearch
+   def ndl_search( keyword, opts = {} )
+      base_uri = "http://api.porta.ndl.go.jp/servicedp/opensearch"
+      q = URI.escape( keyword )
+      # TODO: Atom/RSSの双方を対象にできるようにすること（現状は Atom のみ）
+      opts[ :format ] = "atom"
+      opts[ :dpgroupid ] = "ndl"
+      if not opts.empty?
+         opts_s = opts.keys.map do |e|
+            "#{ e }=#{ URI.escape( opts[e].to_s ) }"
+         end.join( "&" )
+      end
+      cont = nil
+      opensearch_url = "#{ base_uri }?any=#{ q }&#{ opts_s }"
+      open( opensearch_url ) do |res|
+         cont = res.read
+      end
+      #open( "result.xml", "w" ){|io| io.puts cont }
+      data = {}
+      parser = LibXML::XML::Parser.string( cont )
+      #p cont
+      doc = parser.parse
+      # ref. http://ci.nii.ac.jp/info/ja/if_opensearch.html
+      #puts keyword.toeuc
+      data[ :q ] = keyword
+      data[ :link ] = "http://porta.ndl.go.jp/cgi-bin/openurl.cgi"
+      data[ :totalResults ] = doc.find( "//openSearch:totalResults", "http://a9.com/-/spec/opensearchrss/1.0/" )[0].content.to_i
+      entries = doc.find( "//item" )
+      data[ :entries ] = []
+      entries.each do |e|
+         dpid = e.find( "./dcndl_porta:dpid", "http://ndl.go.jp/dcndl/dcndl_porta/" )[0].content
+         title = e.find( "./title" )[0].content
+         #puts title.toeuc
+         url = e.find( "./link" )[0].content
+         author = e.find( ".//author" )
+         if author and author[0]
+            author = author[0].content
+         else
+            author = ""
+         end
+         source = e.find( "./source" )
+         if source and source[0]
+            source = source[0].content
+         else
+            source = ""
+         end
+         publicationName = e.find( "dcterms:bibliographicCitation", "http://purl.org/dc/terms/" )
+         if publicationName and publicationName[0]
+            publicationName = publicationName[0].content
+         else
+            publicationName = nil
+         end
+         date = e.find( "./dcterms:issued", "http://purl.org/dc/terms/" )
+         if date and date[0]
+            date = date[0].content
+         else
+            date = e.find( "./dcterms:modified", "http://purl.org/dc/terms/" )
+            if date and date[0]
+               date = date[0].content
+            else
+               date = nil
+            end
+         end
+         publisher = e.find( "./dc:publisher", "http://purl.org/dc/elements/1.1/" )
+         if publisher and publisher[0]
+            publisher = publisher[0].content
+         else
+            publisher = nil
+         end
+         description = e.find( "./description" )
+         if description and description[0] and dpid != "zassaku"
+            description = description[0].content
+         else
+            description = ""
+         end
+         data[ :entries ] << {
+            :title => title,
+            :url => url,
+            :author => author,
+            :source => source,
+            :date => date,
+            :publisher => publisher,
+            :publicationName => publicationName,
+            :description => description,
+            :dpid => dpid,
+         }
+      end
+      data
+   end
+
+   # WorldCat Basic API (Opensearch)
+   WORLDCAT_BASIC_WSKEY = "5lIR8i5bSQQNg4Xb3ro6QbOzXiGSs6PrGGJ02BKolP9qTUQRcui2Ze9AsQIlM8IzV0E9XMcrWWieWvrM"
+   def worldcat_search( keyword, opts = {} )
+      base_uri = "http://worldcat.org/webservices/catalog/search/opensearch"
+      q = URI.escape( keyword )
+      # TODO: Atom/RSSの双方を対象にできるようにすること（現状は Atom のみ）
+      opts[ :format ] = "atom"
+      opts[ :wskey ] = WORLDCAT_BASIC_WSKEY
+      if not opts.empty?
+         opts_s = opts.keys.map do |e|
+            "#{ e }=#{ URI.escape( opts[e].to_s ) }"
+         end.join( "&" )
+      end
+      cont = nil
+      opensearch_url = "#{ base_uri }?q=#{ q }&#{ opts_s }"
+      open( opensearch_url ) do |res|
+         cont = res.read
+      end
+      #open( "result.xml", "w" ){|io| io.puts cont }
+      data = {}
+      parser = LibXML::XML::Parser.string( cont )
+      doc = parser.parse
+      # ref. http://ci.nii.ac.jp/info/ja/if_opensearch.html
+      #puts keyword.toeuc
+      data[ :q ] = keyword
+      # data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.sub( /&format=atom\b/, "" ).sub( /&wskey=\w+/, "" )
+      data[ :link ] = "http://www.worldcat.org/search?q=#{ q }"
+      data[ :totalResults ] = doc.find( "//opensearch:totalResults" )[0].content.to_i
+      entries = doc.find( "//atom:entry", "atom:http://www.w3.org/2005/Atom" )
+      data[ :entries ] = []
+      entries.each do |e|
+         title = e.find( "./atom:title", "atom:http://www.w3.org/2005/Atom" )[0].content
+         #puts title.toeuc
+         url = e.find( "./atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content
+         author = e.find( ".//atom:author/atom:name", "atom:http://www.w3.org/2005/Atom" ).to_a.map{|name| name.content }.join( "; " )
+         content = e.find( "./atom:content", "atom:http://www.w3.org/2005/Atom" )[0]
+         data[ :entries ] << {
+            :title => title,
+            :url => url,
+            :author => author,
+            :content => content,
+         }
+      end
+      data
+   end
+
    class BaseApp
       attr_reader :format, :content, :url
       attr_reader :count, :page, :mode

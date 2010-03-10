@@ -38,6 +38,7 @@ class TestWorldcat < Test::Unit::TestCase
       @cgi.params["url"] = [ "http://yahoo.co.jp" ]
       app = Fuwatto::WorldcatApp.new( @cgi )
       result = app.execute
+      $stdout = File.open( "/dev/null", "w" )
       html = app.output( "worldcat", result )
    end
    def test_execute2

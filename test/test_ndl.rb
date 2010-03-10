@@ -38,7 +38,8 @@ class TestNDL < Test::Unit::TestCase
       @cgi.params["url"] = [ "http://yahoo.co.jp" ]
       app = Fuwatto::NDLApp.new( @cgi )
       result = app.execute
-      html = app.output( "ndl", result )
+      $stdout = File.open( "/dev/null", "w" )
+      app.output( "ndl", result )
    end
    def test_execute2
       @cgi.params[ "text" ] = [ "»ùÆ¸µÔÂÔ¤ÈÁêÃÌ½ê¤Î±¿±Ä" ]
