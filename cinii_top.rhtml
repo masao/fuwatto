@@ -13,7 +13,7 @@
 </head>
 <body onload="seltab('box', 'head', 10, <%= query_url? ? 2 : 1 %>)">
 <!-- hhmts start -->
-<div class="last-update">最終更新日: 2010年03月09日</div>
+<div class="last-update">最終更新日: 2010年03月11日</div>
 <!-- hhmts end -->
 <div class="last-update"><a href="history.html">(更新履歴)</a></div>
 <!--
@@ -44,7 +44,6 @@
 <% if result %>
 <%= result %>
 <p class="pagination">ページ:
-<% MAX_PAGE = 19 # ページネイションに表示されるアイテム数 %>
 <% first_page = data[ :page ] - MAX_PAGE / 2 %>
 <% first_page = 0 if first_page < 0 %>
 <% last_page  = ( data[ :totalResults ] - 1 ) / data[ :count ] %>

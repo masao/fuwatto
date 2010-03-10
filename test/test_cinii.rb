@@ -33,6 +33,7 @@ class TestCinii < Test::Unit::TestCase
       assert( result )
       assert( result[ :totalResults ] > 0 )
       assert( result[ :totalResults ] > 20 )
+      assert( result[ :entries ].size == 20 )
    end
    def test_execute2
       @cgi.params[ "text" ] = [ "»ùÆ¸µÔÂÔ¤ÈÁêÃÌ½ê¤Î±¿±Ä" ]
@@ -41,5 +42,16 @@ class TestCinii < Test::Unit::TestCase
       assert( result )
       assert( result[ :totalResults ] > 0 )
       # assert( result[ :totalResults ] > 20 )
+   end
+   def test_execute_page
+      @cgi.params["url"] = [ "http://yahoo.co.jp" ]
+      @cgi.params["page"] = [ 1 ]
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      result = cinii.execute
+      assert( result )
+      assert( result[ :totalResults ] > 0 )
+      assert( result[ :totalResults ] > 20 )
+      assert( result[ :entries ].size > 20 )
+      assert( result[ :entries ].size == 40 )
    end
 end

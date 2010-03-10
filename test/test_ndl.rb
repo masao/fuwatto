@@ -49,4 +49,13 @@ class TestNDL < Test::Unit::TestCase
       assert( result[ :totalResults ] > 0 )
       # assert( result[ :totalResults ] > 20 )
    end
+   def test_execute_page
+      @cgi.params["url"] = [ "http://yahoo.co.jp" ]
+      @cgi.params["page"] = [ 1 ]
+      cinii = Fuwatto::NDLApp.new( @cgi )
+      result = cinii.execute
+      assert( result )
+      assert( result[ :totalResults ] > 0 )
+      assert( result[ :totalResults ] > 20 )
+   end
 end

@@ -26,6 +26,8 @@ module Fuwatto
    VERSION = '0.2'
    BASE_URI = 'http://fuwat.to/'
    USER_AGENT = "Fuwatto Search/#{ VERSION }; #{ BASE_URI }"
+   CACHE_TIME = 60 * 60 * 24 * 1   # 1日経つまで、キャッシュは有効
+   MAX_PAGE = 19 # ページネイションに表示されるアイテム数
 
    # Bag of Words による文書表現
    class Document < Array
@@ -43,6 +45,14 @@ module Fuwatto
             self.push( *extract_keywords_mecab( normalized_content ) )
          end
          #puts self
+      end
+      # 類似度計算
+      def sim( vector )
+         sum = 0
+         vector.each do |k, v|
+            sum += v * self.assoc( k ).to_i
+         end
+         sum
       end
    end
 
@@ -139,6 +149,14 @@ module Fuwatto
       end
    end
 
+   CACHE_DIR = "cache"
+   def cache_xml( prefix, name, page = 0 )
+      xml_fname = name.dup
+      xml_fname << ":#{ page }" if not page.nil? and not page == 0
+      xml_fname << ".xml"
+      File.join( CACHE_DIR, prefix, xml_fname )
+   end
+
    def pdftotext( pdf_str )
       pdf_file = Tempfile.new( [ "pdf", ".pdf" ] )
       pdf_file.print pdf_str
@@ -153,18 +171,23 @@ module Fuwatto
    def cinii_search( keyword, opts = {} )
       base_uri = "http://ci.nii.ac.jp/opensearch/search"
       q = URI.escape( keyword )
-      # TODO: Atom/RSSの双方を対象にできるようにすること（現状は Atom のみ）
-      opts[ :format ] = "atom"
-      if not opts.empty?
-         opts_s = opts.keys.map do |e|
-            "#{ e }=#{ URI.escape( opts[e].to_s ) }"
-         end.join( "&" )
-      end
       cont = nil
-      opensearch_uri = URI.parse( "#{ base_uri }?q=#{ q }&#{ opts_s }" )
-      response = http_get( opensearch_uri )
-      cont = response.body
-      #open( "result.xml", "w" ){|io| io.puts cont }
+      cache_file = cache_xml( "cinii", q, opts[:start] )
+      if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
+         cont = open( cache_file ){|io| io.read }
+      else
+         # TODO: Atom/RSSの双方を対象にできるようにすること（現状は Atom のみ）
+         opts[ :format ] = "atom"
+         if not opts.empty?
+            opts_s = opts.keys.map do |e|
+               "#{ e }=#{ URI.escape( opts[e].to_s ) }"
+            end.join( "&" )
+         end
+         opensearch_uri = URI.parse( "#{ base_uri }?q=#{ q }&#{ opts_s }" )
+         response = http_get( opensearch_uri )
+         cont = response.body
+         open( cache_file, "w" ){|io| io.print cont }
+      end
       data = {}
       parser = LibXML::XML::Parser.string( cont )
       doc = parser.parse
@@ -204,22 +227,25 @@ module Fuwatto
    def ndl_search( keyword, opts = {} )
       base_uri = "http://api.porta.ndl.go.jp/servicedp/opensearch"
       q = URI.escape( keyword )
-      # TODO: Atom/RSSの双方を対象にできるようにすること（現状は Atom のみ）
-      opts[ :format ] = "atom"
-      opts[ :dpgroupid ] = "ndl"
-      if not opts.empty?
-         opts_s = opts.keys.map do |e|
-            "#{ e }=#{ URI.escape( opts[e].to_s ) }"
-         end.join( "&" )
-      end
       cont = nil
-      opensearch_uri = URI.parse( "#{ base_uri }?any=#{ q }&#{ opts_s }" )
-      response = http_get( opensearch_uri )
-      cont = response.body
-      #open( "result.xml", "w" ){|io| io.puts cont }
+      cache_file = cache_xml( "ndl", q, opts[:start] )
+      if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
+         cont = open( cache_file ){|io| io.read }
+      else
+         opts[ :format ] = "atom"
+         opts[ :dpgroupid ] = "ndl"
+         if not opts.empty?
+            opts_s = opts.keys.map do |e|
+               "#{ e }=#{ URI.escape( opts[e].to_s ) }"
+            end.join( "&" )
+         end
+         opensearch_uri = URI.parse( "#{ base_uri }?any=#{ q }&#{ opts_s }" )
+         response = http_get( opensearch_uri )
+         cont = response.body
+         open( cache_file, "w" ){|io| io.print cont }
+      end
       data = {}
       parser = LibXML::XML::Parser.string( cont )
-      #p cont
       doc = parser.parse
       # ref. http://ci.nii.ac.jp/info/ja/if_opensearch.html
       #puts keyword.toeuc
@@ -294,19 +320,23 @@ module Fuwatto
    def worldcat_search( keyword, opts = {} )
       base_uri = "http://worldcat.org/webservices/catalog/search/opensearch"
       q = URI.escape( keyword )
-      # TODO: Atom/RSSの双方を対象にできるようにすること（現状は Atom のみ）
-      opts[ :format ] = "atom"
-      opts[ :wskey ] = WORLDCAT_BASIC_WSKEY
-      if not opts.empty?
-         opts_s = opts.keys.map do |e|
-            "#{ e }=#{ URI.escape( opts[e].to_s ) }"
-         end.join( "&" )
-      end
       cont = nil
-      opensearch_uri = URI.parse( "#{ base_uri }?q=#{ q }&#{ opts_s }" )
-      response = http_get( opensearch_uri )
-      cont = response.body
-      #open( "result.xml", "w" ){|io| io.puts cont }
+      cache_file = cache_xml( "worldcat", q, opts[:start] )
+      if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
+         cont = open( cache_file ){|io| io.read }
+      else
+         opts[ :format ] = "atom"
+         opts[ :wskey ] = WORLDCAT_BASIC_WSKEY
+         if not opts.empty?
+            opts_s = opts.keys.map do |e|
+               "#{ e }=#{ URI.escape( opts[e].to_s ) }"
+            end.join( "&" )
+         end
+         opensearch_uri = URI.parse( "#{ base_uri }?q=#{ q }&#{ opts_s }" )
+         response = http_get( opensearch_uri )
+         cont = response.body
+         open( cache_file, "w" ){|io| io.print cont }
+      end
       data = {}
       parser = LibXML::XML::Parser.string( cont )
       doc = parser.parse
