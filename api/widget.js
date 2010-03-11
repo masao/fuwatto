@@ -15,7 +15,7 @@ function fuwatto_widget( opt ){
 
 function fuwatto_show_result( data ) {
   var h3 = document.createElement('h3');
-  h3.appendChild( document.createTextNode("¥ÿœ¢ ∏∏•") );
+  h3.appendChild( document.createTextNode("Èñ¢ÈÄ£ÊñáÁåÆ") );
   h3.setAttribute('style','margin-bottom:0;');
   document.getElementById('fuwatto_result').appendChild(h3);
   var keywords = document.createElement('div');
@@ -60,6 +60,6 @@ function fuwatto_show_result( data ) {
 
   var footer = document.createElement('div');
   footer.setAttribute('style','text-align:right;font-size:smaller;');
-  footer.innerHTML = 'Powered by <a href="' + BASEURL + '?url=' + document.location.href + '">§’§Ô§√§»CiNii¥ÿœ¢∏°∫˜</a>';
+  footer.innerHTML = 'Powered by <a href="' + BASEURL + '?url=' + document.location.href + '">„Åµ„Çè„Å£„Å®CiNiiÈñ¢ÈÄ£Ê§úÁ¥¢</a>';
   document.getElementById('fuwatto_result').appendChild(footer);
 }
