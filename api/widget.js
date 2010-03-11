@@ -16,16 +16,16 @@ function fuwatto_widget( opt ){
 function fuwatto_show_result( data ) {
   var h3 = document.createElement('h3');
   h3.appendChild( document.createTextNode("関連文献") );
-  h3.setAttribute('style','margin-bottom:0;');
+  h3.style.cssText = 'margin-bottom:0';
   document.getElementById('fuwatto_result').appendChild(h3);
   var keywords = document.createElement('div');
   keywords.setAttribute('class','fuwatto_keywords');
-  keywords.setAttribute('style','text-align:right;font-size:smaller;');
+  keywords.style.cssText = 'text-align:right;font-size:smaller';
   keywords.appendChild( document.createTextNode( data["q"] + "\n" ) );
   document.getElementById('fuwatto_result').appendChild(keywords);
 		   
   var dl = document.createElement('dl');
-  dl.setAttribute('style','margin-bottom:0;');
+  dl.style.cssText = 'margin-bottom:0;';
   for (var i=0, entry; entry = data.entries[i]; i++) {
     var dt = document.createElement('dt');
     dt.setAttribute('class','fuwatto_title');
@@ -38,13 +38,13 @@ function fuwatto_show_result( data ) {
 
     var dd_author = document.createElement('dd');
     dd_author.setAttribute('class','fuwatto_author');
-    dd_author.setAttribute('style','font-size:smaller;');
+    dd_author.style.cssText = 'font-size:smaller;';
     dd_author.appendChild( document.createTextNode(entry.author) );
     dl.appendChild(dd_author);
 
     var dd_info = document.createElement('dd');
     dd_info.setAttribute('class','fuwatto_info');
-    dd_info.setAttribute('style','font-size:smaller;');
+    dd_info.style.cssText = 'font-size:smaller;';
     var span_pubname = document.createElement('span');
     span_pubname.setAttribute('class', 'fuwatto_pubname');
     span_pubname.appendChild( document.createTextNode(entry.publicationName) );
@@ -59,7 +59,7 @@ function fuwatto_show_result( data ) {
   document.getElementById('fuwatto_result').appendChild(dl);
 
   var footer = document.createElement('div');
-  footer.setAttribute('style','text-align:right;font-size:smaller;');
+  footer.style.cssText = 'text-align:right;font-size:smaller;';
   footer.innerHTML = 'Powered by <a href="' + BASEURL + '?url=' + document.location.href + '">ふわっとCiNii関連検索</a>';
   document.getElementById('fuwatto_result').appendChild(footer);
 }
