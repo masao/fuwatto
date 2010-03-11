@@ -15,7 +15,7 @@ class TestFuwatto < Test::Unit::TestCase
       assert( result )
       assert( result[:link] )
       assert( result[:q] )
-      assert( result[:q] == "keyword" )
+      assert_equal( result[:q], "keyword" )
       assert( result[:totalResults] > 0 )
       assert( result[:entries].size > 0 )
    end
@@ -61,5 +61,79 @@ class TestCinii < Test::Unit::TestCase
       assert( result )
       assert( result[ :totalResults ] > 0 )
       assert( result[ :entries ].size == 20 )
+   end
+
+   def test_json
+      @cgi.params["url"] = [ "http://yahoo.co.jp" ]
+      @cgi.params["format"] = [ "json" ]
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      result = cinii.execute
+      $stdout = StringIO.new
+      cinii.output( "cinii", result )
+      $stdout.rewind
+      json_str = $stdout.read
+      assert( json_str )
+      json = json_str.split( /\r?\n\r?\n/ )[1]
+      assert_not_nil( json )
+      obj = JSON::Parser.new( json ).parse
+      assert( obj )
+      assert( obj[ "entries" ] )
+      assert_equal( obj[ "entries" ].size, 20 )
+   end
+   def test_json_callback
+      @cgi.params["url"] = [ "http://yahoo.co.jp" ]
+      @cgi.params["format"] = [ "json" ]
+      @cgi.params["callback"] = [ "test" ]
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      result = cinii.execute
+      $stdout = StringIO.new
+      cinii.output( "cinii", result )
+      $stdout.rewind
+      json_str = $stdout.read
+      json = json_str.split( /\r?\n\r?\n/ )[1]
+      assert_equal( "test({", json[0,6] )
+   end
+   def test_json_callback2
+      @cgi.params["url"] = [ "http://yahoo.co.jp" ]
+      @cgi.params["format"] = [ "json" ]
+      @cgi.params["callback"] = [ "test_test2" ]
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      result = cinii.execute
+      $stdout = StringIO.new
+      cinii.output( "cinii", result )
+      $stdout.rewind
+      json_str = $stdout.read
+      json = json_str.split( /\r?\n\r?\n/ )[1]
+      assert_equal( "test_test2({", json[0,12] )
+   end
+   def test_json_callback3
+      @cgi.params["url"] = [ "http://yahoo.co.jp" ]
+      @cgi.params["format"] = [ "json" ]
+      @cgi.params["callback"] = [ "test\"" ]
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      result = cinii.execute
+      $stdout = StringIO.new
+      cinii.output( "cinii", result )
+      $stdout.rewind
+      json_str = $stdout.read
+      json = json_str.split( /\r?\n\r?\n/ )[1]
+      assert_equal( "{\"", json[0,2] )
+      assert_not_equal( "test\"({", json[0,7] )
+   end
+   def test_json_count
+      @cgi.params["url"] = [ "http://yahoo.co.jp" ]
+      @cgi.params["format"] = [ "json" ]
+      @cgi.params["count"] = [ 5 ]
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      result = cinii.execute
+      $stdout = StringIO.new
+      cinii.output( "cinii", result )
+      $stdout.rewind
+      json_str = $stdout.read
+      json = json_str.split( /\r?\n\r?\n/ )[1]
+      obj = JSON::Parser.new( json ).parse
+      assert( obj )
+      assert_equal( 5, obj["entries"].size )
+      assert_not_equal( 20, obj["entries"].size )
    end
 end

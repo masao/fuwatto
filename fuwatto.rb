@@ -379,6 +379,7 @@ module Fuwatto
          @count = 20 if count < 1
          @page = @cgi.params["page"][0].to_i
          @mode = @cgi.params["mode"][0] || "mecab"
+         @callback = @cgi.params["callback"][0]
       end
 
       def query_url?
@@ -452,6 +453,7 @@ module Fuwatto
             end
          end
          data[ :entries ] = entries
+         data[ :entries ] = entries[0, @count] if @format == "json"
          data[ :additional_keywords ] = additional_keywords
          data[ :count ] = count
          data[ :page ] = page
@@ -467,7 +469,11 @@ module Fuwatto
             print eval_rhtml( "./#{ prefix }_top.rhtml", binding )
          when "json"
             print @cgi.header "application/json"
-            print JSON::generate( data )
+            result = JSON::generate( data )
+            if @callback and @callback =~ /^\w+$/
+               result = "#{ @callback }(#{ result })"
+            end
+            print result
          else
             raise "unknown format specified: #{ format }"
          end
