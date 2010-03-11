@@ -24,7 +24,7 @@ module Math
 end
 
 module Fuwatto
-   VERSION = '0.2'
+   VERSION = '0.3'
    BASE_URI = 'http://fuwat.to/'
    USER_AGENT = "Fuwatto Search/#{ VERSION }; #{ BASE_URI }"
    CACHE_TIME = 60 * 60 * 24 * 1   # 1日経つまで、キャッシュは有効
