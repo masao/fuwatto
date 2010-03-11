@@ -54,4 +54,12 @@ class TestCinii < Test::Unit::TestCase
       assert( result[ :entries ].size > 20 )
       assert( result[ :entries ].size == 40 )
    end
+   def test_ssl
+      @cgi.params["url"] = [ "https://addons.mozilla.org/ja/firefox/addon/1122" ]
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      result = cinii.execute
+      assert( result )
+      assert( result[ :totalResults ] > 0 )
+      assert( result[ :entries ].size == 20 )
+   end
 end

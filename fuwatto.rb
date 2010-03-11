@@ -3,6 +3,7 @@
 # $Id$
 
 require "net/http"
+require "net/https"
 #require "pp"
 require "tempfile"
 require "erb"
@@ -61,7 +62,7 @@ module Fuwatto
    def extract_keywords_yahooapi( str )
       #cont = open( "?appid=#{ YAHOO_APPID }&sentence=#{ URI.escape( str ) }&output=xml" ){|io| io.read }
       uri = URI.parse( YAHOO_KEYWORD_BASEURI )
-      response = http_get( uri )
+      #response = http_get( uri )
       http = Net::HTTP.new( uri.host, uri.port )
       xml = nil
       http.start do |conn|
@@ -129,7 +130,9 @@ module Fuwatto
          proxy = proxy_uri.host
          proxy_port = proxy_uri.port
       end
-      Net::HTTP.Proxy( proxy, proxy_port ).start( uri.host, uri.port ) do |http|
+      http = Net::HTTP.Proxy( proxy, proxy_port ).new( uri.host, uri.port )
+      http.use_ssl = true if uri.scheme == "https"
+      http.start do |http|
          response, = http.get( uri.request_uri, { 'User-Agent'=>USER_AGENT } )
          #if response.code !~ /^2/
          #   response.each do |k,v|
