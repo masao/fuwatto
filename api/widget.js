@@ -60,6 +60,6 @@ function fuwatto_show_result( data ) {
 
   var footer = document.createElement('div');
   footer.setAttribute('style','text-align:right;font-size:smaller;');
-  footer.innerHTML = 'Powered by <a href="' + BASEURL + '?url=' + document.location.href + '">ふわっと関連検索</a>';
+  footer.innerHTML = 'Powered by <a href="' + BASEURL + '?url=' + document.location.href + '">ふわっとCiNii関連検索</a>';
   document.getElementById('fuwatto_result').appendChild(footer);
 }
