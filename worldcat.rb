@@ -8,7 +8,7 @@ module Fuwatto
    class WorldcatApp < BaseApp
       TERMS = 5
       def execute
-         super( :worldcat_search, TERMS )
+         super( :worldcat_search, TERMS, { :count => count } )
       end
    end
 end

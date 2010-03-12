@@ -393,7 +393,7 @@ module Fuwatto
       end
 
       include Fuwatto
-      def execute( search_method, terms )
+      def execute( search_method, terms, opts = {} )
          data = {}
          if not query?
             return data
@@ -419,7 +419,7 @@ module Fuwatto
          vector = Document.new( content, mode )
          vector1 = {}
          vector.each_with_index do |k, i|
-            res = send( search_method, k[0].toutf8 )
+            res = send( search_method, k[0].toutf8, opts )
             next if res[ :totalResults ] < 1
             score = k[1] * 1 / Math.log2( res[ :totalResults ] + 1 )
             vector1[ k[0] ] = score
@@ -433,7 +433,7 @@ module Fuwatto
          terms.times do |i|
             keyword = vector[ 0..(terms-i-1) ].join( " " ).toutf8
             STDERR.puts keyword
-            data = send( search_method, keyword )
+            data = send( search_method, keyword, opts )
             if data[ :totalResults ] > 0
                entries = ( entries + data[ :entries ] ).uniq
                if entries.size < count and entries.size <= count * ( page + 1 ) and vector.size >= (terms-i)
@@ -444,7 +444,8 @@ module Fuwatto
                   start = count + 1
                   while data[ :totalResults ] >= start and entries.size < count * ( page + 1 ) do
                      #p [ entries.size, start ]
-                     data = send( search_method, keyword, { :start => start } )
+                     opts[ :start ] = start
+                     data = send( search_method, keyword, opts )
                      entries = ( entries + data[ :entries ] ).uniq
                      start += count
                   end
