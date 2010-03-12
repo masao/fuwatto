@@ -9,6 +9,15 @@
 <title>更新履歴 - ふわっと関連検索</title>
 <style type="text/css">
 .link { font-size: smaller; }
+dd.news:before { content:"[News] " }
+dd.minor:before { content:"[Changes] " }
+dd.bugfix:before { content:"[Bug fix] " }
+dd.minor, .bugfix { font-size:smaller; }
+/*
+dd.news { color: red; }
+dd.minor { color: maroon; }
+dd.bugfix { color: olive; }
+*/
 </style>
 </head>
 <h1>更新履歴 - ふわっと関連検索</h1>
@@ -23,22 +32,22 @@
 </p>
 <dl>
   <dt>2010年3月11日<!-- 0.3 -->
-  <dd>HTTPSサイトに未対応となっていたバグを修正。
-  <dd>検索結果をキャッシュし、同一クエリでの検索は2回目からは高速に表示できるようになりました。
+  <dd class="minor">検索結果をキャッシュし、同一クエリでの検索は2回目からは高速に表示できるようになりました。
+  <dd class="bugfix">HTTPSサイトに未対応となっていたバグを修正。
   <dt>2010年3月9日
-  <dd>NDL Portaを検索対象とした「<a href="http://fuwat.to/ndl">ふわっとNDL関連検索</a>」を追加公開。
+  <dd class="news">NDL Portaを検索対象とした「<a href="http://fuwat.to/ndl">ふわっとNDL関連検索</a>」を追加公開。
   <dt>2010年2月22日
-  <dd>稼働サイトを fuwat.to ドメインに移動。
+  <dd class="news">稼働サイトを fuwat.to ドメインに移動。
       「<a href="http://fuwat.to/cinii">ふわっとCiNii関連検索</a>」
       「<a href="http://fuwat.to/worldcat">ふわっとWorldCat関連検索</a>」
-  <dd>WorldCatを検索対象とした「ふわっとWorldCat関連検索」を追加公開。
+  <dd class="news">WorldCatを検索対象とした「ふわっとWorldCat関連検索」を追加公開。
   <dt>2010年1月18日
-  <dd>検索例として、朝日新聞・日本経済新聞・毎日新聞の記事を対象とした検索リンクをトップページに追加。
+  <dd class="minor">検索例として、朝日新聞・日本経済新聞・毎日新聞の記事を対象とした検索リンクをトップページに追加。
   <dt>2010年1月12日
-  <dd>個人サイト上でアナウンス。
+  <dd class="news">個人サイト上でアナウンス。
       <span class="link">(<a href="http://masao.jpn.org/d/2010-01-12.html#2010-01-12-2">ふわっとCiNii関連検索 - まさおのChangeLogメモ</a>)</span>
   <dt>2010年1月10日
-  <dd>初版(0.1)公開。Twitter上でアナウンス。
+  <dd class="news">初版(0.1)公開。Twitter上でアナウンス。
       <span class="link">(<a href="http://twitter.com/tmasao/status/7571380397">1</a>, <a href="http://twitter.com/tmasao/status/7571394545">2</a>)</span>
 </dl>
 <hr>
