@@ -39,7 +39,7 @@ class TestWorldcat < Test::Unit::TestCase
       app = Fuwatto::WorldcatApp.new( @cgi )
       result = app.execute
       $stdout = File.open( "/dev/null", "w" )
-      html = app.output( "worldcat", result )
+      app.output( "worldcat", result )
    end
    def test_execute2
       @cgi.params[ "text" ] = [ "»ùÆ¸µÔÂÔ¤ÈÁêÃÌ½ê¤Î±¿±Ä" ]
@@ -48,5 +48,20 @@ class TestWorldcat < Test::Unit::TestCase
       assert( result )
       assert( result[ :totalResults ] > 0 )
       # assert( result[ :totalResults ] > 20 )
+   end
+   # jawp:É´Î¤Èô¹Ô¾ì
+   def test_count
+      @cgi.params["url"] = [ "http://ja.wikipedia.org/wiki/%E7%99%BE%E9%87%8C%E9%A3%9B%E8%A1%8C%E5%A0%B4" ]
+      app = Fuwatto::WorldcatApp.new( @cgi )
+      result = app.execute
+      assert( result )
+      assert( result[ :totalResults ] > 0 )
+      assert( result[ :totalResults ] < 20 )
+      assert( result[ :totalResults ] < app.count )
+      assert_equal( result[ :totalResults ], result[ :entries ].size )
+      $stdout = File.open( "/dev/null", "w" )
+      assert_nothing_raised do
+         app.output( "worldcat", result )
+      end
    end
 end
