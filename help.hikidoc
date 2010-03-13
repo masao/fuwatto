@@ -27,33 +27,47 @@ date.modified: 2010-03-13
 2010年3月現在、検索対象データベースは、CiNii, WorldCat, NDL PORTAの3つに対応しています。
 
 今後、API対応されているものを中心に増やしていく予定です。
-ご希望のデータベース等がありましたら、ご連絡いただければ幸いです。
+ご希望のデータベース等がありましたら、[[ご連絡|mailto:tmasao@acm.org]]いただければ幸いです。
 
 !!いま使っているデータベースでも、「ふわっと○○関連検索」してみたい
 
-OpensearchやSRUといった検索用APIに対応したものでしたら、30分程度で追加できますので、ご連絡ください。
+[[OpenSearch|wikipedia:OpenSearch]]や[[SRU|http://kaede.nier.go.jp/wiki/?SRU+Version+1.2+Specifications]]といった検索用APIに対応したものでしたら、30分程度で追加できますので、[[ご連絡ください|mailto:tmasao@acm.org]]。
 
 !!検索結果の並び順は？
 
-2010年3月現在、データベース検索サイト上での標準の並び順となっています。
+2010年3月現在、データベース検索サイト上での標準の並び順に若干の修正を加えたものとなっています。
+たとえば、CiNii論文データベースの場合は日付順が標準の並び順であるため、おおむね日付の新しいものが上位に並ぶことが前提となっています。
 今後、よりテキストに類似した文書を上位に返すよう、改良していく予定です。
-少々お待ちください。
 
 !!もっと簡単に使うには？
 
-外部のサイトなどから、ふわっと関連検索の検索結果に簡単に飛んで来ることができるようにするブログパーツやブックマークレットなどを用意しています。
+外部のサイトなどから、ふわっと関連検索の検索結果に簡単に飛んで来ることができるようにするブックマークレットやブログパーツなどを用意しています。
 
 !!!ブックマークレット
 
+以下のリンクURLをブックマークに追加することで、あとはそのブックマークリンクをクリックするだけで、いま見ているページを対象に、ふわっと検索できます。
+
+* [[ふわっとCiNii関連検索|javascript:location.href='http://fuwat.to/cinii?url='+encodeURIComponent(location.href)]]
+* [[ふわっとNDL関連検索|javascript:location.href='http://fuwat.to/ndl?url='+encodeURIComponent(location.href)]]
+* [[ふわっとWorldCat関連検索|javascript:location.href='http://fuwat.to/worldcat?url='+encodeURIComponent(location.href)]]
+
 !!!ブログパーツ
 
-ご自分で作られているブログ設定に、以下のHTML片をブログパーツとして貼りつけることで、ブログ記事の内容に関連した論文に飛ぶことができます。
+ご自分で作られているブログ設定に、以下の4行のHTMLをブログパーツとして貼りつけることで、ブログ記事の内容に関連した文献検索結果をいつでも表示することができます。
 
-!!API提供
+ <script src="http://fuwat.to/api/widget.js" type="text/javascript" charset="utf-8"></script>
+ <script type="text/javascript">
+ fuwatto_widget({});
+ </script>
+
+!!開発者向けAPIの提供
 
 JSON形式で検索結果を取得できるAPIを利用できます。
+
+通常の検索結果画面のURLに、{{code 'format=json'}} パラメータを加えてください。
+コールバック関数は、{{code 'callback=callback'}} パラメータで指定することができます。
 
 !!名前の由来
 
 ズバッと検索結果を得るのではなく、検索結果をみながら、次の着想を考える使いかたをして欲しいという思いから、「ふわっと」と名付けました。
-連想検索の良いところをうまく活用ください。
+連想検索的な関連文献の探索にうまく活用いただければ幸いです。

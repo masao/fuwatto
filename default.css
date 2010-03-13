@@ -31,11 +31,14 @@ div.center {
 p {
   text-indent: 1em;
 }
-
+pre, code {
+  color: navy;
+}
 h1 {
   text-align: center;
   margin-top: 10px;
 }
+
 .form {
   margin-left: 5em;
   margin-right: 5em;
