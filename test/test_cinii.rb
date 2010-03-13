@@ -136,4 +136,11 @@ class TestCinii < Test::Unit::TestCase
       assert_equal( 5, obj["entries"].size )
       assert_not_equal( 20, obj["entries"].size )
    end
+   def test_param_database
+      @cgi.params["url"] = [ "http://yahoo.co.jp" ]
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      result = cinii.execute
+      assert( result )
+      assert_equal( result[ :database ], "cinii" )
+   end
 end

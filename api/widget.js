@@ -2,22 +2,20 @@
  * Fuwatto Search Widget
  * written by Masao Takaku
  */
-var BASEURL = 'http://fuwat.to/cinii';
+var BASEURL = 'http://fuwat.to/';
 //var BASEURL = 'http://localhost/~masao/private/cvswork/fuwatto/cinii.rb';
 function fuwatto_widget( opt ){
+  var database = opt.database || 'cinii';
   var width = opt.width || 'auto';
   var height = opt.height || 'auto';
   var count = opt.count || 5;
+  var title = opt.title || "関連検索";
   document.write('<div style="width:'+width+'px;height:'+height+'px;border:solid 1px gray;padding:4px;overflow:auto;"' +
-		 ' id="fuwatto_result"></div>' + 
-		 '<script src="'+ BASEURL + '?format=json&amp;url=' + document.location.href + '&amp;count=' + count + '&amp;callback=fuwatto_show_result" type="text/javascript"></script>');
+		 ' id="fuwatto_result"><h3 style="margin-bottom:0px">' + title + '</h3></div>' + 
+		 '<script src="'+ BASEURL + database + '?format=json&amp;url=' + document.location.href + '&amp;count=' + count + '&amp;callback=fuwatto_show_result" type="text/javascript"></script>');
 }
 
 function fuwatto_show_result( data ) {
-  var h3 = document.createElement('h3');
-  h3.appendChild( document.createTextNode("関連文献") );
-  h3.style.cssText = 'margin-bottom:0';
-  document.getElementById('fuwatto_result').appendChild(h3);
   var keywords = document.createElement('div');
   keywords.setAttribute('class','fuwatto_keywords');
   keywords.style.cssText = 'text-align:right;font-size:smaller';
@@ -60,6 +58,6 @@ function fuwatto_show_result( data ) {
 
   var footer = document.createElement('div');
   footer.style.cssText = 'text-align:right;font-size:smaller;';
-  footer.innerHTML = 'Powered by <a href="' + BASEURL + '?url=' + document.location.href + '">ふわっとCiNii関連検索</a>';
+  footer.innerHTML = 'Powered by <a href="' + BASEURL + data.database + '?url=' + document.location.href + '">ふわっとCiNii関連検索</a>';
   document.getElementById('fuwatto_result').appendChild(footer);
 }

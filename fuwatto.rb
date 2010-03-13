@@ -458,6 +458,7 @@ module Fuwatto
          data[ :additional_keywords ] = additional_keywords
          data[ :count ] = count
          data[ :page ] = page
+         data[ :database ] = self.class.to_s.sub( /\AFuwatto::(\w+)App\Z/, '\1' ).downcase
          data[ :searchTime ] = "%0.02f" % ( Time.now - time_pre )
          data
       end
