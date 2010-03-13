@@ -25,6 +25,12 @@ div.last-update {
   text-align: right;
   font-size: smaller;
 }
+div.center {
+  text-align: center;
+}
+p {
+  text-indent: 1em;
+}
 
 h1 {
   text-align: center;

@@ -1,0 +1,8 @@
+date.format: "%Y年%m月%d日"
+subject.label:
+   profile : 自己紹介
+   etc : 雑多
+   software : ソフトウェア
+   lecture : 講義資料
+   trans : 翻訳
+   senkyo-koho: 選挙広報集

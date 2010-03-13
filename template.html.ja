@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:tmasao@acm.org" />
+<link rel="stylesheet" href="<%= css %>" type="text/css" />
+<% if css_content %>
+<style type="text/css">
+<%= css_content %>
+</style>
+<% end %>
+<% if javascript_src %>
+<script type="text/javascript" src="<%= javascript_src %>"></script>
+<% end %>
+<title><%= title %></title>
+</head>
+<body>
+<% if not navi == "false" %>
+<div class="navi"><a href="<%= rootdir %>">HOME</a> &gt;
+<% subject_path.each do |label, path| %>
+<a class="subject" href="<%= path %>"><%= label %></a> &gt;
+<% end %>
+<%= title_short( true ) %>
+</div>
+<% end %>
+<% if date_available %>
+<div class="last-update">初版公開日: <%= date_available.strftime( date_format ) %></div>
+<% end %>
+<% if date_modified %>
+<div class="last-update">最終更新日: <%= date_modified.strftime( date_format ) %></div>
+<% end %>
+<% if lang_switch.size > 1 %>
+<ul id="interlang">
+<% @conf["interlang"].keys.each do |lang| %>
+<li id="il-<%= lang %>"><%= lang == @lang ? "" : "<a href=\"#{lang_file( lang )}\">" %><%= @conf["interlang"][lang] %><%= lang == @lang ? "" : %q[</a>] %></li>
+<% end %>
+</ul>
+<% end %>
+<h1><%= title %></h1>
+<%= body %>
+<hr />
+<% if not navi == "false" %>
+<div class="navi"><a href="<%= rootdir %>">HOME</a> &gt;
+<% subject.to_a.each do |category| %>
+<%   label = subject_label[category] || category %>
+<a class="subject" href="<%= rootdir %>/<%= category %>/"><%= label %></a> &gt;
+<% end %>
+<% if title_short %>
+<%= title_short %>
+<% else %>
+<%= title %>
+<% end %>
+</div>
+<% end %>
+<address>高久雅生 (Masao Takaku)<br />
+<a href="http://masao.jpn.org/">http://masao.jpn.org/</a>,
+<a href="mailto:tmasao@acm.org">tmasao@acm.org</a></address>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-389547-4";
+urchinTracker();
+</script>
+</body>
+</html>
