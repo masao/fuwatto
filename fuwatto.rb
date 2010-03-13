@@ -27,7 +27,7 @@ module Fuwatto
    VERSION = '0.3'
    BASE_URI = 'http://fuwat.to/'
    USER_AGENT = "Fuwatto Search/#{ VERSION }; #{ BASE_URI }"
-   CACHE_TIME = 60 * 60 * 24 * 1   # 1日経つまで、キャッシュは有効
+   CACHE_TIME = 60 * 60 * 24 * 3   # 3日経つまで、キャッシュは有効
    MAX_PAGE = 19 # ページネイションに表示されるアイテム数
 
    # Bag of Words による文書表現

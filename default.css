@@ -1,24 +1,34 @@
 body {
   /* ref:http://www.colordic.org/colorsample/2173.html */
   background-color: #fcd575;
-  padding: 1%;
+  padding: 0 1%;
   font-family: Tahoma, Verdana, sans-serif;
 }
 
+#navi {
+  list-style-type: none;
+  font-size: smaller;
+  text-align: right;
+  margin-bottom: 5px;
+  margin-top: 0px;
+}
+#navi li {
+  display: inline;
+  padding: .1em .5em;
+  /* border: solid 1px gray; */
+  margin-left: 2px;
+}
+#navi li a {
+  text-align: center;
+}
 div.last-update {
   text-align: right;
   font-size: smaller;
 }
-div.top-navi {
-  text-align: right;
-  font-size: smaller;
-}
-div.top-navi a {
-  margin-left: .5em;
-}
 
 h1 {
   text-align: center;
+  margin-top: 10px;
 }
 .form {
   margin-left: 5em;
