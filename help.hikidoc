@@ -27,16 +27,17 @@ date.modified: 2010-03-13
 2010年3月現在、検索対象データベースは、CiNii, WorldCat, NDL PORTAの3つに対応しています。
 
 今後、API対応されているものを中心に増やしていく予定です。
-ご希望のデータベース等がありましたら、[[ご連絡|mailto:tmasao@acm.org]]いただければ幸いです。
+ご希望のデータベース等がありましたら、ぜひ[[ご連絡ください|mailto:tmasao@acm.org]]。
 
 !!いま使っているデータベースでも、「ふわっと○○関連検索」してみたい
 
-[[OpenSearch|wikipedia:OpenSearch]]や[[SRU|http://kaede.nier.go.jp/wiki/?SRU+Version+1.2+Specifications]]といった検索用APIに対応したものでしたら、30分程度で追加できますので、[[ご連絡ください|mailto:tmasao@acm.org]]。
+[[OpenSearch|wikipedia:OpenSearch]]や[[SRU|http://kaede.nier.go.jp/wiki/?SRU+Version+1.2+Specifications]]といった検索用APIに対応したものでしたら、すぐに追加できますので、[[ご連絡ください|mailto:tmasao@acm.org]]。
 
 !!検索結果の並び順は？
 
 2010年3月現在、データベース検索サイト上での標準の並び順に若干の修正を加えたものとなっています。
 たとえば、CiNii論文データベースの場合は日付順が標準の並び順であるため、おおむね日付の新しいものが上位に並ぶことが前提となっています。
+
 今後、よりテキストに類似した文書を上位に返すよう、改良していく予定です。
 
 !!もっと簡単に使うには？
@@ -66,6 +67,8 @@ JSON形式で検索結果を取得できるAPIを利用できます。
 
 通常の検索結果画面のURLに、{{code 'format=json'}} パラメータを加えてください。
 コールバック関数は、{{code 'callback=callback'}} パラメータで指定することができます。
+
+* 例: http://fuwat.to/cinii?url=http%3A%2F%2Ffuwat.to%2Fcinii&format=json
 
 !!名前の由来
 
