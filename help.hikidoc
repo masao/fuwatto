@@ -1,6 +1,6 @@
 title: ふわっと関連検索とは
 date.available: 2010-03-14
-date.modified: 2010-03-14
+date.modified: 2010-03-15
 
 {{div class="center"
 '''ふわっと関連検索にもどる'''
@@ -24,7 +24,7 @@ date.modified: 2010-03-14
 
 !!検索できるデータベースは？
 
-2010年3月現在、検索対象データベースは、CiNii, WorldCat, NDL PORTAの3つに対応しています。
+2010年3月現在、検索対象データベースは、[[CiNii|http://ci.nii.ac.jp]], [[WorldCat|http://worldcat.org]], [[NDL PORTA|http://porta.ndl.go.jp]]の3つに対応しています。
 
 今後、API対応されているものを中心に増やしていく予定です。
 ご希望のデータベース等がありましたら、ぜひ[[ご連絡ください|mailto:tmasao@acm.org]]。
