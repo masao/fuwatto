@@ -24,7 +24,7 @@ function fuwatto_show_result( data ) {
   document.getElementById('fuwatto_result').appendChild(keywords);
 		   
   var dl = document.createElement('dl');
-  dl.style.cssText = 'margin-bottom:0;';
+  dl.style.cssText = 'margin:2px 0px;';
   for (var i=0, entry; entry = data.entries[i]; i++) {
     var dt = document.createElement('dt');
     dt.setAttribute('class','fuwatto_title');

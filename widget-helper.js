@@ -16,17 +16,16 @@ function preview_fuwatto()
   div.style.cssText = 'width:'+width+'px;height:'+height+'px;border:solid 1px gray;padding:4px;overflow:auto;';
   div.setAttribute( "id", "fuwatto_result" );
   var h3 = document.createElement( "h3" );
-  h3.style.cssText = "margin-bottom:0px";
+  h3.style.cssText = "margin:0px";
   h3.appendChild( document.createTextNode( title ) );
   div.appendChild( h3 );
+  document.getElementById( 'preview' ).appendChild( div );
 
   var script = document.createElement( "script" );
   script.setAttribute( "src", PREVIEW_BASEURL + database + '?format=json;url=' + url + ';count=' + count + ';callback=fuwatto_show_result' );
   script.setAttribute( "type", "text/javascript" );
   script.setAttribute( "defer", "defer" );
-
-  div.appendChild( script );
-  document.getElementById( 'preview' ).appendChild( div );
+  document.getElementById( 'preview' ).appendChild( script );
 
   // Construct a HTML snippet for Fuwatto Web Widget:
   var params = [];
