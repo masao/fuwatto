@@ -25,6 +25,10 @@
 <%= title_short( true ) %>
 </div>
 <% end %>
+<ul id="navi">
+  <li><a href="help.html">ふわっと関連検索とは</a></li>
+  <li><a href="history.html">更新履歴</a></li>
+</ul>
 <% if date_available %>
 <div class="last-update">初版公開日: <%= date_available.strftime( date_format ) %></div>
 <% end %>
