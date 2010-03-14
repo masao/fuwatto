@@ -46,13 +46,17 @@ function fuwatto_show_result( data ) {
     dd_info.style.cssText = 'font-size:smaller;';
     var span_pubname = document.createElement('span');
     span_pubname.setAttribute('class', 'fuwatto_pubname');
-    span_pubname.appendChild( document.createTextNode(entry.publicationName) );
-    dd_info.appendChild(span_pubname);
-    dd_info.appendChild( document.createTextNode(";\n") );
+    if ( entry.publicationName ) {
+      span_pubname.appendChild( document.createTextNode(entry.publicationName) );
+      dd_info.appendChild(span_pubname);
+      dd_info.appendChild( document.createTextNode(";\n") );
+    }
     var span_pubdate = document.createElement('span');
     span_pubdate.setAttribute('class', 'fuwatto_pubdate');
-    span_pubdate.appendChild( document.createTextNode(entry.publicationDate) );
-    dd_info.appendChild(span_pubdate);
+    if ( entry.publicationDate ) {
+      span_pubdate.appendChild( document.createTextNode(entry.publicationDate) );
+      dd_info.appendChild(span_pubdate);
+    }
     dl.appendChild(dd_info);
   }
   document.getElementById('fuwatto_result').appendChild(dl);
