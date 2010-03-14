@@ -1,6 +1,6 @@
-title: 「ふわっと関連検索」ブログパーツ支援ツール
+title: 「ふわっと関連検索」ブログパーツ貼り付け支援ツール
 date.modified: 2010-03-14
-date.available: 2010-03-13
+date.available: 2010-03-14
 javascript.src: widget-helper.js
 css.content:
  form#html {
@@ -76,13 +76,15 @@ fuwatto_widget({ "database" : "", "url" : "http://www.asahi.com/paper/editorial.
 </div>
 }}
 
-{{rawhtml
+{{rawhtml '
 <form id="html">
-<textarea name="html" cols="70" rows="5" onclick="document.forms[1].html.select();">
+<textarea name="html" cols="70" rows="4" onclick="document.forms[1].html.select();">
 <script src="http://fuwat.to/api/widget.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">
 fuwatto_widget({});
-</script>
-</textarea>
+</script></textarea>
 </form>
+'}}
+{{div class="center"
+※上記コードをブログやWebサイトのHTMLに貼り付けることで、上記のような「ふわっと関連検索」結果をどこのページからでも表示できるようになります。
 }}
