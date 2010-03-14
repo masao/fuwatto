@@ -50,5 +50,5 @@ function preview_fuwatto()
 		    '<script type="text/javascript">' + "\n" + 
 		    "fuwatto_widget({\n  " +
 		    params.join( ",\n  " ) +
-		    "});\n" + "</script>";
+		    "\n});</script>";
 }
