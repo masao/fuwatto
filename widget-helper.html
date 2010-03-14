@@ -7,7 +7,18 @@
 <link rev="made" href="mailto:tmasao@acm.org" />
 <link rel="stylesheet" href="default.css" type="text/css" />
 <style type="text/css">
-form#html { text-align:center;margin:auto; }</style>
+ form#html {
+   text-align: center;
+   margin: auto;
+ }
+ form#form {
+   margin: auto;
+ }
+ form#form input[type="button"] {
+   font-size: larger;
+   margin: 1%;
+ }
+</style>
 <script type="text/javascript" src="widget-helper.js"></script>
 <title>「ふわっと関連検索」ブログパーツ支援ツール</title>
 </head>
@@ -18,7 +29,12 @@ form#html { text-align:center;margin:auto; }</style>
 <p>ブログパーツの貼りつけに必要な情報を自動的に設定できます。</p>
 <h2 id="toc1_1">パラメータ設定</h2>
 <p>「ふわっと関連検索」を様々なサイトで使えるようにするブログパーツのパラメータを以下で設定します。</p>
-<form id="form" onsubmit="return false;">
+<form id="form" onsubmit="preview_fuwatto();return false;">
+検索対象データベース: <select name="database">
+		      <option value="cinii">CiNii
+		      <option value="ndl">NDL Porta
+		      <option value="worldcat">WorldCat
+		      </select><br>
 タイトル表示: <input type="text" name="title" value="関連文献" size="20"><br>
 表示件数:
 <select name="count" >
@@ -47,10 +63,10 @@ form#html { text-align:center;margin:auto; }</style>
   <option value="400">400px
   <option value="600">600px
 </select><br>
-<input type="button" value=" Preview " onclick="preview_fuwatto();return false;">
+<input type="button" onclick="preview_fuwatto();return false;" value="  Preview  ">
 </form>
 <h2 id="toc1_2">プレビュー と 貼り付けコード（HTML）</h2>
-<p>上記の表示形式でよろしければ、末尾のHTML片をコピーして、ブログ等に貼り付けることができます。</p>
+<p>下記の表示形式でよろしければ、末尾のHTML片をコピーして、ブログ等に貼り付けることができます。</p>
 <script src="http://fuwat.to/api/widget.js" type="text/javascript" charset="utf-8"></script>
 <div id="preview">
 <script type="text/javascript">
