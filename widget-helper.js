@@ -48,7 +48,7 @@ function preview_fuwatto()
   form = document.forms[1];
   form.html.value = '<script src="http://fuwat.to/api/widget.js" type="text/javascript" charset="utf-8"></script>' + "\n" +
 		    '<script type="text/javascript">' + "\n" + 
-		    "fuwatto_widget({\n" +
-		    params.join( ",\n" ) +
+		    "fuwatto_widget({\n  " +
+		    params.join( ",\n  " ) +
 		    "});\n" + "</script>";
 }
