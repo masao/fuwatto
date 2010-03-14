@@ -71,8 +71,35 @@ fuwatto_widget({});
 <p>通常の検索結果画面のURLに、<code>format=json</code> パラメータを加えてください。
 コールバック関数は、<code>callback=callback</code> パラメータで指定することができます。</p>
 <ul>
-<li>例: <a href="http://fuwat.to/cinii?url=http%3A%2F%2Ffuwat.to%2Fcinii&amp;format=json">http://fuwat.to/cinii?url=http%3A%2F%2Ffuwat.to%2Fcinii&amp;format=json</a></li>
+<li>例: <a href="http://fuwat.to/cinii?url=http%3A%2F%2Ffuwat.to%2Fcinii;format=json">http://fuwat.to/cinii?url=http%3A%2F%2Ffuwat.to%2Fcinii;format=json</a></li>
 </ul>
+<p>返ってくるJSON形式のデータはたとえば以下のようなデータ形式となっています:</p>
+<pre>{
+ "totalResults":36,
+ "link":"http://ci.nii.ac.jp/opensearch/search?q=%E8%A8%98%E4%BA%8B%20%E7%A4%BE%E8%AA%AC",
+ "q":"\u8a18\u4e8b \u793e\u8aac",
+ "count":3,
+ "page":0,
+ "additional_keywords":[],
+ "database":"cinii",
+ "searchTime":"0.26",
+ "entries":[
+  {"publicationName":"\u8a00\u8a9e\u6587\u5316\u5b66\u7814\u7a76",
+ "title":"\u793e\u8aac\u8a18\u4e8b\u306b\u304a\u3051\u308bpositive politeness strategies",
+  "publicationDate":"2009/3",
+  "url":"http://ci.nii.ac.jp/naid/40016663467",
+  "author":"\u7a32\u6c38, \u77e5\u4e16"},
+  {"publicationName":"\u96fb\u5b50\u60c5\u5831\u901a\u4fe1\u5b66\u4f1a\u6280\u8853\u7814\u7a76\u5831\u544a. TL, \u601d\u8003\u3068\u8a00\u8a9e",
+  "title":"\u65b0\u805e\u8a18\u4e8b\u306e\u610f\u898b\u62bd\u51fa\u306e\u305f\u3081\u306e\u611f\u60c5\u8a9e\u8f9e\u66f8\u306e\u6709\u52b9\u6027\u306b\u95a2\u3059\u308b\u8003\u5bdf(\u601d\u8003\u3068\u77e5\u8b58\u691c\u7d22\u30fb\u7372\u5f97, \u4e00\u822c)",
+  "publicationDate":"2007-12-07",
+  "url":"http://ci.nii.ac.jp/naid/110006549600",
+  "author":"\u56db\u5bae, \u745e\u7a42; \u4e09\u54c1, \u8ce2\u4e00; \u571f\u5c4b, \u8aa0\u53f8; \u4efb, \u798f\u7d99"},
+  {"publicationName":"\u60c5\u5831\u51e6\u7406\u5b66\u4f1a\u7814\u7a76\u5831\u544a. \u81ea\u7136\u8a00\u8a9e\u51e6\u7406\u7814\u7a76\u4f1a\u5831\u544a",
+  "title":"\u547d\u984c-\u30e2\u30c0\u30ea\u30c6\u30a3\u69cb\u9020\u306b\u5bfe\u5fdc\u3059\u308b\u968e\u5c64\u69cb\u9020\u306e\u89e3\u6790(\u8a00\u8a9e\u30e2\u30c7\u30eb\u30fb\u5fdc\u7528)",
+  "publicationDate":"2007-03-28",
+  "url":"http://ci.nii.ac.jp/naid/110006248070",
+  "author":"\u5c0f\u6a4b, \u6d0b\u5e73; \u5742\u91ce, \u9054\u90ce"}]
+}</pre>
 <h2 id="toc3_2">名前の由来</h2>
 <p>ズバッと検索結果を得るのではなく、検索結果をみながら、次の着想を考える使いかたをして欲しいという思いから、「ふわっと」と名付けました。
 連想検索的な関連文献の探索にうまく活用いただければ幸いです。</p>
