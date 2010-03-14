@@ -54,23 +54,23 @@ css.content:
 幅:
 <select name="width" >
   <option value="auto">指定なし
-  <option value="120">120px
-  <option value="160">160px
-  <option value="200">200px
-  <option value="300">300px
-  <option value="400">400px
-  <option value="600">600px
-  <option value="800">800px
+  <option value="120px">120px
+  <option value="160px">160px
+  <option value="200px">200px
+  <option value="300px">300px
+  <option value="400px">400px
+  <option value="600px">600px
+  <option value="800px">800px
 </select>
 高さ:
 <select name="height" >
   <option value="auto">指定なし
-  <option value="120">120px
-  <option value="160">160px
-  <option value="200">200px
-  <option value="300">300px
-  <option value="400">400px
-  <option value="600">600px
+  <option value="120px">120px
+  <option value="160px">160px
+  <option value="200px">200px
+  <option value="300px">300px
+  <option value="400px">400px
+  <option value="600px">600px
 </select><br>
 <input type="button" onclick="preview_fuwatto();return false;" value="  Preview  ">
 </form>
@@ -84,7 +84,7 @@ css.content:
 <script src="http://fuwat.to/api/widget.js" type="text/javascript" charset="utf-8"></script>
 <div id="preview">
 <script type="text/javascript">
-fuwatto_widget({ "database" : "", "url" : "http://www.asahi.com/paper/editorial.html" });
+fuwatto_widget({ "url" : "http://www.asahi.com/paper/editorial.html" });
 </script>
 </div>
 }}
