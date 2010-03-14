@@ -368,6 +368,7 @@ module Fuwatto
             :url => url,
             :author => author,
             :content => content,
+            :publicationName => content,
          }
       end
       data
