@@ -1,5 +1,5 @@
 title: 「ふわっと関連検索」ブログパーツ貼り付け支援ツール
-date.modified: 2010-03-14
+date.modified: 2010-03-15
 date.available: 2010-03-14
 javascript.src: widget-helper.js
 css.content:
@@ -78,7 +78,7 @@ css.content:
 
 !!プレビュー と 貼り付けコード（HTML）
 
-下記の表示形式でよろしければ、末尾のHTML片をコピーして、ブログ等に貼り付けることができます。
+下記の表示形式でよろしければ、末尾のHTML片をコピーして、ブログ等に貼り付けることができます（下記に表示される検索結果はダミーです）。
 
 {{rawhtml
 <script src="http://fuwat.to/api/widget.js" type="text/javascript" charset="utf-8"></script>
