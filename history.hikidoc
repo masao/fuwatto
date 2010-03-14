@@ -1,6 +1,6 @@
 title: 更新履歴 - ふわっと関連検索
 date.available: 2010-01-17
-date.modified: 2010-03-13
+date.modified: 2010-03-14
 css.content: dt { margin-top: 5px; }
 
 {{div class="center"
@@ -13,7 +13,7 @@ css.content: dt { margin-top: 5px; }
 }}
 
 :2010年3月13日:
-::[News] 利用ガイド「[[ふわっと関連検索とは|./help.html]]」を公開。
+::[News] 利用ガイド「[[ふわっと関連検索とは|./help.html]]」、「[[ブログパーツ貼り付け支援ツール|widget-helper.html]]」を公開。
 ::[Bugfix] 「WorldCat検索」で取得した検索結果が全件表示できなかったバグを修正。
 :2010年3月11日:
 // 0.3

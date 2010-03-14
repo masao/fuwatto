@@ -24,9 +24,9 @@
 <li><a href="#toc1_2">検索できるデータベースは？</a></li>
 <li><a href="#toc1_3">いま使っているデータベースでも、「ふわっと○○関連検索」してみたい</a></li>
 <li><a href="#toc1_4">検索結果の並び順は？</a></li>
-<li><a href="#toc1_5">もっと簡単に使うには？</a><ul>
+<li><a href="#toc1_5">もっと簡単に使うには</a><ul>
 <li><a href="#toc2_1">ブックマークレット</a></li>
-<li><a href="#toc2_2">ブログパーツ</a></li>
+<li><a href="#toc2_2">自分のWebサイトで使うには？（ブログパーツ）</a></li>
 </ul></li>
 <li><a href="#toc3_1">開発者向けAPIの提供</a></li>
 <li><a href="#toc3_2">名前の由来</a></li></ul>
@@ -49,7 +49,7 @@
 <p>2010年3月現在、データベース検索サイト上での標準の並び順に若干の修正を加えたものとなっています。
 たとえば、CiNii論文データベースの場合は日付順が標準の並び順であるため、おおむね日付の新しいものが上位に並ぶことが前提となっています。</p>
 <p>今後、よりテキストに類似した文書を上位に返すよう、改良していく予定です。</p>
-<h2 id="toc1_5">もっと簡単に使うには？</h2>
+<h2 id="toc1_5">もっと簡単に使うには</h2>
 <p>外部のサイトなどから、ふわっと関連検索の検索結果に簡単に飛んで来ることができるようにするブックマークレットやブログパーツなどを用意しています。</p>
 <h3 id="toc2_1">ブックマークレット</h3>
 <p>以下のリンクURLをブックマークに追加することで、あとはそのブックマークリンクをクリックするだけで、いま見ているページを対象に、ふわっと検索できます。</p>
@@ -58,12 +58,14 @@
 <li><a href="javascript:location.href='http://fuwat.to/ndl?url='+encodeURIComponent(location.href)">ふわっとNDL関連検索</a></li>
 <li><a href="javascript:location.href='http://fuwat.to/worldcat?url='+encodeURIComponent(location.href)">ふわっとWorldCat関連検索</a></li>
 </ul>
-<h3 id="toc2_2">ブログパーツ</h3>
-<p>ご自分で作られているブログ設定に、以下の4行のHTMLをブログパーツとして貼りつけることで、ブログ記事の内容に関連した文献検索結果をいつでも表示することができます。</p>
+<h3 id="toc2_2">自分のWebサイトで使うには？（ブログパーツ）</h3>
+<p>ご自分のWebサイトのページ内に、以下の4行のHTMLをブログパーツとして貼りつけることで、そのページの内容に関連した文献検索結果をいつでも表示することができます。</p>
 <pre>&lt;script src="http://fuwat.to/api/widget.js" type="text/javascript" charset="utf-8"&gt;&lt;/script&gt;
 &lt;script type="text/javascript"&gt;
 fuwatto_widget({});
 &lt;/script&gt;</pre>
+<p>表示される件数や、幅や高さなども選ぶことができます。
+<a href="./widget-helper.html">ブログパーツ貼り付け支援ツール</a>もご利用ください。</p>
 <h2 id="toc3_1">開発者向けAPIの提供</h2>
 <p>JSON形式で検索結果を取得できるAPIを利用できます。</p>
 <p>通常の検索結果画面のURLに、<code>format=json</code> パラメータを加えてください。

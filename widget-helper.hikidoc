@@ -15,6 +15,15 @@ css.content:
    margin: 1%;
  }
 
+{{div class="center"
+'''ふわっと関連検索にもどる'''
+[
+[[CiNii|http://fuwat.to/cinii]] /
+[[NDL Porta|http://fuwat.to/ndl]] /
+[[WorldCat|http://fuwat.to/worldcat]]
+]
+}}
+
 ブログパーツの貼りつけに必要な情報を自動的に設定できます。
 
 !!パラメータ設定

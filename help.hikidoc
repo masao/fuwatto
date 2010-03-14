@@ -41,7 +41,7 @@ date.modified: 2010-03-14
 
 今後、よりテキストに類似した文書を上位に返すよう、改良していく予定です。
 
-!!もっと簡単に使うには？
+!!もっと簡単に使うには
 
 外部のサイトなどから、ふわっと関連検索の検索結果に簡単に飛んで来ることができるようにするブックマークレットやブログパーツなどを用意しています。
 
@@ -53,14 +53,17 @@ date.modified: 2010-03-14
 * [[ふわっとNDL関連検索|javascript:location.href='http://fuwat.to/ndl?url='+encodeURIComponent(location.href)]]
 * [[ふわっとWorldCat関連検索|javascript:location.href='http://fuwat.to/worldcat?url='+encodeURIComponent(location.href)]]
 
-!!!ブログパーツ
+!!!自分のWebサイトで使うには？（ブログパーツ）
 
-ご自分で作られているブログ設定に、以下の4行のHTMLをブログパーツとして貼りつけることで、ブログ記事の内容に関連した文献検索結果をいつでも表示することができます。
+ご自分のWebサイトのページ内に、以下の4行のHTMLをブログパーツとして貼りつけることで、そのページの内容に関連した文献検索結果をいつでも表示することができます。
 
  <script src="http://fuwat.to/api/widget.js" type="text/javascript" charset="utf-8"></script>
  <script type="text/javascript">
  fuwatto_widget({});
  </script>
+
+表示される件数や、幅や高さなども選ぶことができます。
+[[ブログパーツ貼り付け支援ツール|./widget-helper.html]]もご利用ください。
 
 !!開発者向けAPIの提供
 
