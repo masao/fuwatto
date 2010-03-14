@@ -303,12 +303,18 @@ module Fuwatto
          else
             description = ""
          end
+         if publicationName.nil? or publicationName.empty?
+            publicationName = [ source, publisher ].select{|e|
+               not e.nil? and not e.empty?
+            }.join( "; " )
+         end
          data[ :entries ] << {
             :title => title,
             :url => url,
             :author => author,
             :source => source,
             :date => date,
+            :publicationDate => date,
             :publisher => publisher,
             :publicationName => publicationName,
             :description => description,
