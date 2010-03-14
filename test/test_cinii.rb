@@ -79,6 +79,7 @@ class TestCinii < Test::Unit::TestCase
       assert( obj )
       assert( obj[ "entries" ] )
       assert_equal( obj[ "entries" ].size, 20 )
+      assert_equal( obj[ "database" ], "cinii" )
    end
    def test_json_callback
       @cgi.params["url"] = [ "http://yahoo.co.jp" ]
