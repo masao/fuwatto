@@ -10,7 +10,7 @@ function fuwatto_widget( opt ){
   var width = opt.width || 'auto';
   var height = opt.height || 'auto';
   var count = opt.count || 3;
-  var title = opt.title || "関連検索";
+  var title = opt.title || "関連文献";
   document.write('<div style="width:'+width+'px;height:'+height+'px;border:solid 1px gray;padding:4px;overflow:auto;" id="fuwatto_result">' +
 		 '<h3 style="margin-bottom:0px">' + title + '</h3></div>' + 
 		 '<script src="'+ BASEURL + database + '?format=json;url=' + url + ';count=' + count + ';callback=fuwatto_show_result" type="text/javascript"></script>');
