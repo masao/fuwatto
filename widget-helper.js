@@ -3,7 +3,8 @@
 var PREVIEW_BASEURL = 'http://fuwat.to/';
 function preview_fuwatto()
 {
-  form = document.forms[0];
+  // Build a preview format:
+  var form = document.forms[0];
   var url = "http://www.asahi.com/paper/editorial.html";
   var count = form.count.value;
   var width = form.width.value;
@@ -26,4 +27,28 @@ function preview_fuwatto()
 
   div.appendChild( script );
   document.getElementById( 'preview' ).appendChild( div );
+
+  // Construct a HTML snippet for Fuwatto Web Widget:
+  var params = [];
+  if (database && database != "cinii") {
+    params.push( 'database : "' + database + '"' );
+  }
+  if (count && count != 3) {
+    params.push( 'count : ' + count );
+  }
+  if (title && title != "関連文献") {
+    params.push( 'title : "' + title + '"' );
+  }
+  if (width && width != "auto") {
+    params.push( 'width : ' + width );
+  }
+  if (height && height != "auto") {
+    params.push( 'height : ' + height );
+  }
+  form = document.forms[1];
+  form.html.value = '<script src="http://fuwat.to/api/widget.js" type="text/javascript" charset="utf-8"></script>' + "\n" +
+		    '<script type="text/javascript">' + "\n" + 
+		    "fuwatto_widget({\n" +
+		    params.join( ",\n" ) +
+		    "});\n" + "</script>";
 }

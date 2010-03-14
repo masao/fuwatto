@@ -30,9 +30,9 @@ css.content:
 		      </select><br>
 タイトル表示: <input type="text" name="title" value="関連文献" size="20"><br>
 表示件数:
-<select name="count" >
+<select name="count">
   <option value="1">1件
-  <option value="3">3件
+  <option value="3" selected="selected">3件
   <option value="5">5件
   <option value="10">10件
   <option value="20">20件
@@ -40,17 +40,20 @@ css.content:
 <br>
 幅:
 <select name="width" >
-  <option value="auto">なし
+  <option value="auto">指定なし
   <option value="120">120px
+  <option value="160">160px
   <option value="200">200px
   <option value="300">300px
   <option value="400">400px
   <option value="600">600px
+  <option value="800">800px
 </select>
 高さ:
 <select name="height" >
-  <option value="auto">なし
+  <option value="auto">指定なし
   <option value="120">120px
+  <option value="160">160px
   <option value="200">200px
   <option value="300">300px
   <option value="400">400px
@@ -75,10 +78,10 @@ fuwatto_widget({ "database" : "", "url" : "http://www.asahi.com/paper/editorial.
 
 {{rawhtml
 <form id="html">
-<textarea cols="70" rows="5">
+<textarea name="html" cols="70" rows="5">
 <script src="http://fuwat.to/api/widget.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">
-fuwatto_widget({ "database" : "", "url" : "http://www.asahi.com/paper/editorial.html" });
+fuwatto_widget({});
 </script>
 </textarea>
 </form>
