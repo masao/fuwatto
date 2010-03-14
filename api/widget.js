@@ -5,21 +5,23 @@
 var BASEURL = 'http://fuwat.to/';
 //var BASEURL = 'http://localhost/~masao/private/cvswork/fuwatto/cinii.rb';
 function fuwatto_widget( opt ){
+  var url = opt.url || document.location.href;
   var database = opt.database || 'cinii';
   var width = opt.width || 'auto';
   var height = opt.height || 'auto';
   var count = opt.count || 5;
   var title = opt.title || "関連検索";
-  document.write('<div style="width:'+width+'px;height:'+height+'px;border:solid 1px gray;padding:4px;overflow:auto;"' +
-		 ' id="fuwatto_result"><h3 style="margin-bottom:0px">' + title + '</h3></div>' + 
-		 '<script src="'+ BASEURL + database + '?format=json&amp;url=' + document.location.href + '&amp;count=' + count + '&amp;callback=fuwatto_show_result" type="text/javascript"></script>');
+  document.write('<div style="width:'+width+'px;height:'+height+'px;border:solid 1px gray;padding:4px;overflow:auto;" id="fuwatto_result">' +
+		 '<h3 style="margin-bottom:0px">' + title + '</h3></div>' + 
+		 '<script src="'+ BASEURL + '?format=json&amp;url=' + url + '&amp;count=' + count + '&amp;callback=fuwatto_show_result" type="text/javascript"></script>');
+//		 '<script src="'+ BASEURL + database + '?format=json&amp;url=' + document.location.href + '&amp;count=' + count + '&amp;callback=fuwatto_show_result" type="text/javascript"></script>');
 }
 
 function fuwatto_show_result( data ) {
   var keywords = document.createElement('div');
   keywords.setAttribute('class','fuwatto_keywords');
   keywords.style.cssText = 'text-align:right;font-size:smaller';
-  keywords.appendChild( document.createTextNode( data["q"] + "\n" ) );
+  keywords.appendChild( document.createTextNode( data.q + "\n" ) );
   document.getElementById('fuwatto_result').appendChild(keywords);
 		   
   var dl = document.createElement('dl');
@@ -58,6 +60,6 @@ function fuwatto_show_result( data ) {
 
   var footer = document.createElement('div');
   footer.style.cssText = 'text-align:right;font-size:smaller;';
-  footer.innerHTML = 'Powered by <a href="' + BASEURL + data.database + '?url=' + document.location.href + '">ふわっとCiNii関連検索</a>';
+  footer.innerHTML = 'Powered by <a href="' + BASEURL + data.database + '?url=' + document.location.href + '">ふわっと' + data.database.substr(0,1).toUpperCase() + data.database.substr(1) + '関連検索</a>';
   document.getElementById('fuwatto_result').appendChild(footer);
 }
