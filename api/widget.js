@@ -13,8 +13,7 @@ function fuwatto_widget( opt ){
   var title = opt.title || "関連検索";
   document.write('<div style="width:'+width+'px;height:'+height+'px;border:solid 1px gray;padding:4px;overflow:auto;" id="fuwatto_result">' +
 		 '<h3 style="margin-bottom:0px">' + title + '</h3></div>' + 
-		 '<script src="'+ BASEURL + '?format=json&amp;url=' + url + '&amp;count=' + count + '&amp;callback=fuwatto_show_result" type="text/javascript"></script>');
-//		 '<script src="'+ BASEURL + database + '?format=json&amp;url=' + document.location.href + '&amp;count=' + count + '&amp;callback=fuwatto_show_result" type="text/javascript"></script>');
+		 '<script src="'+ BASEURL + '?format=json;url=' + url + ';count=' + count + ';callback=fuwatto_show_result" type="text/javascript"></script>');
 }
 
 function fuwatto_show_result( data ) {
