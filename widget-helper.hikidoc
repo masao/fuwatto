@@ -1,0 +1,69 @@
+title: 「ふわっと関連検索」ブログパーツ支援ツール
+date.modified: 2010-03-14
+date.available: 2010-03-13
+css.content: form#html { text-align:center;margin:auto; }
+javascript.src: widget-helper.js
+
+ブログパーツの貼りつけに必要な情報を自動的に設定できます。
+
+!!パラメータ設定
+
+「ふわっと関連検索」を様々なサイトで使えるようにするブログパーツのパラメータを以下で設定します。
+
+{{rawhtml
+<form id="form" onsubmit="return false;">
+タイトル表示: <input type="text" name="title" value="関連文献" size="20"><br>
+表示件数:
+<select name="count" >
+  <option value="1">1件
+  <option value="3">3件
+  <option value="5">5件
+  <option value="10">10件
+  <option value="20">20件
+</select>
+<br>
+幅:
+<select name="width" >
+  <option value="auto">なし
+  <option value="120">120px
+  <option value="200">200px
+  <option value="300">300px
+  <option value="400">400px
+  <option value="600">600px
+</select>
+高さ:
+<select name="height" >
+  <option value="auto">なし
+  <option value="120">120px
+  <option value="200">200px
+  <option value="300">300px
+  <option value="400">400px
+  <option value="600">600px
+</select><br>
+<input type="button" value=" Preview " onclick="preview_fuwatto();return false;">
+</form>
+}}
+
+!!プレビュー と 貼り付けコード（HTML）
+
+上記の表示形式でよろしければ、末尾のHTML片をコピーして、ブログ等に貼り付けることができます。
+
+{{rawhtml
+<script src="http://fuwat.to/api/widget.js" type="text/javascript" charset="utf-8"></script>
+<div id="preview">
+<script type="text/javascript">
+fuwatto_widget({ "database" : "", "url" : "http://www.asahi.com/paper/editorial.html" });
+</script>
+</div>
+}}
+
+{{rawhtml
+<form id="html">
+<textarea cols="70" rows="5">
+<script src="http://fuwat.to/api/widget.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+fuwatto_widget({ "database" : "", "url" : "http://www.asahi.com/paper/editorial.html" });
+</script>
+</textarea>
+</form>
+}}

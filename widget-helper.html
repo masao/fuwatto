@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:tmasao@acm.org" />
+<link rel="stylesheet" href="default.css" type="text/css" />
+<style type="text/css">
+form#html { text-align:center;margin:auto; }</style>
+<script type="text/javascript" src="widget-helper.js"></script>
+<title>「ふわっと関連検索」ブログパーツ支援ツール</title>
+</head>
+<body>
+<div class="last-update">初版公開日: 2010年03月13日</div>
+<div class="last-update">最終更新日: 2010年03月14日</div>
+<h1>「ふわっと関連検索」ブログパーツ支援ツール</h1>
+<p>ブログパーツの貼りつけに必要な情報を自動的に設定できます。</p>
+<h2 id="toc1_1">パラメータ設定</h2>
+<p>「ふわっと関連検索」を様々なサイトで使えるようにするブログパーツのパラメータを以下で設定します。</p>
+<form id="form" onsubmit="return false;">
+タイトル表示: <input type="text" name="title" value="関連文献" size="20"><br>
+表示件数:
+<select name="count" >
+  <option value="1">1件
+  <option value="3">3件
+  <option value="5">5件
+  <option value="10">10件
+  <option value="20">20件
+</select>
+<br>
+幅:
+<select name="width" >
+  <option value="auto">なし
+  <option value="120">120px
+  <option value="200">200px
+  <option value="300">300px
+  <option value="400">400px
+  <option value="600">600px
+</select>
+高さ:
+<select name="height" >
+  <option value="auto">なし
+  <option value="120">120px
+  <option value="200">200px
+  <option value="300">300px
+  <option value="400">400px
+  <option value="600">600px
+</select><br>
+<input type="button" value=" Preview " onclick="preview_fuwatto();return false;">
+</form>
+<h2 id="toc1_2">プレビュー と 貼り付けコード（HTML）</h2>
+<p>上記の表示形式でよろしければ、末尾のHTML片をコピーして、ブログ等に貼り付けることができます。</p>
+<script src="http://fuwat.to/api/widget.js" type="text/javascript" charset="utf-8"></script>
+<div id="preview">
+<script type="text/javascript">
+fuwatto_widget({ "database" : "", "url" : "http://www.asahi.com/paper/editorial.html" });
+</script>
+</div>
+<form id="html">
+<textarea cols="70" rows="5">
+<script src="http://fuwat.to/api/widget.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+fuwatto_widget({ "database" : "", "url" : "http://www.asahi.com/paper/editorial.html" });
+</script>
+</textarea>
+</form>
+<hr />
+<div id="footer">
+<address>高久雅生 (Masao Takaku)<br />
+<a href="http://masao.jpn.org/">http://masao.jpn.org/</a>,
+<a href="mailto:tmasao@acm.org">tmasao@acm.org</a></address>
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-389547-4";
+urchinTracker();
+</script>
+</body>
+</html>

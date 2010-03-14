@@ -1,6 +1,6 @@
 # $Id$
 
-HTML	= 	help.html history.html
+HTML	= 	help.html history.html widget-helper.html
 
 TOHTML =	./tohtml.rb
 TOHTML_JA=$(TOHTML) ./tohtml.conf.ja ./template.html.ja
