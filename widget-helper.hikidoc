@@ -38,45 +38,45 @@ css.content:
 <form action="" id="form" onsubmit="preview_fuwatto();return false;">
 <p>
 検索対象データベース: <select name="database">
-		      <option value="cinii">CiNii
-		      <option value="ndl">NDL Porta
-		      <option value="worldcat">WorldCat
+		      <option value="cinii">CiNii</option>
+		      <option value="ndl">NDL Porta</option>
+		      <option value="worldcat">WorldCat</option>
 		      </select>
 <br />
 タイトル表示: <input type="text" name="title" value="関連文献" size="20">
 <br />
 表示件数:
 <select name="count">
-  <option value="1">1件
-  <option value="3" selected="selected">3件
-  <option value="5">5件
-  <option value="10">10件
-  <option value="20">20件
+  <option value="1">1件</option>
+  <option value="3" selected="selected">3件</option>
+  <option value="5">5件</option>
+  <option value="10">10件</option>
+  <option value="20">20件</option>
 </select>
 <br />
 幅:
 <select name="width" >
-  <option value="auto">指定なし
-  <option value="120px">120px
-  <option value="160px">160px
-  <option value="200px">200px
-  <option value="300px">300px
-  <option value="400px">400px
-  <option value="600px">600px
-  <option value="800px">800px
+  <option value="auto">指定なし</option>
+  <option value="120px">120px</option>
+  <option value="160px">160px</option>
+  <option value="200px">200px</option>
+  <option value="300px">300px</option>
+  <option value="400px">400px</option>
+  <option value="600px">600px</option>
+  <option value="800px">800px</option>
 </select>
 高さ:
 <select name="height" >
-  <option value="auto">指定なし
-  <option value="120px">120px
-  <option value="160px">160px
-  <option value="200px">200px
-  <option value="300px">300px
-  <option value="400px">400px
-  <option value="600px">600px
+  <option value="auto">指定なし</option>
+  <option value="120px">120px</option>
+  <option value="160px">160px</option>
+  <option value="200px">200px</option>
+  <option value="300px">300px</option>
+  <option value="400px">400px</option>
+  <option value="600px">600px</option>
 </select>
 <br />
-<input type="button" onclick="preview_fuwatto();return false;" value="  Preview  ">
+<input type="button" onclick="preview_fuwatto();return false;" value="  Preview  " />
 </p>
 </form>
 }}
