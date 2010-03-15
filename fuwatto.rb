@@ -67,7 +67,7 @@ module Fuwatto
       http = Net::HTTP.new( uri.host, uri.port )
       xml = nil
       http.start do |conn|
-         data = "appid=#{ YAHOO_APPID }&sentence=#{ URI.escape( str.toutf8 ) }&output=xml"
+         data = "appid=#{ YAHOO_APPID }&sentence=#{ URI.escape( str ) }&output=xml"
          # p data
          res, = conn.post( uri.path, data )
          xml = res.body
@@ -75,7 +75,7 @@ module Fuwatto
       #p xml
       parser = LibXML::XML::Parser.string( xml )
       doc = parser.parse
-      keywords = doc.find( "//y:Keyphrase", "y:urn:yahoo:jp:jlp:KeyphraseService" ).map{|e| e.content.toeuc }
+      keywords = doc.find( "//y:Keyphrase", "y:urn:yahoo:jp:jlp:KeyphraseService" ).map{|e| e.content }
       #keywords.each do |e|
       #   p e.content
       #end
@@ -199,7 +199,6 @@ module Fuwatto
       parser = LibXML::XML::Parser.string( cont )
       doc = parser.parse
       # ref. http://ci.nii.ac.jp/info/ja/if_opensearch.html
-      #puts keyword.toeuc
       data[ :q ] = keyword
       data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.sub( /&format=atom\b/, "" )
       data[ :totalResults ] = doc.find( "//opensearch:totalResults" )[0].content.to_i
@@ -207,7 +206,6 @@ module Fuwatto
       data[ :entries ] = []
       entries.each do |e|
          title = e.find( "./atom:title", "atom:http://www.w3.org/2005/Atom" )[0].content
-         #puts title.toeuc
          url = e.find( "./atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content
          author = e.find( ".//atom:author/atom:name", "atom:http://www.w3.org/2005/Atom" ).to_a.map{|name| name.content }.join( "; " )
          pubname = e.find( "./prism:publicationName", "prism:http://prismstandard.org/namespaces/basic/2.0/" )[0]
@@ -254,8 +252,6 @@ module Fuwatto
       data = {}
       parser = LibXML::XML::Parser.string( cont )
       doc = parser.parse
-      # ref. http://ci.nii.ac.jp/info/ja/if_opensearch.html
-      #puts keyword.toeuc
       data[ :q ] = keyword
       data[ :link ] = "http://porta.ndl.go.jp/cgi-bin/openurl.cgi"
       data[ :totalResults ] = doc.find( "//openSearch:totalResults", "http://a9.com/-/spec/opensearchrss/1.0/" )[0].content.to_i
@@ -264,7 +260,6 @@ module Fuwatto
       entries.each do |e|
          dpid = e.find( "./dcndl_porta:dpid", "http://ndl.go.jp/dcndl/dcndl_porta/" )[0].content
          title = e.find( "./title" )[0].content
-         #puts title.toeuc
          url = e.find( "./link" )[0].content
          author = e.find( ".//author" )
          if author and author[0]
@@ -354,7 +349,6 @@ module Fuwatto
       parser = LibXML::XML::Parser.string( cont )
       doc = parser.parse
       # ref. http://ci.nii.ac.jp/info/ja/if_opensearch.html
-      #puts keyword.toeuc
       data[ :q ] = keyword
       # data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.sub( /&format=atom\b/, "" ).sub( /&wskey=\w+/, "" )
       data[ :link ] = "http://www.worldcat.org/search?q=#{ q }"
@@ -363,7 +357,6 @@ module Fuwatto
       data[ :entries ] = []
       entries.each do |e|
          title = e.find( "./atom:title", "atom:http://www.w3.org/2005/Atom" )[0].content
-         #puts title.toeuc
          url = e.find( "./atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content
          author = e.find( ".//atom:author/atom:name", "atom:http://www.w3.org/2005/Atom" ).to_a.map{|name| name.content }.join( "; " )
          content = e.find( "./atom:content", "atom:http://www.w3.org/2005/Atom" )[0]
@@ -416,13 +409,13 @@ module Fuwatto
             @content = response.body
             case response[ "content-type" ]
             when /^text\/html\b/
-               @content = @content.toeuc
+               @content = @content
                @content = ExtractContent::analyse( @content ).join( "\n" )
                #puts content
             when /^text\//
-               @content = @content.toeuc
+               @content = @content
             when /^application\/pdf\b/
-               @content = pdftotext( @content ) #.toeuc
+               @content = pdftotext( @content )
             else
                raise "Unknown Content-Type: #{ response[ "content-type" ] }"
             end
@@ -430,7 +423,7 @@ module Fuwatto
          vector = Document.new( content, mode )
          vector1 = {}
          vector.each_with_index do |k, i|
-            res = send( search_method, k[0].toutf8, opts )
+            res = send( search_method, k[0], opts )
             next if res[ :totalResults ] < 1
             score = k[1] * 1 / Math.log2( res[ :totalResults ] + 1 )
             vector1[ k[0] ] = score
@@ -442,13 +435,13 @@ module Fuwatto
          entries = []
          additional_keywords = []
          terms.times do |i|
-            keyword = vector[ 0..(terms-i-1) ].join( " " ).toutf8
+            keyword = vector[ 0..(terms-i-1) ].join( " " )
             STDERR.puts keyword
             data = send( search_method, keyword, opts )
             if data[ :totalResults ] > 0
                entries = ( entries + data[ :entries ] ).uniq
                if entries.size < count and entries.size <= count * ( page + 1 ) and vector.size >= (terms-i)
-                  additional_keywords.unshift( vector[ terms - i - 1 ].toutf8 )
+                  additional_keywords.unshift( vector[ terms - i - 1 ] )
                   #p additional_keywords
                   next
                else
