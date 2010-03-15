@@ -144,4 +144,13 @@ class TestCinii < Test::Unit::TestCase
       assert( result )
       assert_equal( result[ :database ], "cinii" )
    end
+   def test_query_toolong
+      # キャッシュファイル名がNAME_MAXを超えると、Errno::ENAMETOOLONG 例外が発生する。
+      @cgi.params[ "text" ] = [ "消費 ホーム グループホーム 問題 火災 省庁 安全 認知 トヨタ 施設" ]
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      result = cinii.execute
+      assert( result )
+      assert( result[ :totalResults ] > 0 )
+      # assert( result[ :totalResults ] > 20 )
+   end
 end

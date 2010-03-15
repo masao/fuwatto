@@ -5,6 +5,7 @@
 require "net/http"
 require "net/https"
 #require "pp"
+require "digest/md5"
 require "tempfile"
 require "erb"
 require "cgi"
@@ -155,6 +156,9 @@ module Fuwatto
    CACHE_DIR = "cache"
    def cache_xml( prefix, name, page = 0 )
       xml_fname = name.dup
+      if xml_fname.size > 245
+         xml_fname = Digest::MD5.hexdigest( xml_fname )
+      end
       xml_fname << ":#{ page }" if not page.nil? and not page == 0
       xml_fname << ".xml"
       File.join( CACHE_DIR, prefix, xml_fname )
