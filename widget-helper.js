@@ -13,7 +13,7 @@ function preview_fuwatto()
   var database = form.database.value;
   document.getElementById( 'preview' ).innerHTML = '';
   var div = document.createElement( "div" );
-  div.style.cssText = 'width:'+width+'px;height:'+height+'px;border:solid 1px gray;padding:4px;overflow:auto;';
+  div.style.cssText = 'width:'+width+';height:'+height+';border:solid 1px gray;padding:4px;overflow:auto;';
   div.setAttribute( "id", "fuwatto_result" );
   var h3 = document.createElement( "h3" );
   h3.style.cssText = "margin:0px";
