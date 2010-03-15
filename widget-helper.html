@@ -42,13 +42,16 @@
 <p>ブログパーツの貼りつけに必要な情報を自動的に設定できます。</p>
 <h2 id="toc1_1">パラメータ設定</h2>
 <p>「ふわっと関連検索」を様々なサイトで使えるようにするブログパーツのパラメータを以下で設定します。</p>
-<form id="form" onsubmit="preview_fuwatto();return false;">
+<form action="" id="form" onsubmit="preview_fuwatto();return false;">
+<p>
 検索対象データベース: <select name="database">
 		      <option value="cinii">CiNii
 		      <option value="ndl">NDL Porta
 		      <option value="worldcat">WorldCat
-		      </select><br>
-タイトル表示: <input type="text" name="title" value="関連文献" size="20"><br>
+		      </select>
+<br />
+タイトル表示: <input type="text" name="title" value="関連文献" size="20">
+<br />
 表示件数:
 <select name="count">
   <option value="1">1件
@@ -57,7 +60,7 @@
   <option value="10">10件
   <option value="20">20件
 </select>
-<br>
+<br />
 幅:
 <select name="width" >
   <option value="auto">指定なし
@@ -78,8 +81,10 @@
   <option value="300px">300px
   <option value="400px">400px
   <option value="600px">600px
-</select><br>
+</select>
+<br />
 <input type="button" onclick="preview_fuwatto();return false;" value="  Preview  ">
+</p>
 </form>
 <h2 id="toc1_2">プレビュー と 貼り付けコード（HTML）</h2>
 <p>下記の表示形式でよろしければ、末尾のHTML片をコピーして、ブログ等に貼り付けることができます（下記に表示される検索結果はダミーです）。</p>
