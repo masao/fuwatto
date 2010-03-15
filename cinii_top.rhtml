@@ -26,13 +26,13 @@
 <div id="box1">
 <form action="<%=h @cgi.script_name %>" method="post" name="text1">
 <textarea rows="4" cols="45"  name="text"><%=h content.to_s.toutf8 %></textarea>
-<input type="submit" value="  論 文 検 索  ">
+<input type="submit" value="  論 文 検 索  " />
 </form>
 </div>
 <div id="box2">
 <form action="<%=h @cgi.script_name %>" method="get" name="url1">
-<input type="text" name="url" value="<%=h( url || "http://" ) %>" size="70">
-<input type="submit" value="  論 文 検 索  ">
+<input type="text" name="url" value="<%=h( url || "http://" ) %>" size="70" />
+<input type="submit" value="  論 文 検 索  " />
 </form>
 </div>
 </div>
