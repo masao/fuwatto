@@ -85,7 +85,7 @@ JSON形式で検索結果を取得できるAPIを利用できます。
   "searchTime":"0.26",
   "entries":[
    {"publicationName":"\u8a00\u8a9e\u6587\u5316\u5b66\u7814\u7a76",
-  "title":"\u793e\u8aac\u8a18\u4e8b\u306b\u304a\u3051\u308bpositive politeness strategies",
+   "title":"\u793e\u8aac\u8a18\u4e8b\u306b\u304a\u3051\u308bpositive politeness strategies",
    "publicationDate":"2009/3",
    "url":"http://ci.nii.ac.jp/naid/40016663467",
    "author":"\u7a32\u6c38, \u77e5\u4e16"},
