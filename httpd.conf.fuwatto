@@ -8,6 +8,7 @@ AllowOverride All
 ScriptAlias /cinii /home/masao/cvswork/fuwatto/cinii.rb
 ScriptAlias /worldcat /home/masao/cvswork/fuwatto/worldcat.rb
 ScriptAlias /ndl /home/masao/cvswork/fuwatto/ndl.rb
+ScriptAlias /opac-hit-u /home/masao/cvswork/fuwatto/opac-hit-u.rb
 
 # conf.d/welcome.conf disabled
 <LocationMatch "^/+$">
