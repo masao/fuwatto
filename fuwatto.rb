@@ -25,7 +25,7 @@ module Math
 end
 
 module Fuwatto
-   VERSION = '1.0.1'
+   VERSION = '1.0.2'
    BASE_URI = 'http://fuwat.to/'
    USER_AGENT = "Fuwatto Search/#{ VERSION }; #{ BASE_URI }"
    CACHE_TIME = 60 * 60 * 24 * 3   # 3日経つまで、キャッシュは有効
@@ -123,6 +123,7 @@ module Fuwatto
 
    # Supports redirect
    def http_get( uri, limit = 3 )
+      #STDERR.puts uri
       raise "Too many redirects: #{ uri }" if limit < 0
       http_proxy = ENV[ "http_proxy" ]
       proxy, proxy_port = nil
@@ -371,6 +372,73 @@ module Fuwatto
       data
    end
 
+   # 一橋大学 OPAC Opensearch (not API)
+   def opac_hit_u_search( keyword, opts = {} )
+      require "htmlentities"
+      base_uri = "https://opac.lib.hit-u.ac.jp/opac/opac_list.cgi"
+      q = URI.escape( keyword )
+      opts_s = ""
+      opts[ :amode ] = 9 if opts.key?( :key )
+      if not opts.empty?
+         opts_s = opts.keys.map do |e|
+            "#{ e }=#{ URI.escape( opts[e].to_s ) }"
+         end.join( "&" )
+      end
+      opts_s = "&" + opts_s if not opts_s.empty?
+      uri = URI.parse( "#{ base_uri }?kywd=#{ q }#{ opts_s }" )
+      cont = nil
+      cache_file = cache_xml( "opac_hit_u", q, opts[:start] )
+      if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
+         cont = open( cache_file ){|io| io.read }
+      else
+         response = http_get( uri )
+         cont = response.body
+         open( cache_file, "w" ){|io| io.print cont }
+      end
+      data = {}
+      # <td class="list_result"><span class="name"><a href="/opac/opac_details.cgi?lang=0&amode=11&place=&bibid=1000258087&key=B126875030611669&start=1&srmode=0"><strong>Take the test : sample questions from OECD's PISA assessments</strong></a></span><div class="other">[Paris] : OECD , c2009.</div></td>
+      data[ :opac_hit_u_key ] = $1 if %r[&key=(\w+)&] =~ cont # ad-hoc...
+      data[ :q ] = keyword
+      data[ :link ] = uri.to_s
+      if %r[該当件数(?:&nbsp;|[:\s])*<b>(\d+)</b>&nbsp;件] =~ cont
+         totalResults = $1.to_i
+      else
+         totalResults = 0
+      end
+      htmlentities = HTMLEntities.new
+      data[ :totalResults ] = totalResults
+      data[ :entries ] = []
+      cont.gsub( %r|<td class="list_result"><span class="name"><a href="([^\"]+)"><strong>([^<]*)</strong></a></span><div class="other">(.*?)</div></td>| ) do |entry|
+         url, title, other = $1, $2, $3
+         url = uri.merge( $1 )
+         if url.query =~ /(bibid=\w+)/
+            url.query = "amode=11&#$1"
+         end
+         title = htmlentities.decode( title )
+         author = ""
+         if title =~ / \/ /
+            #STDERR.puts title.split( / \/ / )
+            title, author = title.split( / \/ / )
+         end
+         other.gsub!( /<[^>]+>/, "" )
+         other = htmlentities.decode( other )
+         case other
+         when /c?(\d{4})\.\Z/, /\b(\d{4}[\.\d+])\.\Z/
+            date = $1
+         when other =~ /c?(\d{4})\./
+            date = $1
+         end
+         data[ :entries ] << {
+            :title => title,
+            :author => author,
+            :url => url,
+            :description => other,
+            :publicationDate => date,
+         }
+      end
+      data
+   end
+
    class BaseApp
       attr_reader :format, :content, :url
       attr_reader :count, :page, :mode
@@ -421,6 +489,9 @@ module Fuwatto
             end
          end
          vector = Document.new( content, mode )
+         #vector.sort_by{|e| - e[1] }[0..20].each do |e|
+         #   puts e.join("\t")
+         #end
          vector1 = {}
          vector.each_with_index do |k, i|
             res = send( search_method, k[0], opts )
@@ -429,6 +500,9 @@ module Fuwatto
             vector1[ k[0] ] = score
             break if vector1.size >= 10
          end
+         #vector1.sort_by{|e| - e[1] }.each do |e|
+         #   puts e.join("\t")
+         #end
          vector = vector1.keys.sort_by{|k| -vector1[k] }
          #puts vector1
          keyword = ""
@@ -449,6 +523,7 @@ module Fuwatto
                   while data[ :totalResults ] >= start and entries.size < count * ( page + 1 ) do
                      #p [ entries.size, start ]
                      opts[ :start ] = start
+                     opts[ :key ] = data[ :opac_hit_u_key ] if data[ :opac_hit_u_key ]
                      data = send( search_method, keyword, opts )
                      entries = ( entries + data[ :entries ] ).uniq
                      start += count
