@@ -1,6 +1,6 @@
 title: 更新履歴 - ふわっと関連検索
 date.available: 2010-01-17
-date.modified: 2010-03-15
+date.modified: 2010-03-17
 css.content: dt { margin-top: 5px; }
 
 {{div class="center"
@@ -12,6 +12,8 @@ css.content: dt { margin-top: 5px; }
 ]
 }}
 
+:2010年3月17日:
+::[News] 新たに「[[ふわっと 一橋大学OPAC 関連検索β|http://fuwat.to/opac-hit-u]]」を公開。(fuwatto.rb 1.0.2)
 :2010年3月15日:
 ::[Bugfix] 極端に長いキーワードが抽出された際にエラーになるバグを修正。(fuwatto.rb 1.0.1)
 :2010年3月14日:
