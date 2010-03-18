@@ -1,3 +1,5 @@
 AddHandler cgi-script .rb
 Options -Indexes
 RedirectPermanent /~masao/fuwatto/cinii.rb http://fuwat.to/cinii
+RedirectPermanent /~masao/fuwatto/ http://fuwat.to/
+RedirectPermanent /~masao/fuwatto/history.html http://fuwat.to/history.html
