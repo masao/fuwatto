@@ -37,6 +37,7 @@ module Fuwatto
       attr_reader :content
       def initialize( content, mode = "mecab" )
          super()
+         return if content.nil?
          @content = NKF.nkf( "-wm0XZ1", content ).gsub( /\s+/, " " ).strip
          normalized_content = @content.downcase
          clear
@@ -96,6 +97,7 @@ module Fuwatto
       score = 0
       lines.each_with_index do |line, idx|
          next if line[0] =~ /\A[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]+\Z/o # ASCII symbol chars
+         # Stop words, derived from Lucene
          next if line[0] =~ /\A(?:w(?:h(?:e(?:re(?:a(?:[st]|fter)|u(?:nto|pon)|in(?:to)?|o[fn]?|from|with|ver|by)?|n(?:(?:so)?ever|ce)?|ther)|o(?:m(?:(?:so)?ever)?|s(?:oever|e)|ever|le)?|i(?:ch(?:(?:so)?ever)?|l(?:st|e)|ther)|at(?:(?:so)?ever)?|y)|i(?:th(?:out|in)?|ll)|e(?:ll|re)?|ould|as)|a(?:l(?:(?:bei|mos)t|on[eg]|though|ready|ways|so|l)|n(?:y(?:(?:wher|on)e|thing|how)?|other|d)?|fter(?:wards)?|bo(?:ut|ve)|gain(?:st)?|mong(?:st)?|r(?:ound|e)|(?:cros)?s|dj|t)?|t(?:h(?:e(?:re(?:(?:upo|i)n|afte|for|by)?|m(?:selves)?|n(?:ce)?|ir|se|y)?|r(?:ough(?:out)?|u)|o(?:ugh|se)|[iu]s|a[nt])|o(?:gether|wards?|o)?)?|s(?:o(?:me(?:t(?:imes?|hing)|(?:wher|on)e|how)?)?|e(?:em(?:ing|ed|s)?|veral)|(?:inc|am)e|h(?:ould|e)|till|uch)?|b(?:e(?:c(?:om(?:es?|ing)|a(?:us|m)e)|fore(?:hand)?|(?:hi|yo)nd|(?:twe)?en|sides?|ing|low)?|oth|ut|y)|h(?:e(?:r(?:e(?:(?:upo|i)n|by)?|s(?:elf)?)?|eafter|nce)?|i(?:m(?:self)?|s)|a(?:[ds]|ve)|ow(?:ever)?)|o(?:u(?:r(?:(?:selve)?s)?|t)|n(?:ce one|ly|to)?|ther(?:wise|s)?|f(?:ten|f)?|(?:ve)?r|wn)|e(?:ve(?:r(?:y(?:(?:wher|on)e|thing)?)?|n)|ls(?:ewher)?e|(?:noug|ac)h|ither|xcept|tc|g)|n(?:o(?:[rw]|t(?:hing)?|body|o?ne)?|e(?:ver(?:theless)?|ither|xt)|amely|where)|m(?:o(?:re(?:over)?|st(?:ly)?)|(?:eanwhil)?e|u(?:ch|st)|y(?:self)?|an?y|ight)|i(?:[efs]|n(?:deed|to|c)?|t(?:s(?:elf)?)?)?|f(?:or(?:mer(?:ly)?)?|urther|irst|rom|ew)|l(?:a(?:tter(?:ly)?|st)|e(?:ast|ss)|td)|y(?:ou(?:r(?:s(?:el(?:ves|f))?)?)?|et)|x(?:author|other |note|subj|cal)|u(?:n(?:der|til)|p(?:on)?|s)|c(?:an(?:not)?|o(?:uld)?)|d(?:uring|own)|per(?:haps)?|v(?:ery|ia)|rather)\Z/o
          #next if line[0].size < 3
          #p line[2]
@@ -489,33 +491,48 @@ module Fuwatto
             end
          end
          vector = Document.new( content, mode )
-         #vector.sort_by{|e| - e[1] }[0..20].each do |e|
+         #vector[0..20].each do |e|
          #   puts e.join("\t")
          #end
-         vector1 = {}
-         vector.each_with_index do |k, i|
+         prev_scores = []
+         vector1 = Document.new( nil ) # empty vector
+         while vector.size > 0
+            k = vector.shift
+            prev_scores << k[1]
             res = send( search_method, k[0], opts )
             next if res[ :totalResults ] < 1
             score = k[1] * 1 / Math.log2( res[ :totalResults ] + 1 )
-            vector1[ k[0] ] = score
-            break if vector1.size >= 10
+            vector1 << [ k[0], score ]
+            break if vector1.size >= terms
          end
-         #vector1.sort_by{|e| - e[1] }.each do |e|
+         vector1 = vector1.sort_by{|k| -k[1] }
+         prev_min = prev_scores.min
+         cur_min  = vector1[-1][1]
+         vector = vector.map do |k|
+            factor = prev_min / cur_min
+            score = k[1] / factor
+            [ k[0], score ]
+         end
+         vector = vector1 + vector
+         #p vector
+         #vector[0..20].each do |e|
          #   puts e.join("\t")
          #end
-         vector = vector1.keys.sort_by{|k| -vector1[k] }
-         #puts vector1
+         keywords = {}
+         vector[ 0..20 ].each do |k,v|
+            keywords[ k ] = v
+         end
          keyword = ""
          entries = []
          additional_keywords = []
          terms.times do |i|
-            keyword = vector[ 0..(terms-i-1) ].join( " " )
+            keyword = vector[ 0..(terms-i-1) ].map{|k| k[0] }.join( " " )
             STDERR.puts keyword
             data = send( search_method, keyword, opts )
             if data[ :totalResults ] > 0
                entries = ( entries + data[ :entries ] ).uniq
                if entries.size < count and entries.size <= count * ( page + 1 ) and vector.size >= (terms-i)
-                  additional_keywords.unshift( vector[ terms - i - 1 ] )
+                  additional_keywords.unshift( vector[ terms - i - 1 ][0] )
                   #p additional_keywords
                   next
                else
@@ -532,6 +549,7 @@ module Fuwatto
                break
             end
          end
+         data[ :keywords ] = keywords
          data[ :entries ] = entries
          data[ :entries ] = entries[0, @count] if @format == "json"
          data[ :additional_keywords ] = additional_keywords

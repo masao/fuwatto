@@ -51,12 +51,13 @@ class TestWorldcat < Test::Unit::TestCase
    end
    # jawp:É´Î¤Èô¹Ô¾ì
    def test_count
-      @cgi.params["url"] = [ "http://ja.wikipedia.org/wiki/%E7%99%BE%E9%87%8C%E9%A3%9B%E8%A1%8C%E5%A0%B4" ]
+      # @cgi.params["url"] = [ "http://ja.wikipedia.org/wiki/%E7%99%BE%E9%87%8C%E9%A3%9B%E8%A1%8C%E5%A0%B4" ]
+      @cgi.params["text"] = [ "wiktionary" ]
       app = Fuwatto::WorldcatApp.new( @cgi )
       result = app.execute
       assert( result )
       assert( result[ :totalResults ] > 0 )
-      #assert( result[ :totalResults ] < 20 )
+      assert( result[ :totalResults ] < 20 )
       assert( result[ :totalResults ] < app.count )
       assert_equal( result[ :totalResults ], result[ :entries ].size )
       $stdout = File.open( "/dev/null", "w" )
