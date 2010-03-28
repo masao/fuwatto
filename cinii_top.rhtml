@@ -20,6 +20,13 @@
 <div class="last-update">最終更新日: 2010年03月15日</div>
 <!-- hhmts end -->
 <h1>ふわっと CiNii 関連検索</h1>
+<% if data[ :error ] %>
+<p class="error">
+<% if data[ :error ] == Fuwatto::NoHitError %>
+関連する文献を見つけることができませんでした。
+<% end %>
+</p>
+<% end %>
 <div class="form">
 <div class="tabheader"><div id="head1"><a href="javascript:seltab('box', 'head', 10, 1)">文章から検索</a></div><div class="space">&nbsp;</div><div id="head2"><a href="javascript:seltab('box', 'head', 10, 2)">ウェブページから検索</a></div><div class="space">&nbsp;</div></div>
 <div class="tabbody">

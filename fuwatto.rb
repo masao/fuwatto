@@ -15,8 +15,16 @@ require "kconv"
 require "rubygems"
 require "json"
 require "libxml"
-require "MeCab"
-require "extractcontent"
+begin
+   require "MeCab"
+rescue LoadError
+   require "mecab_local.rb"
+end
+begin
+   require "extractcontent"
+rescue LoadError
+#   require "extractcontent_local.rb"
+end
 
 module Math
    def self::log2( n )
@@ -53,9 +61,10 @@ module Fuwatto
       def sim( vector )
          sum = 0
          vector.each do |k, v|
-            sum += v * self.assoc( k ).to_i
+				term = self.assoc( k )
+            sum += v * term[1] if term
          end
-         sum
+         sum / vector.size
       end
    end
 
@@ -89,7 +98,7 @@ module Fuwatto
       #puts lines
       lines = lines.toutf8.split( /\n/ ).map{|l| l.split(/\t/) }
       lines = lines.select{|l| l[2] and l[1] =~ /^名詞|UNK|形容詞/o and l[1] !~ /接[頭尾]|非自立|代名詞/o }
-      #pp lines
+      #p lines
       raise "Extracting keywords from a text failed." if lines.empty?
       min = lines.map{|e| e[2].to_i }.min
       lines = lines.map{|e| [ e[0], e[1], e[2].to_i + min.abs + 1 ] } if min < 0
@@ -110,7 +119,7 @@ module Fuwatto
          else
             score = Math.log2( line[2].to_i + 1 )
          end
-         #pp [ line[0], score, idx ]
+         #p [ line[0], score, idx ]
          count[ line[0] ] += score #/ Math.log2( idx + 1 )
          #count[ line[0] ] += 1
       end
@@ -183,6 +192,7 @@ module Fuwatto
       q = URI.escape( keyword )
       cont = nil
       cache_file = cache_xml( "cinii", q, opts[:start] )
+      #p File.mtime( cache_file )
       if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
          cont = open( cache_file ){|io| io.read }
       else
@@ -441,6 +451,18 @@ module Fuwatto
       data
    end
 
+   class NoHitError < Exception; end
+
+	class Message < Hash
+		ERROR_MESSAGE = {
+			"Fuwatto::NoHitError" => "関連する文献を見つけることができませんでした。",
+		}
+		def initialize
+			set = ERROR_MESSAGE.dup
+		end
+	end
+
+
    class BaseApp
       attr_reader :format, :content, :url
       attr_reader :count, :page, :mode
@@ -505,6 +527,7 @@ module Fuwatto
             vector1 << [ k[0], score ]
             break if vector1.size >= terms
          end
+         raise Fuwatto::NoHitError if vector1.empty?
          vector1 = vector1.sort_by{|k| -k[1] }
          prev_min = prev_scores.min
          cur_min  = vector1[-1][1]
@@ -518,6 +541,7 @@ module Fuwatto
          #vector[0..20].each do |e|
          #   puts e.join("\t")
          #end
+         #p vector
          keywords = {}
          vector[ 0..20 ].each do |k,v|
             keywords[ k ] = v
@@ -561,9 +585,10 @@ module Fuwatto
       end
 
       def output( prefix, data = {} )
+			STDERR.puts data.inspect
          case format
          when "html"
-            result = eval_rhtml( "./#{ prefix }.rhtml", binding ) if query?
+            result = eval_rhtml( "./#{ prefix }.rhtml", binding ) if query? and not data.has_key?( :error )
             print @cgi.header
             print eval_rhtml( "./#{ prefix }_top.rhtml", binding )
          when "json"
