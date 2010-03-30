@@ -375,7 +375,13 @@ module Fuwatto
       end
       data = {}
       parser = LibXML::XML::Parser.string( cont )
-      doc = parser.parse
+      doc = nil
+      begin
+         doc = parser.parse
+      rescue LibXML::XML::Error => e
+         File.unlink( cache_file )
+         raise e
+      end
       # ref. http://ci.nii.ac.jp/info/ja/if_opensearch.html
       data[ :q ] = keyword
       #data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.sub( /&format=atom\b/, "" )
