@@ -24,12 +24,12 @@ if $0 == __FILE__
    end
    begin
       app = Fuwatto::CiniiApp.new( @cgi )
-		data = {}
+      data = {}
       begin
-			data = app.execute
-		rescue Fuwatto::NoHitError => e
-			data[ :error ] = e.class
-		end
+         data = app.execute
+      rescue Fuwatto::NoHitError => e
+         data[ :error ] = e.class
+      end
       app.output( "cinii", data )
    rescue Exception
       if @cgi then
