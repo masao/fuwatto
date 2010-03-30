@@ -19,6 +19,15 @@ class TestFuwatto < Test::Unit::TestCase
       assert( result[:totalResults] > 0 )
       assert( result[:entries].size > 0 )
    end
+   def test_crd_search2
+      result = crd_search2( "keyword" )
+      assert( result )
+      assert( result[:link] )
+      assert( result[:q] )
+      assert( result[:q] == "keyword" )
+      assert( result[:totalResults] > 0 )
+      assert( result[:entries].size > 0 )
+   end
 end
 
 class TestCRD < Test::Unit::TestCase

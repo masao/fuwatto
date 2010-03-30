@@ -24,7 +24,7 @@ if $0 == __FILE__
    end
    begin
       app = Fuwatto::CRDApp.new( @cgi )
-		data = {}
+      data = {}
       begin
          data = app.execute
       rescue Fuwatto::NoHitError => e

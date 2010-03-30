@@ -349,6 +349,101 @@ module Fuwatto
       data
    end
 
+   # レファ協API via NDL PORTA Opensearch
+   def crd_search2( keyword, opts = {} )
+      base_uri = "http://api.porta.ndl.go.jp/servicedp/opensearch"
+      q = URI.escape( keyword )
+      cont = nil
+      cache_file = cache_xml( "crd2", q, opts[:start] )
+      if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
+         cont = open( cache_file ){|io| io.read }
+      else
+         opts[ :format ] = "atom"
+         opts[ :dpid ] = "refkyo"
+         if not opts.empty?
+            opts_s = opts.keys.map do |e|
+               "#{ e }=#{ URI.escape( opts[e].to_s ) }"
+            end.join( "&" )
+         end
+         opensearch_uri = URI.parse( "#{ base_uri }?any=#{ q }&#{ opts_s }" )
+         response = http_get( opensearch_uri )
+         cont = response.body
+         open( cache_file, "w" ){|io| io.print cont }
+      end
+      data = {}
+      parser = LibXML::XML::Parser.string( cont )
+      doc = parser.parse
+      data[ :q ] = keyword
+      data[ :link ] = "http://porta.ndl.go.jp/cgi-bin/openurl.cgi"
+      data[ :totalResults ] = doc.find( "//openSearch:totalResults", "http://a9.com/-/spec/opensearchrss/1.0/" )[0].content.to_i
+      entries = doc.find( "//item" )
+      data[ :entries ] = []
+      entries.each do |e|
+         dpid = e.find( "./dcndl_porta:dpid", "http://ndl.go.jp/dcndl/dcndl_porta/" )[0].content
+         title = e.find( "./title" )[0].content
+         url = e.find( "./link" )[0].content
+         author = e.find( ".//author" )
+         if author and author[0]
+            author = author[0].content
+         else
+            author = ""
+         end
+         source = e.find( "./source" )
+         if source and source[0]
+            source = source[0].content
+         else
+            source = ""
+         end
+         publicationName = e.find( "dcterms:bibliographicCitation", "http://purl.org/dc/terms/" )
+         if publicationName and publicationName[0]
+            publicationName = publicationName[0].content
+         else
+            publicationName = nil
+         end
+         date = e.find( "./dcterms:issued", "http://purl.org/dc/terms/" )
+         if date and date[0]
+            date = date[0].content
+         else
+            date = e.find( "./dcterms:modified", "http://purl.org/dc/terms/" )
+            if date and date[0]
+               date = date[0].content
+            else
+               date = nil
+            end
+         end
+         publisher = e.find( "./dc:publisher", "http://purl.org/dc/elements/1.1/" )
+         if publisher and publisher[0]
+            publisher = publisher[0].content
+         else
+            publisher = nil
+         end
+         description = e.find( "./description" )
+         if description and description[0] and dpid != "zassaku"
+            description = description[0].content
+         else
+            description = ""
+         end
+         if publicationName.nil? or publicationName.empty?
+            publicationName = [ source, publisher ].select{|e|
+               not e.nil? and not e.empty?
+            }.join( "; " )
+         end
+         data[ :entries ] << {
+            :title => title,
+            :url => url,
+            :author => author,
+            :source => source,
+            :date => date,
+            :publicationDate => date,
+            :publisher => publisher,
+            :publicationName => publicationName,
+            :description => description,
+            :dpid => dpid,
+         }
+      end
+      data
+   end
+
    # レファレンス協同データベースAPI
    def crd_search( keyword, opts = {} )
       require "htmlentities"

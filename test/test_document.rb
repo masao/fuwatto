@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
 # $Id$
 
 require 'test/unit'
@@ -10,30 +11,30 @@ require "fuwatto.rb"
 class TestFuwatto < Test::Unit::TestCase
    include Fuwatto
    def test_document
-		text = "test test1 test2"
-		vector = Document.new( text )
-		assert( vector )
-		assert_equal( 3, vector.size )
-		
-		text = "test test test"
-		vector2 = Document.new( text )
-		assert_equal( 1, vector2.size )
+      text = "test test1 test2"
+      vector = Document.new( text )
+      assert( vector )
+      assert_equal( 3, vector.size )
+      
+      text = "test test test"
+      vector2 = Document.new( text )
+      assert_equal( 1, vector2.size )
 
-		text = "text text1 text2"
-		vector3 = Document.new( text )
-		
-		assert( vector.sim( vector2 ) > vector.sim( vector3 ) )
-		STDERR.puts vector.sim( vector2 )
-		STDERR.puts vector.sim( vector3 )
+      text = "text text1 text2"
+      vector3 = Document.new( text )
+      
+      assert( vector.sim( vector2 ) > vector.sim( vector3 ) )
+      #STDERR.puts vector.sim( vector2 )
+      #STDERR.puts vector.sim( vector3 )
 
-		corpus = [ "吾輩は猫である", "吾輩は犬である", "夏目漱石　坊っちゃん" ]
-		vector = Document.new( corpus[0] )
-		vector2 = Document.new( corpus[1] )
-		vector3 = Document.new( corpus[2] )
-		STDERR.puts vector.sim( vector2 )
-		STDERR.puts vector.sim( vector3 )
-		assert( vector.sim( vector2 ) > vector.sim( vector3 ) )
-		STDERR.puts vector.sim( vector2 )
-		STDERR.puts vector.sim( vector3 )
+      corpus = [ "自分は本からの理窟でなく、日常の生活から、体でそれを学んだ。 宮本百合子『若者の言葉（『新しきシベリアを横切る』）』 ",
+                 "ただ寄り添うばかりでなく、二人よったことで二つの人間としての善意をもっと強いものにし、世俗的な意味ばかりでなしに生活の向上をさせて行きたいと思う人々も多いに相異ない。 宮本百合子『これから結婚する人の心持』",
+                 "夏目漱石　坊っちゃん" ]
+      vector = Document.new( corpus[0] )
+      vector2 = Document.new( corpus[1] )
+      vector3 = Document.new( corpus[2] )
+      #STDERR.puts vector.sim( vector2 ).inspect
+      #STDERR.puts vector.sim( vector3 ).inspect
+      assert( vector.sim( vector2 ) > vector.sim( vector3 ) )
    end
 end
