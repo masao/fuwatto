@@ -156,21 +156,21 @@ class TestCinii < Test::Unit::TestCase
    def test_nohit
       @cgi.params[ "text" ] = [ "testtesttest testtesttest" ]
       cinii = Fuwatto::CiniiApp.new( @cgi )
-		data = {}
+      data = {}
       assert_raise( Fuwatto::NoHitError ) do
-	   	data = cinii.execute
-		end
-		begin
-			cinii.execute
-		rescue Fuwatto::NoHitError
-			data[ :error ] = Fuwatto::NoHitError
-		end
+         data = cinii.execute
+      end
+      begin
+         cinii.execute
+      rescue Fuwatto::NoHitError
+         data[ :error ] = Fuwatto::NoHitError
+      end
       $stdout = StringIO.new
-		assert_nothing_raised do
-	      cinii.output( "cinii", data )
-		end
+      assert_nothing_raised do
+         cinii.output( "cinii", data )
+      end
       $stdout.rewind
-		result = $stdout.read
-		assert( result =~ /error/m )
+      result = $stdout.read
+      assert( result =~ /error/m )
    end
 end
