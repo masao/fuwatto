@@ -336,6 +336,61 @@ module Fuwatto
       data
    end
 
+   # レファレンス協同データベースAPI
+   def crd_search( keyword, opts = {} )
+      require "htmlentities"
+      base_uri = "http://crd.ndl.go.jp/refapi/servlet/refapi.RSearchAPI"
+      q = URI.escape( keyword )
+      opts[ :query_logic ] = "2"
+      opts_s = ""
+      if not opts.empty?
+         opts_s = opts.keys.map do |e|
+            "#{ e }=#{ URI.escape( opts[e].to_s ) }"
+         end.join( "&" )
+      end
+      query = "01_" + q + ".02_" + q
+      opts_s = "&" + opts_s if not opts_s.empty?
+      uri = URI.parse( "#{ base_uri }?query=#{ query }#{ opts_s }" )
+      cont = nil
+      cache_file = cache_xml( "crd", q, opts[:start] )
+      if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
+         cont = open( cache_file ){|io| io.read }
+      else
+         response = http_get( uri )
+         cont = response.body
+         open( cache_file, "w" ){|io| io.print cont }
+      end
+      data = {}
+      parser = LibXML::XML::Parser.string( cont )
+      doc = parser.parse
+      # ref. http://ci.nii.ac.jp/info/ja/if_opensearch.html
+      data[ :q ] = keyword
+      #data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.sub( /&format=atom\b/, "" )
+      data[ :link ] = "http://crd.ndl.go.jp/" # TODO: リンク先を適宜補完すること。
+      data[ :totalResults ] = doc.find( "//crd:hit_num", "crd:http://crd.ndl.go.jp/refapi/servlet/refapi.RSearchAPI" )[0].content.to_i
+      entries = doc.find( "//crd:result", "crd:http://crd.ndl.go.jp/refapi/servlet/refapi.RSearchAPI" )
+      data[ :entries ] = []
+      entries.each do |e|
+         title = e.find( "./crd:QUESTION", "crd:http://crd.ndl.go.jp/refapi/servlet/refapi.RSearchAPI" )[0].content
+         url = e.find( "./crd:URL", "crd:http://crd.ndl.go.jp/refapi/servlet/refapi.RSearchAPI" )[0].content
+         author = e.find( "./crd:LIB-NAME", "crd:http://crd.ndl.go.jp/refapi/servlet/refapi.RSearchAPI" ).to_a.map{|name| name.content }.join( "; " )
+         description = e.find( "./crd:ANSWER", "crd:http://crd.ndl.go.jp/refapi/servlet/refapi.RSearchAPI" )[0].content
+         if description.nil? or description.empty?
+            description = e.find( "./crd:ANS-PROC", "crd:http://crd.ndl.go.jp/refapi/servlet/refapi.RSearchAPI" )[0].content
+         end
+         pubdate = e.find( "./crd:CRT-DATE", "crd:http://crd.ndl.go.jp/refapi/servlet/refapi.RSearchAPI" )[0]
+         pubdate = pubdate ? pubdate.content : e.find( "./crd:REG-DATE", "crd:http://crd.ndl.go.jp/refapi/servlet/refapi.RSearchAPI" )[0]
+         data[ :entries ] << {
+            :title => title,
+            :url => url,
+            :author => author,
+            :description => description,
+            :publicationDate => pubdate,
+         }
+      end
+      data
+   end
+
    # WorldCat Basic API (Opensearch)
    WORLDCAT_BASIC_WSKEY = "5lIR8i5bSQQNg4Xb3ro6QbOzXiGSs6PrGGJ02BKolP9qTUQRcui2Ze9AsQIlM8IzV0E9XMcrWWieWvrM"
    def worldcat_search( keyword, opts = {} )
@@ -585,7 +640,7 @@ module Fuwatto
       end
 
       def output( prefix, data = {} )
-			STDERR.puts data.inspect
+         #STDERR.puts data.inspect
          case format
          when "html"
             result = eval_rhtml( "./#{ prefix }.rhtml", binding ) if query? and not data.has_key?( :error )
