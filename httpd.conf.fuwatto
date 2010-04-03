@@ -10,6 +10,7 @@ ScriptAlias /worldcat /home/masao/cvswork/fuwatto/worldcat.rb
 ScriptAlias /ndl /home/masao/cvswork/fuwatto/ndl.rb
 ScriptAlias /opac-hit-u /home/masao/cvswork/fuwatto/opac-hit-u.rb
 ScriptAlias /crd /home/masao/cvswork/fuwatto/crd.rb
+ScriptAlias /epi /home/masao/cvswork/fuwatto/epi.rb
 
 # conf.d/welcome.conf disabled
 <LocationMatch "^/+$">

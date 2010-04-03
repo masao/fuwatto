@@ -44,7 +44,7 @@ class String
 end
 
 module Fuwatto
-   VERSION = '1.0.3'
+   VERSION = '1.0.4'
    BASE_URI = 'http://fuwat.to/'
    USER_AGENT = "Fuwatto Search/#{ VERSION }; #{ BASE_URI }"
    CACHE_TIME = 60 * 60 * 24 * 3   # 3日経つまで、キャッシュは有効
@@ -199,7 +199,7 @@ module Fuwatto
       end
    end
 
-   # CiNii Opensearch APi
+   # CiNii Opensearch API
    def cinii_search( keyword, opts = {} )
       base_uri = "http://ci.nii.ac.jp/opensearch/search"
       q = URI.escape( keyword )
@@ -553,6 +553,65 @@ module Fuwatto
       data
    end
 
+   # EPI SRU API
+   def epi_search( keyword, opts = {} )
+      base_uri = "http://kaede.nier.go.jp/epi"
+      client_base_uri = "http://kaede.nier.go.jp/epi-search/sru-gw.rb"
+      q = URI.escape( keyword.split.join( " AND " ) )
+      cont = nil
+      cache_file = cache_xml( "epi", q, opts[:start] )
+      #p File.mtime( cache_file )
+      if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
+         cont = open( cache_file ){|io| io.read }
+      else
+         opts[ :version ] = "1.1"
+         opts[ :operation ] = "searchRetrieve"
+         opts[ :maximumRecords ] ||= 20
+         if opts[ :start ]
+            opts[ :startRecord ] = opts[ :start ]
+            opts.delete( :start )
+         end
+         #p opts
+         if not opts.empty?
+            opts_s = opts.keys.map do |e|
+               "#{ e }=#{ URI.escape( opts[e].to_s ) }"
+            end.join( "&" )
+         end
+         sru_uri = URI.parse( "#{ base_uri }?query=#{ q }&#{ opts_s }" )
+         response = http_get( sru_uri )
+         cont = response.body
+         open( cache_file, "w" ){|io| io.print cont }
+      end
+      data = {}
+      parser = LibXML::XML::Parser.string( cont )
+      doc = parser.parse
+      # ref. http://ci.nii.ac.jp/info/ja/if_opensearch.html
+      data[ :q ] = keyword
+      data[ :link ] = client_base_uri + "?keyword=#{ q }"
+      data[ :totalResults ] = doc.find( "//srw:numberOfRecords", "srw:http://www.loc.gov/zing/srw/" )[0].content.to_i
+      entries = doc.find( "//srw:record", "srw:http://www.loc.gov/zing/srw/" )
+      data[ :entries ] = []
+      entries.each do |e|
+         title = e.find( "./srw:recordData/xml/title", "srw:http://www.loc.gov/zing/srw/" )[0].content
+         paper_id = e.find( "./srw:recordData/xml/paper_id", "srw:http://www.loc.gov/zing/srw/" )[0]
+         paper_id = paper_id.content if paper_id
+         url = client_base_uri + "?keyword=paper_id=#{ paper_id }"
+         author = e.find( "./srw:recordData/xml/author", "srw:http://www.loc.gov/zing/srw/" )[0]
+         author = author ? author.content : "" 
+         pubname = e.find( "./srw:recordData/xml/journal", "srw:http://www.loc.gov/zing/srw/" )[0].content
+         pubdate = e.find( "./srw:recordData/xml/pubdate", "srw:http://www.loc.gov/zing/srw/" )[0]
+         pubdate = pubdate ? pubdate.content : ""
+         data[ :entries ] << {
+            :title => title,
+            :url => url,
+            :author => author,
+            :publicationName => pubname,
+            :publicationDate => pubdate,
+         }
+      end
+      data
+   end
+
    # 一橋大学 OPAC Opensearch (not API)
    def opac_hit_u_search( keyword, opts = {} )
       require "htmlentities"
@@ -693,6 +752,105 @@ module Fuwatto
             res = send( search_method, k[0], opts )
             next if res[ :totalResults ] < 1
             score = k[1] * 1 / Math.log2( res[ :totalResults ] + 1 )
+            vector1 << [ k[0], score ]
+            break if vector1.size >= terms
+         end
+         raise Fuwatto::NoHitError if vector1.empty?
+         vector1 = vector1.sort_by{|k| -k[1] }
+         prev_min = prev_scores.min
+         cur_min  = vector1[-1][1]
+         vector = vector.map do |k|
+            factor = prev_min / cur_min
+            score = k[1] / factor
+            [ k[0], score ]
+         end
+         vector = vector1 + vector
+         #p vector
+         #vector[0..20].each do |e|
+         #   puts e.join("\t")
+         #end
+         #p vector
+         keywords = {}
+         vector[ 0..20 ].each do |k,v|
+            keywords[ k ] = v
+         end
+         keyword = ""
+         entries = []
+         additional_keywords = []
+         terms.times do |i|
+            keyword = vector[ 0..(terms-i-1) ].map{|k| k[0] }.join( " " )
+            STDERR.puts keyword
+            data = send( search_method, keyword, opts )
+            if data[ :totalResults ] > 0
+               entries = ( entries + data[ :entries ] ).uniq
+               if entries.size < count and entries.size <= count * ( page + 1 ) and vector.size >= (terms-i)
+                  additional_keywords.unshift( vector[ terms - i - 1 ][0] )
+                  #p additional_keywords
+                  next
+               else
+                  start = count + 1
+                  while data[ :totalResults ] >= start and entries.size < count * ( page + 1 ) do
+                     #p [ entries.size, start ]
+                     opts[ :start ] = start
+                     opts[ :key ] = data[ :opac_hit_u_key ] if data[ :opac_hit_u_key ]
+                     data = send( search_method, keyword, opts )
+                     entries = ( entries + data[ :entries ] ).uniq
+                     start += count
+                  end
+               end
+               break
+            end
+         end
+         data[ :keywords ] = keywords
+         data[ :entries ] = entries
+         data[ :entries ] = entries[0, @count] if @format == "json"
+         data[ :additional_keywords ] = additional_keywords
+         data[ :count ] = count
+         data[ :page ] = page
+         data[ :database ] = self.class.to_s.sub( /\AFuwatto::(\w+)App\Z/, '\1' ).downcase
+         data[ :searchTime ] = "%0.02f" % ( Time.now - time_pre )
+         data
+      end
+
+      def execute2( search_method, terms, opts = {} )
+         data = {}
+         if not query?
+            return data
+         end
+         time_pre = Time.now
+         if query_url?
+            uri = URI.parse( url )
+            response = http_get( uri )
+            @content = response.body
+            case response[ "content-type" ]
+            when /^text\/html\b/
+               @content = @content
+               @content = ExtractContent::analyse( @content ).join( "\n" )
+               #puts content
+            when /^text\//
+               @content = @content
+            when /^application\/pdf\b/
+               @content = pdftotext( @content )
+            else
+               raise "Unknown Content-Type: #{ response[ "content-type" ] }"
+            end
+         end
+         vector = Document.new( content, mode )
+         #vector[0..20].each do |e|
+         #   puts e.join("\t")
+         #end
+         prev_scores = []
+         vector1 = Document.new( nil ) # empty vector
+         while vector.size > 0
+            k = vector.shift
+            prev_scores << k[1]
+            res = send( search_method, k[0], opts )
+            next if res[ :totalResults ] < 1
+            vector_cur = Document.new( res[:entries].map{|e| [e[:title],e[:description],e[:publicationName]].join("\n") }.join( "\n" ) )
+            sim = vector.sim( vector_cur )
+            $KCODE="u"
+            p [ sim, k[0] ]
+            score = k[1] * ( 1 + sim ) / Math.log2( res[ :totalResults ] + 1 )
             vector1 << [ k[0], score ]
             break if vector1.size >= terms
          end
