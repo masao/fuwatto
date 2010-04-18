@@ -33,7 +33,7 @@ class TestCinii < Test::Unit::TestCase
       assert( result )
       assert( result[ :totalResults ] > 0 )
       assert( result[ :totalResults ] > 20 )
-      assert( result[ :entries ].size == 20 )
+      assert_equal( 20, result[ :entries ].size )
    end
    def test_execute2
       @cgi.params[ "text" ] = [ "»ùÆ¸µÔÂÔ¤ÈÁêÃÌ½ê¤Î±¿±Ä" ]
@@ -64,7 +64,7 @@ class TestCinii < Test::Unit::TestCase
       result = cinii.execute
       assert( result )
       assert( result[ :totalResults ] > 0 )
-      assert( result[ :entries ].size == 20 )
+      assert_equal( 20, result[ :entries ].size )
    end
 
    def test_json
