@@ -52,7 +52,11 @@ class TestCinii < Test::Unit::TestCase
       assert( result[ :totalResults ] > 0 )
       assert( result[ :totalResults ] > 20 )
       assert( result[ :entries ].size > 20 )
-      assert( result[ :entries ].size == 40 )
+      if result[ :totalResults ] >= 40
+         assert_equal( 40, result[ :entries ].size )
+      else
+         assert_equal( result[ :totalResults ], result[ :entries ].size )
+      end
    end
    def test_ssl
       @cgi.params["url"] = [ "https://addons.mozilla.org/ja/firefox/addon/1122" ]
