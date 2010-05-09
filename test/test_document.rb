@@ -29,12 +29,20 @@ class TestFuwatto < Test::Unit::TestCase
 
       corpus = [ "自分は本からの理窟でなく、日常の生活から、体でそれを学んだ。 宮本百合子『若者の言葉（『新しきシベリアを横切る』）』 ",
                  "ただ寄り添うばかりでなく、二人よったことで二つの人間としての善意をもっと強いものにし、世俗的な意味ばかりでなしに生活の向上をさせて行きたいと思う人々も多いに相異ない。 宮本百合子『これから結婚する人の心持』",
-                 "夏目漱石　坊っちゃん" ]
+                 "渋沢栄一 夏目漱石　坊っちゃん",
+                 "自分は本からの理窟でなく、日常の生活から、体でそれを学んだ。 宮本百合子『若者の言葉（『新しきシベリアを横切る』）』 ",
+               ]
       vector = Document.new( corpus[0] )
       vector2 = Document.new( corpus[1] )
       vector3 = Document.new( corpus[2] )
-      #STDERR.puts vector.sim( vector2 ).inspect
-      #STDERR.puts vector.sim( vector3 ).inspect
+      #p vector.sim( vector2 )
+      #p vector.sim( vector3 )
       assert( vector.sim( vector2 ) > vector.sim( vector3 ) )
+
+      vector = Document.new( corpus[0], :mecab, :tf )
+      assert_equal( 1, vector.assoc( "百合子" )[1] )
+      vector = Document.new( corpus[3], :mecab, :default )
+      #p vector
+      assert(  vector.assoc( "宮本" )[1] > vector.assoc( "生活" )[1] )
    end
 end

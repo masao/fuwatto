@@ -7,6 +7,19 @@ require "fuwatto.rb"
 module Fuwatto
    class OPACHitUApp < BaseApp
       TERMS = 5
+      TITLE = "ふわっと 一橋大学OPAC 関連検索"
+      HELP_TEXT = <<EOF
+<p>
+入力したテキストまたはウェブページに関連した論文を<a href="http://opac.lib.hit-u.ac.jp">一橋大学OPAC</a>で検索します。
+長いテキストやURLで指定したページからでも関連キーワードを自動的に抜き出して文献検索できるのが特徴です。
+</p>
+<p>
+例:
+<a href="?url=http://www.asahi.com/paper/editorial.html">朝日新聞社説</a> <span style="font-size:smaller;">（<a href="http://www.asahi.com/paper/editorial.html">元記事(asahi.com)</a>）</span>, 
+<a href="?url=http://www.nikkei.co.jp/news/shasetsu/">日本経済新聞社説</a> <span style="font-size:smaller;">（<a href="http://www.nikkei.co.jp/news/shasetsu/">元記事(nikkei.co.jp)</a>）</span>,
+<a href="?url=http://mainichi.jp/select/opinion/eye/">毎日新聞「記者の目」</a> <span style="font-size:smaller;">（<a href="http://mainichi.jp/select/opinion/eye/">元記事(mainichi.jp)</a>）</span>
+</p>
+EOF
       def execute
          super( :opac_hit_u_search, TERMS )
       end

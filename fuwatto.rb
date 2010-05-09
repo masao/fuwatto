@@ -54,7 +54,11 @@ module Fuwatto
    class Document < Array
       include Fuwatto
       attr_reader :content
-      def initialize( content, mode = :mecab, weight = :tf )
+      # weight:
+      # - :default => MeCabスコアの対数値
+      # - :count => MeCabスコア
+      # - :tf => TF（出現回数）
+      def initialize( content, mode = :mecab, weight = :default )
          super()
          return if content.nil?
          @content = NKF.nkf( "-wm0XZ1", content ).gsub( /\s+/, " " ).strip
@@ -70,7 +74,7 @@ module Fuwatto
       end
       # 類似度計算
       def sim( vector )
-         sum = 0
+         sum = 0.0
          vector.each do |k, v|
             term = self.assoc( k )
             sum += v * term[1] if term
@@ -719,7 +723,7 @@ module Fuwatto
       end
 
       include Fuwatto
-      def execute( search_method, terms, opts = {} )
+      def execute( search_method, terms, opts = {}, term_weight_mode = :default )
          data = {}
          if not query?
             return data
@@ -742,7 +746,7 @@ module Fuwatto
                raise "Unknown Content-Type: #{ response[ "content-type" ] }"
             end
          end
-         vector = Document.new( content, mode )
+         vector = Document.new( content, mode, term_weight_mode )
          #vector[0..20].each do |e|
          #   puts e.join("\t")
          #end
