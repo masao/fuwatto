@@ -54,7 +54,7 @@ module Fuwatto
    class Document < Array
       include Fuwatto
       attr_reader :content
-      def initialize( content, mode = "mecab" )
+      def initialize( content, mode = :mecab, weight = :tf )
          super()
          return if content.nil?
          @content = NKF.nkf( "-wm0XZ1", content ).gsub( /\s+/, " " ).strip
@@ -64,7 +64,7 @@ module Fuwatto
          when "yahoo"
             self.push( *extract_keywords_yahooapi( normalized_content ) )
          else
-            self.push( *extract_keywords_mecab( normalized_content ) )
+            self.push( *extract_keywords_mecab( normalized_content, weight ) )
          end
          #puts self
       end
@@ -585,17 +585,19 @@ module Fuwatto
       data = {}
       parser = LibXML::XML::Parser.string( cont )
       doc = parser.parse
+      #p [ q, cont ]
       # ref. http://ci.nii.ac.jp/info/ja/if_opensearch.html
       data[ :q ] = keyword
       data[ :link ] = client_base_uri + "?keyword=#{ q }"
       data[ :totalResults ] = doc.find( "//srw:numberOfRecords", "srw:http://www.loc.gov/zing/srw/" )[0].content.to_i
       entries = doc.find( "//srw:record", "srw:http://www.loc.gov/zing/srw/" )
       data[ :entries ] = []
+      #p entries.to_a
       entries.each do |e|
-         title = e.find( "./srw:recordData/xml/title", "srw:http://www.loc.gov/zing/srw/" )[0].content
-         paper_id = e.find( "./srw:recordData/xml/paper_id", "srw:http://www.loc.gov/zing/srw/" )[0]
-         paper_id = paper_id.content if paper_id
-         url = client_base_uri + "?keyword=paper_id=#{ paper_id }"
+         title = e.find( "./srw:recordData/xml/title", "srw:http://www.loc.gov/zing/srw/" )[0]
+         title = title.nil? ? "(無題)" : title.content
+         bibid = e.find( "./srw:recordData/xml/bibid", "srw:http://www.loc.gov/zing/srw/" )[0].content
+         url = client_base_uri + "?keyword=bibid%20exact%20#{ bibid }"
          author = e.find( "./srw:recordData/xml/author", "srw:http://www.loc.gov/zing/srw/" )[0]
          author = author ? author.content : "" 
          pubname = e.find( "./srw:recordData/xml/journal", "srw:http://www.loc.gov/zing/srw/" )[0].content
@@ -917,7 +919,7 @@ module Fuwatto
          when "html"
             result = eval_rhtml( "./#{ prefix }.rhtml", binding ) if query? and not data.has_key?( :error )
             print @cgi.header
-            print eval_rhtml( "./#{ prefix }_top.rhtml", binding )
+            print eval_rhtml( "./top.rhtml", binding )
          when "json"
             print @cgi.header "application/json"
             result = JSON::generate( data )
