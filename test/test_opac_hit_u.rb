@@ -24,7 +24,7 @@ class TestFuwatto < Test::Unit::TestCase
    end
 end
 
-class TestCinii < Test::Unit::TestCase
+class TestOPACHitU < Test::Unit::TestCase
    def setup
       ENV[ "REQUEST_METHOD" ] = "GET"
       @cgi = CGI.new( nil )
@@ -39,5 +39,43 @@ class TestCinii < Test::Unit::TestCase
       assert( result[ :totalResults ] > 20 )
       assert( result[ :entries ].size > 20 )
       assert( result[ :entries ].size == 40 )
+   end
+   def test_json
+      @cgi.params["url"] = [ "http://yahoo.co.jp" ]
+      @cgi.params["format"] = [ "json" ]
+      opac = Fuwatto::OPACHitUApp.new( @cgi )
+      result = opac.execute
+      $stdout = StringIO.new
+      opac.output( "opac_hit_u", result )
+      $stdout.rewind
+      json_str = $stdout.read
+      assert( json_str )
+      json = json_str.split( /\r?\n\r?\n/ )[1]
+      assert_not_nil( json )
+      obj = JSON::Parser.new( json ).parse
+      assert( obj )
+      assert_equal( "opachitu", obj[ "database" ] )
+      assert( obj[ "entries" ] )
+      assert( obj[ "entries" ].size > 0 )
+   end
+   def test_nohit
+      @cgi.params[ "text" ] = [ "testtesttest testtesttest" ]
+      opac = Fuwatto::OPACHitUApp.new( @cgi )
+      data = {}
+      assert_raise( Fuwatto::NoHitError ) do
+         data = opac.execute
+      end
+      begin
+         opac.execute
+      rescue Fuwatto::NoHitError
+         data[ :error ] = Fuwatto::NoHitError
+      end
+      $stdout = StringIO.new
+      assert_nothing_raised do
+         opac.output( "opac", data )
+      end
+      $stdout.rewind
+      result = $stdout.read
+      assert( result =~ /error/m )
    end
 end
