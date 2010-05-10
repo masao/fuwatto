@@ -7,6 +7,26 @@ require "fuwatto.rb"
 module Fuwatto
    class WorldcatApp < BaseApp
       TERMS = 5
+      TITLE = "ふわっとWorldCat関連検索 / Fuwatto WorldCat Search"
+      HELP_TEXT = <<-EOF
+<p>
+入力したテキストまたはウェブページに関連した文献を<a href="http://www.worldcat.org">WorldCat</a>で検索します。
+長いテキストやURLで指定したページからでも関連キーワードを自動的に抜き出して文献検索できるのが特徴です。
+</p>
+<p style="text-align:center;padding:1ex;font-weight:bolder">
+Enjoy my quick hack of WorldCat Basic API at Code4Lib 2010 Conference!<br/>
+(from <a href="http://worldcat.org/devnet/wiki/C4l10">OCLC Web Services and Lightning Talk Demos</a> session)
+<br/>
+<small>Note: This service is just for demonstration purpose and it is very slow, 20sec. per search request.</small>
+</p>
+<p>
+例:
+<a href="?url=http://www.asahi.com/paper/editorial.html">朝日新聞社説</a> <span style="font-size:smaller;">（<a href="http://www.asahi.com/paper/editorial.html">元記事(asahi.com)</a>）</span>, 
+<a href="?url=http://www.nikkei.co.jp/news/shasetsu/">日本経済新聞社説</a> <span style="font-size:smaller;">（<a href="http://www.nikkei.co.jp/news/shasetsu/">元記事(nikkei.co.jp)</a>）</span>,
+<a href="?url=http://mainichi.jp/select/opinion/eye/">毎日新聞「記者の目」</a> <span style="font-size:smaller;">（<a href="http://mainichi.jp/select/opinion/eye/">元記事(mainichi.jp)</a>）</span>
+</p>
+</div>
+      EOF
       def execute
          super( :worldcat_search, TERMS, { :count => count } )
       end
