@@ -65,7 +65,7 @@ module Fuwatto
          return if content.nil?
          @content = NKF.nkf( "-wm0XZ1", content ).gsub( /\s+/, " " ).strip
          normalized_content = @content.downcase
-         opts[ :term_weight ] = :default if opts.empty?
+         opts[ :term_weight ] = :default if not opts[ :term_weight ]
          clear
          case mode
          when "yahoo"
@@ -139,7 +139,8 @@ module Fuwatto
             score = Math.log2( line[2].to_i + 1 )
          end
          #p [ line[0], score, idx ]
-         count[ line[0] ] += score #/ Math.log2( idx + 1 )
+         score /= Math.log2( idx + 2 ) if opts[ :term_weight_position ]
+         count[ line[0] ] += score
          #count[ line[0] ] += 1
       end
       # $KCODE = "u"
@@ -689,16 +690,14 @@ module Fuwatto
    end
 
    class NoHitError < Exception; end
-
-	class Message < Hash
-		ERROR_MESSAGE = {
-			"Fuwatto::NoHitError" => "関連する文献を見つけることができませんでした。",
-		}
-		def initialize
-			set = ERROR_MESSAGE.dup
-		end
-	end
-
+   class Message < Hash
+      ERROR_MESSAGE = {
+         "Fuwatto::NoHitError" => "関連する文献を見つけることができませんでした。",
+      }
+      def initialize
+         set = ERROR_MESSAGE.dup
+      end
+   end
 
    class BaseApp
       attr_reader :format, :content, :url
