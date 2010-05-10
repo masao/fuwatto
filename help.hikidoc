@@ -1,6 +1,6 @@
 title: ふわっと関連検索とは
 date.available: 2010-03-14
-date.modified: 2010-03-17
+date.modified: 2010-05-10
 
 {{div class="center"
 '''ふわっと関連検索にもどる'''
@@ -110,3 +110,17 @@ JSON形式で検索結果を取得できるAPIを利用できます。
 
 ズバッと検索結果を得るのではなく、検索結果をみながら、次の着想を考える使いかたをして欲しいという思いから、「ふわっと」と名付けました。
 連想検索的な関連文献の探索にうまく活用いただければ幸いです。
+
+!!謝辞
+
+本ツールの作成には、下記のサービス、ツール群を利用させていただいています。
+ここに記して感謝申し上げます。
+
+*[[論文検索サービスCiNii|http://ci.nii.ac.jp]]: CiNii APIを全面的に利用させていただいております。
+*[[形態素解析エンジンMeCab|http://mecab.sourceforge.net]]: 特徴語の抽出のために利用させていただいております。
+*[[Webページからの本文抽出モジュールextractcontent.rb|http://labs.cybozu.co.jp/blog/nakatani/2007/09/web_1.html]]: Webページからのテキスト抽出のために利用させていただいております。
+
+また、下記サービスは、本サービスの着想にあたって拝見し、ヒントとさせていただきました。記して謝意を示したいと存じます。（順不同）
+*[[論文ったー|http://twitter.com/ronbuntter]], [[Webcat Plus|http://webcatplus.nii.ac.jp]], 宮崎大学におけるOPACとJuNii+のマッシュアップ事例（[[DRFIC 2008 ポスター発表|http://ir.library.osaka-u.ac.jp/meta-bin/mt-pdetail.cgi?smode=1&edm=0&tlang=1&cd=00028044]] (2008-12) / 『大学の図書館』 Vol.27, No.7, pp.145-146, 2008-07 / 『[[九州地区大学図書館協議会誌|http://www.lib.kyushu-u.ac.jp/qkyogikai/qkyogikai/qkyo_kaishi/qkyogikai_kaishi.html#no50]]』 No.50, pp.13-15, 2008-03)
+
+本サービスの研究開発の一部は、科学研究費補助金若手研究（B）（課題番号:[[20700228|http://kaken.nii.ac.jp/ja/p/20700228]]）「マッシュアップを想定した複数教育コレクション提供サービスについての研究」（研究代表者: [[江草由佳|http://www.nier.go.jp/yuka/]]）の助成による成果です。
