@@ -45,5 +45,8 @@ class TestFuwatto < Test::Unit::TestCase
       #p vector
       assert(  vector2.assoc( "宮本" )[1] > vector2.assoc( "生活" )[1] )
       assert_not_equal( vector1.assoc( "宮本" )[1], vector2.assoc( "宮本" )[1] )
+      vector3 = Document.new( corpus[3], :mecab, { :term_weight => :cost } )
+      assert(  vector3.assoc( "宮本" )[1] > vector3.assoc( "生活" )[1] )
+      assert(  vector3.assoc( "宮本" )[1] > vector2.assoc( "宮本" )[1] )
    end
 end

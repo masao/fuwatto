@@ -133,7 +133,7 @@ module Fuwatto
          case opts[ :term_weight ]
          when :tf
             score = 1
-         when :count
+         when :count, :cost
             score = line[2].to_i
          else # :logcost, :default
             score = Math.log2( line[2].to_i + 1 )
