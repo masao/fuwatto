@@ -772,17 +772,19 @@ module Fuwatto
          end
          raise Fuwatto::NoHitError if vector1.empty?
          if opts[ :use_df ]
-            vector1 = vector1.sort_by{|k| -k[1] }
+            vector1.sort!{|a, b| b[1] <=> a[1] }
             prev_min = prev_scores.min
             cur_min  = vector1[-1][1]
-            vector = vector.map do |k|
+            vector.map! do |k|
                factor = prev_min / cur_min
                score = k[1] / factor
                [ k[0], score ]
             end
-            vector = vector1 + vector
+            vector1 << vector
+            vector = vector1
          else
-            vector = vector_orig + vector
+            vector_orig << vector
+            vector = vector_orig
          end
          #p vector
          #vector[0..20].each do |e|
@@ -821,7 +823,7 @@ module Fuwatto
             end
          end
          if opts[ :reranking ]
-            entries.sort_by do |e|
+            entries = entries.sort_by do |e|
                vector.sim( Document.new( [ e[:title], e[:description], e[:publicationName] ].join("\n") ) )
             end
          end
