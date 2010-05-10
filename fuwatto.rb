@@ -54,21 +54,24 @@ module Fuwatto
    class Document < Array
       include Fuwatto
       attr_reader :content
-      # weight:
+      # opts - 特徴語スコアの計算手法切り替え
+      #
+      # :term_weight
       # - :default (:logcost) => MeCab単語コストの対数値
       # - :cost => MeCab単語コスト
       # - :tf => TF（出現回数）
-      def initialize( content, mode = :mecab, term_weight = :default )
+      def initialize( content, mode = :mecab, opts = {} )
          super()
          return if content.nil?
          @content = NKF.nkf( "-wm0XZ1", content ).gsub( /\s+/, " " ).strip
          normalized_content = @content.downcase
+         opts[ :term_weight ] = :default if opts.empty?
          clear
          case mode
          when "yahoo"
             self.push( *extract_keywords_yahooapi( normalized_content ) )
          else
-            self.push( *extract_keywords_mecab( normalized_content, term_weight ) )
+            self.push( *extract_keywords_mecab( normalized_content, opts ) )
          end
          #puts self
       end
@@ -107,7 +110,7 @@ module Fuwatto
       keywords.select{|e| not e.nil? and not e.empty? }
    end
 
-   def extract_keywords_mecab( str, method = :default )
+   def extract_keywords_mecab( str, opts )
       mecab = MeCab::Tagger.new( '--node-format=%m\t%H\t%c\n --unk-format=%m\tUNK\t%c\n' )
       lines = mecab.parse( str.toeuc )
       #puts lines
@@ -127,12 +130,12 @@ module Fuwatto
          #next if line[0].size < 3
          #p line[2]
          #puts line.join("\t")
-         case method
+         case opts[ :term_weight ]
          when :tf
             score = 1
          when :count
             score = line[2].to_i
-         else
+         else # :logcost, :default
             score = Math.log2( line[2].to_i + 1 )
          end
          #p [ line[0], score, idx ]
@@ -746,7 +749,7 @@ module Fuwatto
                raise "Unknown Content-Type: #{ response[ "content-type" ] }"
             end
          end
-         vector = Document.new( content, mode, opts[ :term_weight ] )
+         vector = Document.new( content, mode, opts )
          #vector[0..20].each do |e|
          #   puts e.join("\t")
          #end
@@ -841,7 +844,7 @@ module Fuwatto
                raise "Unknown Content-Type: #{ response[ "content-type" ] }"
             end
          end
-         vector = Document.new( content, mode )
+         vector = Document.new( content, mode, opts )
          #vector[0..20].each do |e|
          #   puts e.join("\t")
          #end
@@ -852,7 +855,7 @@ module Fuwatto
             prev_scores << k[1]
             res = send( search_method, k[0], opts )
             next if res[ :totalResults ] < 1
-            vector_cur = Document.new( res[:entries].map{|e| [e[:title],e[:description],e[:publicationName]].join("\n") }.join( "\n" ) )
+            vector_cur = Document.new( res[:entries].map{|e| [e[:title],e[:description],e[:publicationName]].join("\n") }.join( "\n" ), mode, opts )
             sim = vector.sim( vector_cur )
             $KCODE="u"
             p [ sim, k[0] ]

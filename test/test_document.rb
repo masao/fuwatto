@@ -39,10 +39,11 @@ class TestFuwatto < Test::Unit::TestCase
       #p vector.sim( vector3 )
       assert( vector.sim( vector2 ) > vector.sim( vector3 ) )
 
-      vector = Document.new( corpus[0], :mecab, :tf )
-      assert_equal( 1, vector.assoc( "百合子" )[1] )
-      vector = Document.new( corpus[3], :mecab, :default )
+      vector1 = Document.new( corpus[0], :mecab, { :term_weight => :tf } )
+      assert_equal( 1, vector1.assoc( "百合子" )[1] )
+      vector2 = Document.new( corpus[3], :mecab, { :term_weight => :default } )
       #p vector
-      assert(  vector.assoc( "宮本" )[1] > vector.assoc( "生活" )[1] )
+      assert(  vector2.assoc( "宮本" )[1] > vector2.assoc( "生活" )[1] )
+      assert_not_equal( vector1.assoc( "宮本" )[1], vector2.assoc( "宮本" )[1] )
    end
 end
