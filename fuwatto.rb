@@ -575,17 +575,13 @@ module Fuwatto
          opts[ :version ] = "1.1"
          opts[ :operation ] = "searchRetrieve"
          opts[ :maximumRecords ] ||= 20
-         if opts[ :start ]
-            opts[ :startRecord ] = opts[ :start ]
-            opts.delete( :start )
-         end
+         opts[ :startRecord ] ||= opts[ :start ] if opts[ :start ]
          #p opts
-         if not opts.empty?
-            opts_s = opts.keys.map do |e|
-               "#{ e }=#{ URI.escape( opts[e].to_s ) }"
-            end.join( "&" )
-         end
-         sru_uri = URI.parse( "#{ base_uri }?query=#{ q }&#{ opts_s }" )
+         params = [ :operation, :version, :query, :startRecord, :maximumRecords, :recordPacking, :recordSchema, :recordXPath, :resultSetTTL, :sortKeys, :stylesheet, :extraRequestData ].map do |e|
+            opts[ e ] ? "#{ e }=#{ URI.escape( opts[e].to_s ) }" : nil
+         end.compact.join( "&" )
+         #p params
+         sru_uri = URI.parse( "#{ base_uri }?query=#{ q }&#{ params }" )
          response = http_get( sru_uri )
          cont = response.body
          open( cache_file, "w" ){|io| io.print cont }
@@ -594,12 +590,18 @@ module Fuwatto
       parser = LibXML::XML::Parser.string( cont )
       doc = parser.parse
       #p [ q, cont ]
-      # ref. http://ci.nii.ac.jp/info/ja/if_opensearch.html
       data[ :q ] = keyword
       data[ :link ] = client_base_uri + "?keyword=#{ q }"
-      data[ :totalResults ] = doc.find( "//srw:numberOfRecords", "srw:http://www.loc.gov/zing/srw/" )[0].content.to_i
-      entries = doc.find( "//srw:record", "srw:http://www.loc.gov/zing/srw/" )
       data[ :entries ] = []
+      data[ :totalResults ] = doc.find( "//srw:numberOfRecords", "srw:http://www.loc.gov/zing/srw/" )[0].content.to_i
+      #p data[ :totalResults ]
+      #if data[ :totalResults ]
+      #   data[ :totalResults ] = data[ :totalResults ].content.to_i
+      #else
+      #   data[ :totalResults ] = 0
+      #   return data
+      #end
+      entries = doc.find( "//srw:record", "srw:http://www.loc.gov/zing/srw/" )
       #p entries.to_a
       entries.each do |e|
          title = e.find( "./srw:recordData/xml/title", "srw:http://www.loc.gov/zing/srw/" )[0]
@@ -749,7 +751,9 @@ module Fuwatto
                raise "Unknown Content-Type: #{ response[ "content-type" ] }"
             end
          end
+         #p content
          vector = Document.new( content, mode, opts )
+         #p vector
          #vector[0..20].each do |e|
          #   puts e.join("\t")
          #end
