@@ -192,8 +192,10 @@ class TestCinii < Test::Unit::TestCase
                                } )
       assert_not_equal( result1[ :keywords ][ "百合子" ],
                         result2[ :keywords ][ "百合子" ] )
-      $KCODE="u"
-      p result1[ :keywords ]
-      p result2[ :keywords ]
+      # (missing use_df parameter) equals to { :use_df => true }.
+      result3 = cinii.execute( :cinii_search, Fuwatto::CiniiApp::TERMS,
+                               { :term_weight => :default } )
+      assert_equal( result1[ :keywords ][ "百合子" ],
+                    result3[ :keywords ][ "百合子" ] )
    end
 end
