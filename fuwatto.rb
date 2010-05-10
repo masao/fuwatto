@@ -44,7 +44,7 @@ class String
 end
 
 module Fuwatto
-   VERSION = '1.0.4'
+   VERSION = '1.0.5'
    BASE_URI = 'http://fuwat.to/'
    USER_AGENT = "Fuwatto Search/#{ VERSION }; #{ BASE_URI }"
    CACHE_TIME = 60 * 60 * 24 * 3   # 3日経つまで、キャッシュは有効
@@ -55,10 +55,10 @@ module Fuwatto
       include Fuwatto
       attr_reader :content
       # weight:
-      # - :default => MeCabスコアの対数値
-      # - :count => MeCabスコア
+      # - :default (:logcost) => MeCab単語コストの対数値
+      # - :cost => MeCab単語コスト
       # - :tf => TF（出現回数）
-      def initialize( content, mode = :mecab, weight = :default )
+      def initialize( content, mode = :mecab, term_weight = :default )
          super()
          return if content.nil?
          @content = NKF.nkf( "-wm0XZ1", content ).gsub( /\s+/, " " ).strip
@@ -68,7 +68,7 @@ module Fuwatto
          when "yahoo"
             self.push( *extract_keywords_yahooapi( normalized_content ) )
          else
-            self.push( *extract_keywords_mecab( normalized_content, weight ) )
+            self.push( *extract_keywords_mecab( normalized_content, term_weight ) )
          end
          #puts self
       end
@@ -723,7 +723,7 @@ module Fuwatto
       end
 
       include Fuwatto
-      def execute( search_method, terms, opts = {}, term_weight_mode = :default )
+      def execute( search_method, terms, opts = {} )
          data = {}
          if not query?
             return data
@@ -746,7 +746,7 @@ module Fuwatto
                raise "Unknown Content-Type: #{ response[ "content-type" ] }"
             end
          end
-         vector = Document.new( content, mode, term_weight_mode )
+         vector = Document.new( content, mode, opts[ :term_weight ] )
          #vector[0..20].each do |e|
          #   puts e.join("\t")
          #end
