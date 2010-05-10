@@ -39,7 +39,7 @@ class TestFuwatto < Test::Unit::TestCase
       #p vector.sim( vector3 )
       assert( vector.sim( vector2 ) > vector.sim( vector3 ) )
 
-      # term_weight paramerters:
+      # term_weight paramerter:
       vector1 = Document.new( corpus[0], :mecab, { :term_weight => :tf } )
       assert_equal( 1, vector1.assoc( "百合子" )[1] )
       vector2 = Document.new( corpus[3], :mecab, { :term_weight => :default } )
@@ -50,7 +50,7 @@ class TestFuwatto < Test::Unit::TestCase
       assert(  vector3.assoc( "宮本" )[1] > vector3.assoc( "生活" )[1] )
       assert(  vector3.assoc( "宮本" )[1] > vector2.assoc( "宮本" )[1] )
 
-      # term_weight_position parameters:
+      # term_weight_position parameter:
       vector1 = Document.new( corpus[0], :mecab,
                               { :term_weight => :tf,
                                 :term_weight_position => true } )

@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# -*- coding: euc-jp -*-
+# -*- coding: utf-8 -*-
 # $Id$
 
 require 'test/unit'
@@ -36,7 +36,7 @@ class TestCinii < Test::Unit::TestCase
       assert_equal( 20, result[ :entries ].size )
    end
    def test_execute2
-      @cgi.params[ "text" ] = [ "»ùÆ¸µÔÂÔ¤ÈÁêÃÌ½ê¤Î±¿±Ä" ]
+      @cgi.params[ "text" ] = [ "å…ç«¥è™å¾…ã¨ç›¸è«‡æ‰€ã®é‹å–¶" ]
       cinii = Fuwatto::CiniiApp.new( @cgi )
       result = cinii.execute
       assert( result )
@@ -149,8 +149,8 @@ class TestCinii < Test::Unit::TestCase
       assert_equal( result[ :database ], "cinii" )
    end
    def test_query_toolong
-      # ¥­¥ã¥Ã¥·¥å¥Õ¥¡¥¤¥ëÌ¾¤¬NAME_MAX¤òÄ¶¤¨¤ë¤È¡¢Errno::ENAMETOOLONG Îã³°¤¬È¯À¸¤¹¤ë¡£
-      @cgi.params[ "text" ] = [ "¾ÃÈñ ¥Û¡¼¥à ¥°¥ë¡¼¥×¥Û¡¼¥à ÌäÂê ²ĞºÒ ¾ÊÄ£ °ÂÁ´ Ç§ÃÎ ¥È¥è¥¿ »ÜÀß" ]
+      # ã‚­ãƒ£ãƒƒã‚·ãƒ¥ãƒ•ã‚¡ã‚¤ãƒ«åãŒNAME_MAXã‚’è¶…ãˆã‚‹ã¨ã€Errno::ENAMETOOLONG ä¾‹å¤–ãŒç™ºç”Ÿã™ã‚‹ã€‚
+      @cgi.params[ "text" ] = [ "æ¶ˆè²» ãƒ›ãƒ¼ãƒ  ã‚°ãƒ«ãƒ¼ãƒ—ãƒ›ãƒ¼ãƒ  å•é¡Œ ç«ç½ çœåº å®‰å…¨ èªçŸ¥ ãƒˆãƒ¨ã‚¿ æ–½è¨­" ]
       cinii = Fuwatto::CiniiApp.new( @cgi )
       result = cinii.execute
       assert( result )
@@ -176,5 +176,24 @@ class TestCinii < Test::Unit::TestCase
       $stdout.rewind
       result = $stdout.read
       assert( result =~ /error/m )
+   end
+
+   def test_execute_use_df
+      @cgi.params[ "text" ] = [ "è‡ªåˆ†ã¯æœ¬ã‹ã‚‰ã®ç†çªŸã§ãªãã€æ—¥å¸¸ã®ç”Ÿæ´»ã‹ã‚‰ã€ä½“ã§ãã‚Œã‚’å­¦ã‚“ã ã€‚ å®®æœ¬ç™¾åˆå­ã€è‹¥è€…ã®è¨€è‘‰ï¼ˆã€æ–°ã—ãã‚·ãƒ™ãƒªã‚¢ã‚’æ¨ªåˆ‡ã‚‹ã€ï¼‰ã€ " ]
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      # use_df parameter:
+      result1 = cinii.execute( :cinii_search, Fuwatto::CiniiApp::TERMS,
+                               { :term_weight => :default,
+                                 :use_df => true,
+                               } )
+      result2 = cinii.execute( :cinii_search, Fuwatto::CiniiApp::TERMS,
+                               { :term_weight => :default,
+                                 :use_df => false,
+                               } )
+      assert_not_equal( result1[ :keywords ][ "ç™¾åˆå­" ],
+                        result2[ :keywords ][ "ç™¾åˆå­" ] )
+      $KCODE="u"
+      p result1[ :keywords ]
+      p result2[ :keywords ]
    end
 end

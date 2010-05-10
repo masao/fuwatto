@@ -727,6 +727,7 @@ module Fuwatto
       include Fuwatto
       def execute( search_method, terms, opts = {} )
          data = {}
+         opts[ :use_df ] = true if not opts.has_key?( :use_df )
          if not query?
             return data
          end
@@ -754,8 +755,10 @@ module Fuwatto
          #end
          prev_scores = []
          vector1 = Document.new( nil ) # empty vector
+         vector_orig = Document.new( nil ) # ditto
          while vector.size > 0
             k = vector.shift
+            vector_orig << k
             prev_scores << k[1]
             res = send( search_method, k[0], opts )
             next if res[ :totalResults ] < 1
@@ -764,15 +767,19 @@ module Fuwatto
             break if vector1.size >= terms
          end
          raise Fuwatto::NoHitError if vector1.empty?
-         vector1 = vector1.sort_by{|k| -k[1] }
-         prev_min = prev_scores.min
-         cur_min  = vector1[-1][1]
-         vector = vector.map do |k|
-            factor = prev_min / cur_min
-            score = k[1] / factor
-            [ k[0], score ]
+         if opts[ :use_df ]
+            vector1 = vector1.sort_by{|k| -k[1] }
+            prev_min = prev_scores.min
+            cur_min  = vector1[-1][1]
+            vector = vector.map do |k|
+               factor = prev_min / cur_min
+               score = k[1] / factor
+               [ k[0], score ]
+            end
+            vector = vector1 + vector
+         else
+            vector = vector_orig + vector
          end
-         vector = vector1 + vector
          #p vector
          #vector[0..20].each do |e|
          #   puts e.join("\t")

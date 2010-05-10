@@ -20,8 +20,8 @@ module Fuwatto
 	<a href="?url=http://mainichi.jp/select/opinion/eye/">毎日新聞「記者の目」</a> <span style="font-size:smaller;">（<a href="http://mainichi.jp/select/opinion/eye/">元記事(mainichi.jp)</a>）</span>
 	</p>
       EOF
-      def execute
-         super( :cinii_search, TERMS )
+      def execute( method = :cinii_search, terms = TERMS, opts = {} )
+         super( method, terms, opts )
       end
    end
 end
