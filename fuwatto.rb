@@ -111,13 +111,16 @@ module Fuwatto
    end
 
    def extract_keywords_mecab( str, opts )
+      return [] if str.strip.empty?
       mecab = MeCab::Tagger.new( '--node-format=%m\t%H\t%c\n --unk-format=%m\tUNK\t%c\n' )
       lines = mecab.parse( str.toeuc )
       #puts lines
       lines = lines.toutf8.split( /\n/ ).map{|l| l.split(/\t/) }
       lines = lines.select{|l| l[2] and l[1] =~ /^名詞|UNK|形容詞/o and l[1] !~ /接[頭尾]|非自立|代名詞/o }
       #p lines
-      raise "Extracting keywords from a text failed." if lines.empty?
+      if lines.empty?
+         raise Fuwatto::NoKeywordExtractedError
+      end
       min = lines.map{|e| e[2].to_i }.min
       lines = lines.map{|e| [ e[0], e[1], e[2].to_i + min.abs + 1 ] } if min < 0
       count = Hash.new( 0 )
@@ -692,6 +695,7 @@ module Fuwatto
    end
 
    class NoHitError < Exception; end
+   class NoKeywordExtractedError < Exception; end
    class Message < Hash
       ERROR_MESSAGE = {
          "Fuwatto::NoHitError" => "関連する文献を見つけることができませんでした。",
@@ -760,11 +764,13 @@ module Fuwatto
          prev_scores = []
          vector1 = Document.new( nil ) # empty vector
          vector_orig = Document.new( nil ) # ditto
+         single_entries = []
          while vector.size > 0
             k = vector.shift
             vector_orig << k
             prev_scores << k[1]
             res = send( search_method, k[0], opts )
+            single_entries += res[ :entries ]
             next if res[ :totalResults ] < 1
             score = k[1] * 1 / Math.log2( res[ :totalResults ] + 1 )
             vector1 << [ k[0], score ]
@@ -798,12 +804,35 @@ module Fuwatto
          keyword = ""
          entries = []
          additional_keywords = []
-         terms.times do |i|
-            keyword = vector[ 0..(terms-i-1) ].map{|k| k[0] }.join( " " )
-            STDERR.puts keyword
-            data = send( search_method, keyword, opts )
-            if data[ :totalResults ] > 0
-               entries = ( entries + data[ :entries ] ).uniq
+         if opts[ :combination ]
+            vector[ 0..(terms-1) ].map{|k| k[0] }.combination(3) do |v|
+               keyword = v.join( " " )
+               STDERR.puts keyword
+               data = send( search_method, keyword, opts )
+               if data[ :totalResults ] > 0
+                  entries = ( entries + data[ :entries ] ).uniq
+               end
+            end
+            if entries.size < count and entries.size <= count * ( page + 1 )
+               vector[ 0..(terms-1) ].map{|k| k[0] }.combination(2) do |v|
+                  keyword = v.join( " " )
+                  STDERR.puts keyword
+                  data = send( search_method, keyword, opts )
+                  if data[ :totalResults ] > 0
+                     entries = ( entries + data[ :entries ] ).uniq
+                  end
+               end
+            end
+            if entries.size < count and entries.size <= count * ( page + 1 )
+               entries = ( entries + single_entries ).uniq
+            end
+         else
+            terms.times do |i|
+               keyword = vector[ 0..(terms-i-1) ].map{|k| k[0] }.join( " " )
+               STDERR.puts keyword
+               data = send( search_method, keyword, opts )
+               if data[ :totalResults ] > 0
+                  entries = ( entries + data[ :entries ] ).uniq
                if entries.size < count and entries.size <= count * ( page + 1 ) and vector.size >= (terms-i)
                   additional_keywords.unshift( vector[ terms - i - 1 ][0] )
                   #p additional_keywords
@@ -819,12 +848,17 @@ module Fuwatto
                      start += count
                   end
                end
-               break
+                  break
+               end
             end
          end
          if opts[ :reranking ]
             entries = entries.sort_by do |e|
-               vector.sim( Document.new( [ e[:title], e[:description], e[:publicationName] ].join("\n") ) )
+               begin
+                  - vector.sim( Document.new( [ e[:title], e[:description], e[:publicationName] ].join("\n"), mode, opts ) )
+               rescue Fuwatto::NoKeywordExtractedError
+                  0
+               end
             end
          end
          data[ :keywords ] = keywords

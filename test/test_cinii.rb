@@ -198,4 +198,15 @@ class TestCinii < Test::Unit::TestCase
       assert_equal( result1[ :keywords ][ "百合子" ],
                     result3[ :keywords ][ "百合子" ] )
    end
+   def test_execute_reranking
+      @cgi.params[ "text" ] = [ "自分は本からの理窟でなく、日常の生活から、体でそれを学んだ。 宮本百合子『若者の言葉（『新しきシベリアを横切る』）』 " ]
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      result1 = cinii.execute( :cinii_search, Fuwatto::CiniiApp::TERMS )
+      result2 = cinii.execute( :cinii_search, Fuwatto::CiniiApp::TERMS,
+                               { :reranking => true } )
+      assert_not_equal( result1[ :entries ][0][ :url ],
+                        result2[ :entries ][0][ :url ] )
+      assert_not_equal( result1[ :entries ][-1][ :url ],
+                        result2[ :entries ][-1][ :url ] )
+   end
 end
