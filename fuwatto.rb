@@ -855,9 +855,15 @@ module Fuwatto
          if opts[ :reranking ]
             entries = entries.sort_by do |e|
                begin
-                  - vector.sim( Document.new( [ e[:title], e[:description], e[:publicationName] ].join("\n"), mode, opts ) )
+                  sim = vector.sim( Document.new( [ e[:title], e[:description], e[:publicationName] ].join("\n"), mode, opts ) )
+                  if sim.nan?
+                     #STDERR.puts sim
+                     #STDERR.puts e[:url]
+                     sim = 0
+                  end
+                  - sim
                rescue Fuwatto::NoKeywordExtractedError
-                  0
+                  0.0
                end
             end
          end
