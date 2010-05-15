@@ -696,9 +696,11 @@ module Fuwatto
 
    class NoHitError < Exception; end
    class NoKeywordExtractedError < Exception; end
+   class UnsupportedURI < Exception; end
    class Message < Hash
       ERROR_MESSAGE = {
          "Fuwatto::NoHitError" => "関連する文献を見つけることができませんでした。",
+         "UnsupportedURI" => "未対応のURL形式が指定されています。",
       }
       def initialize
          set = ERROR_MESSAGE.dup
@@ -740,6 +742,10 @@ module Fuwatto
          time_pre = Time.now
          if query_url?
             uri = URI.parse( url )
+            if not uri.respond_to?( :request_uri )
+               data[ :error ] = :UnsupportedURI
+               return data
+            end
             response = http_get( uri )
             @content = response.body
             case response[ "content-type" ]

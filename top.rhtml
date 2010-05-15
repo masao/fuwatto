@@ -17,13 +17,15 @@
   <li><a href="history.html">更新履歴</a></li>
 </ul>
 <!-- hhmts start -->
-<div class="last-update">最終更新日: 2010年04月18日</div>
+<div class="last-update">最終更新日: 2010年05月15日</div>
 <!-- hhmts end -->
 <h1><%= self.class::TITLE %></h1>
 <% if data[ :error ] %>
 <p class="error">
 <% if data[ :error ] == Fuwatto::NoHitError %>
 関連する文献を見つけることができませんでした。
+<% elsif data[ :error ] == :UnsupportedURI %>
+未対応のURL形式が指定されています。
 <% end %>
 </p>
 <% end %>
