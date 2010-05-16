@@ -1,12 +1,15 @@
 title: ふわっと関連検索とは
 date.available: 2010-03-14
-date.modified: 2010-05-10
+date.modified: 2010-05-16
 
 {{div class="center"
 '''ふわっと関連検索にもどる'''
 [
 [[CiNii|http://fuwat.to/cinii]] /
 [[NDL Porta|http://fuwat.to/ndl]] /
+[[レファ協|http://fuwat.to/crd]] /
+[[教育研究論文索引|http://fuwat.to/epi]] /
+[[一橋大学OPAC|http://opac.lib.hit-u.ac.jp]] /
 [[WorldCat|http://fuwat.to/worldcat]]
 ]
 }}
@@ -24,11 +27,13 @@ date.modified: 2010-05-10
 
 !!検索できるデータベースは？
 
-2010年3月現在、検索対象データベースは、
-[[CiNii|http://ci.nii.ac.jp]],
-[[WorldCat|http://worldcat.org]],
-[[NDL PORTA|http://porta.ndl.go.jp]],
-[[一橋大学OPAC|http://opac.lib.hit-u.ac.jp]]
+2010年5月現在、検索対象データベースは、
+[[CiNii|http://fuwat.to/cinii]],
+[[NDL Porta|http://fuwat.to/ndl]],
+[[レファ協|http://fuwat.to/crd]],
+[[教育研究論文索引|http://fuwat.to/epi]],
+[[一橋大学OPAC|http://opac.lib.hit-u.ac.jp]],
+[[WorldCat|http://fuwat.to/worldcat]]
 に対応しています。
 
 今後、API対応されているものを中心に増やしていく予定です。
