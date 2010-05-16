@@ -740,6 +740,16 @@ module Fuwatto
             return data
          end
          time_pre = Time.now
+         search_opts = {}
+         opts.each do |k, v|
+            case k
+            when :term_weight, :term_weight_position, :use_df, :reranking, :combination
+               # skip document weighting params
+            else
+               search_opts[ k ] = v
+            end
+         end
+         #p search_opts
          if query_url?
             uri = URI.parse( url )
             if not uri.respond_to?( :request_uri )
@@ -775,7 +785,7 @@ module Fuwatto
             k = vector.shift
             vector_orig << k
             prev_scores << k[1]
-            res = send( search_method, k[0], opts )
+            res = send( search_method, k[0], search_opts )
             single_entries += res[ :entries ]
             next if res[ :totalResults ] < 1
             score = k[1] * 1 / Math.log2( res[ :totalResults ] + 1 )
@@ -792,7 +802,7 @@ module Fuwatto
                score = k[1] / factor
                [ k[0], score ]
             end
-            vector1 << vector
+            vector1 << vector if not vector.empty?
             vector = vector1
          else
             vector_orig << vector
@@ -814,7 +824,7 @@ module Fuwatto
             vector[ 0..(terms-1) ].map{|k| k[0] }.combination(3) do |v|
                keyword = v.join( " " )
                STDERR.puts keyword
-               data = send( search_method, keyword, opts )
+               data = send( search_method, keyword, search_opts )
                if data[ :totalResults ] > 0
                   entries = ( entries + data[ :entries ] ).uniq
                end
@@ -823,7 +833,7 @@ module Fuwatto
                vector[ 0..(terms-1) ].map{|k| k[0] }.combination(2) do |v|
                   keyword = v.join( " " )
                   STDERR.puts keyword
-                  data = send( search_method, keyword, opts )
+                  data = send( search_method, keyword, search_opts )
                   if data[ :totalResults ] > 0
                      entries = ( entries + data[ :entries ] ).uniq
                   end
@@ -834,26 +844,33 @@ module Fuwatto
             end
          else
             terms.times do |i|
+               next if vector.size < terms - i
                keyword = vector[ 0..(terms-i-1) ].map{|k| k[0] }.join( " " )
                STDERR.puts keyword
-               data = send( search_method, keyword, opts )
+               data = send( search_method, keyword, search_opts )
                if data[ :totalResults ] > 0
                   entries = ( entries + data[ :entries ] ).uniq
-               if entries.size < count and entries.size <= count * ( page + 1 ) and vector.size >= (terms-i)
-                  additional_keywords.unshift( vector[ terms - i - 1 ][0] )
-                  #p additional_keywords
-                  next
-               else
-                  start = count + 1
-                  while data[ :totalResults ] >= start and entries.size < count * ( page + 1 ) do
-                     #p [ entries.size, start ]
-                     opts[ :start ] = start
-                     opts[ :key ] = data[ :opac_hit_u_key ] if data[ :opac_hit_u_key ]
-                     data = send( search_method, keyword, opts )
-                     entries = ( entries + data[ :entries ] ).uniq
-                     start += count
+                  #p [ entries.size, count, page, count * ( page + 1 ) ]
+                  if entries.size < count or entries.size <= count * ( page + 1 )
+                     #p [ vector.size, terms, i ]
+                     if ( terms-i ) > 1
+                        #p [ vector, terms - i - 1 ]
+                        additional_keywords.unshift( vector[ terms - i - 1 ][0] )
+                        #p additional_keywords
+                        next
+                     else
+                        start = count + 1
+                        #p [ :start, data[ :totalResults ], start ]
+                        while data[ :totalResults ] >= start and entries.size < count * ( page + 1 ) do
+                           #p [ entries.size, start ]
+                           search_opts[ :start ] = start
+                           search_opts[ :key ] = data[ :opac_hit_u_key ] if data[ :opac_hit_u_key ]
+                           data = send( search_method, keyword, search_opts )
+                           entries = ( entries + data[ :entries ] ).uniq
+                           start += count
+                        end
+                     end
                   end
-               end
                   break
                end
             end

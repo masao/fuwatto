@@ -45,17 +45,20 @@ class TestCinii < Test::Unit::TestCase
    end
    def test_execute_page
       @cgi.params["url"] = [ "http://yahoo.co.jp" ]
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      result1 = cinii.execute
       @cgi.params["page"] = [ 1 ]
       cinii = Fuwatto::CiniiApp.new( @cgi )
-      result = cinii.execute
-      assert( result )
-      assert( result[ :totalResults ] > 0 )
-      assert( result[ :totalResults ] > 20 )
-      assert( result[ :entries ].size > 20 )
-      if result[ :totalResults ] >= 40
-         assert_equal( 40, result[ :entries ].size )
+      result2 = cinii.execute
+      assert( result1 )
+      assert( result1[ :totalResults ] > 0 )
+      assert( result1[ :totalResults ] > 20 )      
+      assert( result2[ :entries ].size > 20 )
+      assert_not_equal( result1[ :entries ], result2[ :entries ] )
+      if result1[ :totalResults ] >= 40
+         assert_equal( 40, result2[ :entries ].size )
       else
-         assert_equal( result[ :totalResults ], result[ :entries ].size )
+         assert_equal( result2[ :totalResults ], result2[ :entries ].size )
       end
    end
    def test_ssl
@@ -197,6 +200,8 @@ class TestCinii < Test::Unit::TestCase
                                { :term_weight => :default } )
       assert_equal( result1[ :keywords ][ "百合子" ],
                     result3[ :keywords ][ "百合子" ] )
+      assert_no_match( /term_weight/, result1[ :link ] )
+      assert_no_match( /use_df/, result1[ :link ] )
    end
    def test_execute_reranking
       @cgi.params[ "text" ] = [ "自分は本からの理窟でなく、日常の生活から、体でそれを学んだ。 宮本百合子『若者の言葉（『新しきシベリアを横切る』）』 " ]
