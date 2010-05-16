@@ -1,5 +1,5 @@
 title: 「ふわっと関連検索」ブログパーツ貼り付け支援ツール
-date.modified: 2010-03-30
+date.modified: 2010-05-16
 date.available: 2010-03-14
 javascript.src: widget-helper.js
 css.content:
@@ -15,14 +15,7 @@ css.content:
    margin: 1%;
  }
 
-{{div class="center"
-'''ふわっと関連検索にもどる'''
-[
-[[CiNii|http://fuwat.to/cinii]] /
-[[NDL Porta|http://fuwat.to/ndl]] /
-[[WorldCat|http://fuwat.to/worldcat]]
-]
-}}
+{{include 'links.hikidoc'}}
 
 {{div class="center"
 '''[[ヘルプ|./help.html]]にもどる'''

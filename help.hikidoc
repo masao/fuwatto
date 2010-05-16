@@ -2,17 +2,7 @@ title: ふわっと関連検索とは
 date.available: 2010-03-14
 date.modified: 2010-05-16
 
-{{div class="center"
-'''ふわっと関連検索にもどる'''
-[
-[[CiNii|http://fuwat.to/cinii]] /
-[[NDL Porta|http://fuwat.to/ndl]] /
-[[レファ協|http://fuwat.to/crd]] /
-[[教育研究論文索引|http://fuwat.to/epi]] /
-[[一橋大学OPAC|http://opac.lib.hit-u.ac.jp]] /
-[[WorldCat|http://fuwat.to/worldcat]]
-]
-}}
+{{include 'links.hikidoc'}}
 
 {{toc( "目次" )}}
 
