@@ -17,7 +17,7 @@
   <li><a href="history.html">更新履歴</a></li>
 </ul>
 <!-- hhmts start -->
-<div class="last-update">最終更新日: 2010年05月15日</div>
+<div class="last-update">最終更新日: 2010年05月18日</div>
 <!-- hhmts end -->
 <h1><%= self.class::TITLE %></h1>
 <% if data[ :error ] %>
@@ -30,18 +30,18 @@
 </p>
 <% end %>
 <div class="form">
-<div class="tabheader"><div id="head1"><a href="javascript:seltab('box', 'head', 10, 1)">文章から検索</a></div><div class="space">&nbsp;</div><div id="head2"><a href="javascript:seltab('box', 'head', 10, 2)">ウェブページから検索</a></div><div class="space">&nbsp;</div></div>
+<div class="tabheader"><div id="head1"><a href="javascript:seltab('box', 'head', 10, 1)">文章から検索<%=h " (by Text)" if self.class == Fuwatto::WorldcatApp %></a></div><div class="space">&nbsp;</div><div id="head2"><a href="javascript:seltab('box', 'head', 10, 2)">ウェブページから検索<%=h " (by URL)" if self.class == Fuwatto::WorldcatApp %></a></div><div class="space">&nbsp;</div></div>
 <div class="tabbody">
 <div id="box1">
 <form action="<%=h @cgi.script_name %>" method="post" name="text1">
 <textarea rows="4" cols="45"  name="text"><%=h content.to_s.toutf8 %></textarea>
-<input type="submit" value="  論 文 検 索  " />
+<input type="submit" value="  論 文 検 索  <%=h " (Search) " if self.class == Fuwatto::WorldcatApp %>" />
 </form>
 </div>
 <div id="box2">
 <form action="<%=h @cgi.script_name %>" method="get" name="url1">
 <input type="text" name="url" value="<%=h( url || "http://" ) %>" size="70" />
-<input type="submit" value="  論 文 検 索  " />
+<input type="submit" value="  論 文 検 索  <%=h " (Search) " if self.class == Fuwatto::WorldcatApp %>" />
 </form>
 </div>
 </div>
