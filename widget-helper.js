@@ -42,7 +42,7 @@ function preview_fuwatto()
     params.push( 'width : "' + width + '"' );
   }
   if (height && height != "auto") {
-    params.push( 'height : "' + width + '"' );
+    params.push( 'height : "' + height + '"' );
   }
   form = document.forms[1];
   form.html.value = '<script src="http://fuwat.to/api/widget.js" type="text/javascript" charset="utf-8"></script>' + "\n" +
