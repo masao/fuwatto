@@ -39,10 +39,10 @@ function preview_fuwatto()
     params.push( 'title : "' + title + '"' );
   }
   if (width && width != "auto") {
-    params.push( 'width : ' + width );
+    params.push( 'width : "' + width + '"' );
   }
   if (height && height != "auto") {
-    params.push( 'height : ' + height );
+    params.push( 'height : "' + width + '"' );
   }
   form = document.forms[1];
   form.html.value = '<script src="http://fuwat.to/api/widget.js" type="text/javascript" charset="utf-8"></script>' + "\n" +
