@@ -1,10 +1,14 @@
 title: 更新履歴 - ふわっと関連検索
 date.available: 2010-01-17
-date.modified: 2010-05-16
+date.modified: 2010-06-07
 css.content: dt { margin-top: 5px; }
 
 {{include 'links.hikidoc'}}
 
+:2010年6月7日:
+::[Bugfix] 「[[ブログパーツ貼り付け支援ツール|widget-helper.html]]」上で、ブログパーツの幅・高さを指定していた場合にエラーになる不具合を修正しました。
+:2010年6月4日:
+::[News] 国立情報学研究所オープンハウス2010の「[[CiNii公開ワークショップ - いつでもCiNii、どこでもCiNii|http://ci.nii.ac.jp/info/ja/index.html#20100607-02]]」にてデモ発表を行いました。発表スライドは http://www.slideshare.net/tmasao/cinii-api にあります。
 :2010年4月3日:
 ::[News] 新たに「[[ふわっと 教育研究論文索引 関連検索|http://fuwat.to/epi]]」を公開。(fuwatto.rb 1.0.4)
 :2010年3月30日:
@@ -17,11 +21,12 @@ css.content: dt { margin-top: 5px; }
 ::[News] 利用ガイド「[[ふわっと関連検索とは|./help.html]]」、「[[ブログパーツ貼り付け支援ツール|widget-helper.html]]」を公開。(fuwatto.rb 1.0)
 ::[Bugfix] 「WorldCat検索」で取得した検索結果が全件表示できなかったバグを修正。
 :2010年3月11日:
-// 0.3
 ::[Changes] 検索結果をキャッシュし、同一クエリでの検索は2回目からは高速に表示できるようになりました。
 ::[Bug fix] HTTPSサイトに未対応となっていたバグを修正。
 :2010年3月9日:
 ::[News] NDL Portaを検索対象とした「[[ふわっとNDL関連検索|http://fuwat.to/ndl]]」を追加公開。
+:2010年3月8日
+::[News] [[第38回ディジタル図書館ワークショップ|http://www.dl.slis.tsukuba.ac.jp/DLjournal/No_38/]]にて研究発表を行いました。発表スライドは http://masao.jpn.org/pub/2010/dlw38-fuwatto-slides.pdf にあります。
 :2010年2月22日:
 ::[News] 稼働サイトを fuwat.to ドメインに移動。
 ::→ 「[[ふわっとCiNii関連検索|http://fuwat.to/cinii]]」

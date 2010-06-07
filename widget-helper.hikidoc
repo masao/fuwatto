@@ -1,5 +1,5 @@
 title: 「ふわっと関連検索」ブログパーツ貼り付け支援ツール
-date.modified: 2010-05-16
+date.modified: 2010-06-07
 date.available: 2010-03-14
 javascript.src: widget-helper.js
 css.content:
@@ -34,6 +34,7 @@ css.content:
 		      <option value="cinii">CiNii</option>
 		      <option value="ndl">NDL Porta</option>
 		      <option value="crd">レファレンス協同データベース</option>
+		      <option value="epi">教育研究論文索引</option>
 		      <option value="worldcat">WorldCat</option>
 		      <option value="opac-hit-u">一橋大学OPAC</option>
 		      </select>
