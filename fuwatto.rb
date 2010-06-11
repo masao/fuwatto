@@ -44,7 +44,7 @@ class String
 end
 
 module Fuwatto
-   VERSION = '1.0.6'
+   VERSION = '2.0'
    BASE_URI = 'http://fuwat.to/'
    USER_AGENT = "Fuwatto Search/#{ VERSION }; #{ BASE_URI }"
    CACHE_TIME = 60 * 60 * 24 * 3   # 3日経つまで、キャッシュは有効
@@ -842,6 +842,8 @@ module Fuwatto
             if entries.size < count and entries.size <= count * ( page + 1 )
                entries = ( entries + single_entries ).uniq
             end
+	    data[ :q ] = vector[ 0..(terms-1) ].map{|k| k[0] }.join( " " )
+	    data[ :totalResults ] = entries.size
          else
             terms.times do |i|
                next if vector.size < terms - i
@@ -884,11 +886,11 @@ module Fuwatto
                      #STDERR.puts e[:url]
                      sim = 0
                   end
-                  - sim
+                  sim
                rescue Fuwatto::NoKeywordExtractedError
                   0.0
                end
-            end
+            end.reverse
          end
          data[ :keywords ] = keywords
          data[ :entries ] = entries

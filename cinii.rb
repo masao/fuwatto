@@ -38,7 +38,13 @@ if $0 == __FILE__
       app = Fuwatto::CiniiApp.new( @cgi )
       data = {}
       begin
-         data = app.execute
+         opts = {}
+	 if not @cgi[ "combination" ].empty?
+	    opts[ :combination ] = true 
+	    opts[ :reranking ] = true 
+	 end
+	 #p opts
+         data = app.execute( :cinii_search, Fuwatto::CiniiApp::TERMS, opts )
       rescue Fuwatto::NoHitError => e
          data[ :error ] = e.class
       end
