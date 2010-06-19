@@ -214,4 +214,22 @@ class TestCinii < Test::Unit::TestCase
       assert_not_equal( result1[ :entries ][-1][ :url ],
                         result2[ :entries ][-1][ :url ] )
    end
+   def test_execute_prf
+      @cgi.params[ "text" ] = [ "自分は本からの理窟でなく、日常の生活から、体でそれを学んだ。 宮本百合子『若者の言葉（『新しきシベリアを横切る』）』 " ]
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      result1 = cinii.execute( :cinii_search, Fuwatto::CiniiApp::TERMS )
+      result2 = cinii.execute( :cinii_search, Fuwatto::CiniiApp::TERMS,
+                               { :reranking => true, :prf => true } )
+      result3 = cinii.execute( :cinii_search, Fuwatto::CiniiApp::TERMS,
+                               { :reranking => true, :combination => true,
+                                 :prf => true } )
+      assert_not_equal( result1[ :entries ][0][ :url ],
+                        result2[ :entries ][0][ :url ] )
+      assert_not_equal( result1[ :entries ][-1][ :url ],
+                        result2[ :entries ][-1][ :url ] )
+      assert_not_equal( result1[ :entries ][-1][ :url ],
+                        result3[ :entries ][-1][ :url ] )
+      assert_not_equal( result2[ :entries ][-1][ :url ],
+                        result3[ :entries ][-1][ :url ] )
+   end
 end
