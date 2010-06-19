@@ -231,5 +231,8 @@ class TestCinii < Test::Unit::TestCase
                         result3[ :entries ][-1][ :url ] )
       assert_not_equal( result2[ :entries ][-1][ :url ],
                         result3[ :entries ][-1][ :url ] )
+      result4 = cinii.execute( :cinii_search, Fuwatto::CiniiApp::TERMS,
+                               { :reranking => true, :combination => true,
+                                 :prf => true, :term_weight => :tf } )
    end
 end
