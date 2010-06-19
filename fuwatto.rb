@@ -834,7 +834,7 @@ module Fuwatto
          end
          #p content
          vector = Document.new( content, mode, opts )
-         #p vector
+         #STDERR.puts vector.inspect
          #vector[0..20].each do |e|
          #   puts e.join("\t")
          #end
@@ -852,7 +852,10 @@ module Fuwatto
             score = k[1] * 1 / Math.log2( res[ :totalResults ] + 1 )
             vector1 << [ k[0], score ]
             break if vector1.size >= terms
+            #STDERR.puts [ vector1.size, vector.inspect ]
          end
+         #STDERR.puts [ vector1.size, vector.inspect ]
+         #STDERR.puts [ vector1.size, vector1.inspect ]
          raise Fuwatto::NoHitError if vector1.empty?
          single_entries = single_entries.uniq_by{|e| e[ :url ] }
          if opts[ :use_df ]
@@ -867,9 +870,10 @@ module Fuwatto
             vector1.concat( vector ) if not vector.empty?
             vector = vector1
          else
-            vector_orig << vector
+            vector_orig.concat( vector )
             vector = vector_orig
          end
+         #STDERR.puts vector1.inspect
          if opts[ :prf ]	# Rocchio-based blind query expantion
             prf_top_k = single_entries.map do |e|
                Document.new( [ e[:title], e[:description] ].join("\n"),
@@ -884,6 +888,7 @@ module Fuwatto
                end
             end
             #p prf_weight
+            #STDERR.puts vector.inspect
             prf_weight.each do |k, v|
                w = vector.assoc( k )
                if w
@@ -892,6 +897,7 @@ module Fuwatto
                   vector << [ k, v ]
                end
             end
+            #STDERR.puts vector.inspect
             vector.sort!{|a,b| b[1] <=> a[1] }
          end
          #p vector
