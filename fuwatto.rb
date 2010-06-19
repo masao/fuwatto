@@ -62,7 +62,8 @@ module Fuwatto
    USER_AGENT = "Fuwatto Search/#{ VERSION }; #{ BASE_URI }"
    CACHE_TIME = 60 * 60 * 24 * 3   # 3日経つまで、キャッシュは有効
    MAX_PAGE = 19 # ページネイションに表示されるアイテム数
-
+   PRF_TOP_K = 10
+   
    # Bag of Words による文書表現
    class Document < Array
       include Fuwatto
@@ -159,7 +160,6 @@ module Fuwatto
          count[ line[0] ] += score
          #count[ line[0] ] += 1
       end
-      # $KCODE = "u"
       # p count
       ranks = count.keys.sort_by{|e| count[e] }.reverse.map{|e| [e,count[e]] }
       #pp ranks
@@ -804,7 +804,7 @@ module Fuwatto
          search_opts = {}
          opts.each do |k, v|
             case k
-            when :term_weight, :term_weight_position, :use_df, :reranking, :combination
+            when :term_weight, :term_weight_position, :use_df, :reranking, :combination, :prf
                # skip document weighting params
             else
                search_opts[ k ] = v
@@ -854,6 +854,7 @@ module Fuwatto
             break if vector1.size >= terms
          end
          raise Fuwatto::NoHitError if vector1.empty?
+         single_entries = single_entries.uniq_by{|e| e[ :url ] }
          if opts[ :use_df ]
             vector1.sort!{|a, b| b[1] <=> a[1] }
             prev_min = prev_scores.min
@@ -863,11 +864,35 @@ module Fuwatto
                score = k[1] / factor
                [ k[0], score ]
             end
-            vector1 << vector if not vector.empty?
+            vector1.concat( vector ) if not vector.empty?
             vector = vector1
          else
             vector_orig << vector
             vector = vector_orig
+         end
+         if opts[ :prf ]	# Rocchio-based blind query expantion
+            prf_top_k = single_entries.map do |e|
+               Document.new( [ e[:title], e[:description] ].join("\n"),
+                             mode, opts )
+            end.sort_by do |e|
+               e.sim( vector )
+            end.reverse[ 0, PRF_TOP_K ]
+            prf_weight = Hash.new( 0 )
+            prf_top_k.each do |d|
+               d.each do |k, v|
+                  prf_weight[ k ] += v.to_f / PRF_TOP_K
+               end
+            end
+            #p prf_weight
+            prf_weight.each do |k, v|
+               w = vector.assoc( k )
+               if w
+                  w[ 1 ] += v
+               else
+                  vector << [ k, v ]
+               end
+            end
+            vector.sort!{|a,b| b[1] <=> a[1] }
          end
          #p vector
          #vector[0..20].each do |e|
@@ -953,6 +978,7 @@ module Fuwatto
                end
             end.reverse
          end
+         #p entries[ 0, 5 ]
          data[ :keywords ] = keywords
          data[ :entries ] = entries
          data[ :entries ] = entries[0, @count] if @format == "json"
