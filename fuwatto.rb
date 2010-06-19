@@ -43,6 +43,19 @@ class String
    end
 end
 
+class Array
+   def uniq_by
+      result = []
+      hash = {}
+      self.each do |e|
+         next if hash[ yield e ]
+         hash[ yield e ] = true
+         result << e
+      end
+      result
+   end
+end
+
 module Fuwatto
    VERSION = '2.0'
    BASE_URI = 'http://fuwat.to/'
@@ -564,6 +577,54 @@ module Fuwatto
       data
    end
 
+   # JAWikipedia API
+   def wikipedia_ja_search( keyword, opts = {} )
+      base_uri = "http://ja.wikipedia.org/w/api.php"
+      q = URI.escape( keyword )
+      cont = nil
+      cache_file = cache_xml( "jawikipedia", q, opts[:start] )
+      if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
+         cont = open( cache_file ){|io| io.read }
+      else
+         opts[ :action ] = "query"
+         opts[ :list ] = "search"
+         opts[ :format ] = "xml"
+         if not opts.empty?
+            opts_s = opts.keys.map do |e|
+               "#{ e }=#{ URI.escape( opts[e].to_s ) }"
+            end.join( "&" )
+         end
+         search_uri = URI.parse( "#{ base_uri }?srsearch=#{ q }&#{ opts_s }" )
+         response = http_get( search_uri )
+         cont = response.body
+         open( cache_file, "w" ){|io| io.print cont }
+      end
+      data = {}
+      parser = LibXML::XML::Parser.string( cont )
+      doc = parser.parse
+      # ref. http://ci.nii.ac.jp/info/ja/if_opensearch.html
+      data[ :q ] = keyword
+      # data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.sub( /&format=atom\b/, "" ).sub( /&wskey=\w+/, "" )
+      data[ :link ] = "http://ja.wikipedia.org/wiki/Sepecial:Search/#{ q }"
+      data[ :totalResults ] = doc.find_first( "//searchinfo" ).attributes[ "totalhits" ].to_i
+      entries = doc.find( "//p" )
+      data[ :entries ] = []
+      entries.each do |e|
+         title = e.attributes[ "title" ]
+         url = "http://ja.wikipedia.org/wiki/#{ URI.escape( title ) }"
+         content = e.attributes[ "snippet" ]
+         timestamp = e.attributes[ "timestamp" ]
+         data[ :entries ] << {
+            :title => title,
+            :url => url,
+            :content => content,
+            :publicationName => content,
+            :publicationDate => timestamp,
+         }
+      end
+      data
+   end
+
    # EPI SRU API
    def epi_search( keyword, opts = {} )
       base_uri = "http://kaede.nier.go.jp/epi"
@@ -826,7 +887,7 @@ module Fuwatto
                STDERR.puts keyword
                data = send( search_method, keyword, search_opts )
                if data[ :totalResults ] > 0
-                  entries = ( entries + data[ :entries ] ).uniq
+                  entries = ( entries + data[ :entries ] ).uniq_by{|e| e[:url] }
                end
             end
             if entries.size < count and entries.size <= count * ( page + 1 )
