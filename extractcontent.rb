@@ -77,7 +77,7 @@ module ExtractContent
     html = eliminate_useless_tags(html)
 
     # h? block including title
-    html.gsub!(/(<h\d\s*>\s*(.*?)\s*<\/h\d\s*>)/is) do |m|
+    html.gsub!(/(<h\d\s*>\s*(.*?)\s*<\/h\d\s*>)/im) do |m|
       if $2.length >= 3 && title.include?($2) then "<div>#{$2}</div>" else $1 end
     end
 
@@ -86,7 +86,7 @@ module ExtractContent
     body = ''
     score = 0
     bodylist = []
-    list = html.split(/<\/?(?:div|center|td)[^>]*>|<p\s*[^>]*class\s*=\s*["']?(?:posted|plugin-\w+)['"]?[^>]*>/)
+    list = html.split(/<\/?(?:div|center|td)[^>]*>|<p\s*[^>]*class\s*=\s*["']?(?:posted|plugin-\w+)['"]?[^>]*>/i)
     list.each do |block|
       next unless block
       block.strip!
@@ -124,7 +124,7 @@ module ExtractContent
 
   # Extracts title.
   def self.extract_title(st)
-    if st =~ /<title[^>]*>\s*(.*?)\s*<\/title\s*>/i
+    if st =~ /<title[^>]*>\s*(.*?)\s*<\/title\s*>/im
       strip_tags($1)
     else
       ""
@@ -141,9 +141,9 @@ module ExtractContent
     # eliminate useless html tags
     html.gsub!(/<(script|style|select|noscript)[^>]*>.*?<\/\1\s*>/imn, '')
     html.gsub!(/<!--.*?-->/m, '')
-    html.gsub!(/<![A-Za-z].*?>/s, '')
-    html.gsub!(/<div\s[^>]*class\s*=\s*['"]?alpslab-slide["']?[^>]*>.*?<\/div\s*>/m, '')
-    html.gsub!(/<div\s[^>]*(id|class)\s*=\s*['"]?\S*more\S*["']?[^>]*>/is, '')
+    html.gsub!(/<![A-Za-z].*?>/m, '')
+    html.gsub!(/<div\s[^>]*class\s*=\s*['"]?alpslab-slide["']?[^>]*>.*?<\/div\s*>/im, '')
+    html.gsub!(/<div\s[^>]*(id|class)\s*=\s*['"]?\S*more\S*["']?[^>]*>/im, '')
 
     html
   end
@@ -165,10 +165,10 @@ module ExtractContent
   # リンクリスト判定
   # リストであれば非本文として除外する
   def self.islinklist(st)
-    if st=~/<(?:ul|dl|ol)(.+?)<\/(?:ul|dl|ol)>/ism
+    if st=~/<(?:ul|dl|ol)(.+?)<\/(?:ul|dl|ol)>/im
       listpart = $1
-      outside = st.gsub(/<(?:ul|dl)(.+?)<\/(?:ul|dl)>/ismn, '').gsub(/<.+?>/mn, '').gsub(/\s+/, ' ')
-      list = listpart.split(/<li[^>]*>/)
+      outside = st.gsub(/<(?:ul|dl)(.+?)<\/(?:ul|dl)>/imn, '').gsub(/<.+?>/mn, '').gsub(/\s+/, ' ')
+      list = listpart.split(/<li[^>]*>/im)
       list.shift
       rate = evaluate_list(list)
       outside.length <= st.length / (45 / rate)

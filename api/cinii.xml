@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?> 
 <Module>
   <ModulePrefs title="CiNii関連検索" />
-  <Content type="url" href="http://masao.jpn.org/fuwatto/api/cinii.rb"/>
+  <Content type="html">
+<![CDATA[
+<div id="content"></div>
+<script type="text/javascript">
+  this_url = 
+</script>
+]]>
+  </Content>
 </Module>

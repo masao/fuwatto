@@ -769,12 +769,13 @@ module Fuwatto
    end
 
    class BaseApp
-      attr_reader :format, :content, :url
+      attr_reader :format, :content, :url, :html
       attr_reader :count, :page, :mode
       def initialize( cgi )
          @cgi = cgi
          @url = @cgi.params["url"][0]
          @content = @cgi.params["text"][0]
+         @html = @cgi.params["html"][0]
          @format = @cgi.params["format"][0] || "html"
          @count = @cgi.params["count"][0].to_i
          @count = 20 if count < 1
@@ -789,14 +790,18 @@ module Fuwatto
       def query_text?
          not content.nil? and not content.empty?
       end
+      def query_html?
+         not html.nil? and not html.empty?
+      end
       def query?
-         query_url? or query_text?
+         query_url? or query_text? or query_html?
       end
 
       include Fuwatto
       def execute( search_method, terms, opts = {} )
          data = {}
          opts[ :use_df ] = true if not opts.has_key?( :use_df )
+         p query?
          if not query?
             return data
          end
@@ -821,16 +826,15 @@ module Fuwatto
             @content = response.body
             case response[ "content-type" ]
             when /^text\/html\b/
-               @content = @content
                @content = ExtractContent::analyse( @content ).join( "\n" )
-               #puts content
             when /^text\//
-               @content = @content
             when /^application\/pdf\b/
                @content = pdftotext( @content )
             else
                raise "Unknown Content-Type: #{ response[ "content-type" ] }"
             end
+         elsif query_html?
+            @content = ExtractContent::analyse( @html ).join( "\n" )
          end
          #p content
          vector = Document.new( content, mode, opts )
