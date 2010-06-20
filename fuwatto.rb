@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 # $Id$
 
+$:.unshift "."
+
 require "net/http"
 require "net/https"
 #require "pp"
@@ -801,7 +803,6 @@ module Fuwatto
       def execute( search_method, terms, opts = {} )
          data = {}
          opts[ :use_df ] = true if not opts.has_key?( :use_df )
-         p query?
          if not query?
             return data
          end
