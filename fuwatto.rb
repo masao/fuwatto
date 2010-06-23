@@ -142,8 +142,8 @@ module Fuwatto
       count = Hash.new( 0 )
       score = 0
       lines.each_with_index do |line, idx|
-         # ASCII symbol chars
-         next if line[0] =~ /\A[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f、。「『』」・]+\Z/o
+         # ASCII and other symbol chars
+         next if line[0] =~ /\A[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f、。「『』」・〇]+\Z/o
          # One or two digit numbers
          next if line[0] =~ /\A[0-9][0-9]?\Z/o
          # Stop words, derived from Lucene
