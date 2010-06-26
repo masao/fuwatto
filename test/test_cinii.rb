@@ -255,6 +255,5 @@ class TestCinii < Test::Unit::TestCase
       result = cinii.execute( :cinii_search, Fuwatto::CiniiApp::TERMS,
                               { :reranking => true, :combination => true,
                                 :prf => true } )
-      cinii.output( "cinii", data )
    end
 end
