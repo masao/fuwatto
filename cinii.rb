@@ -42,8 +42,8 @@ if $0 == __FILE__
 	 if not @cgi[ "combination" ].empty?
 	    opts[ :combination ] = true 
 	    opts[ :reranking ] = true 
+	    opts[ :prf ] = true
 	 end
-	 #p opts
          data = app.execute( :cinii_search, Fuwatto::CiniiApp::TERMS, opts )
       rescue Fuwatto::NoHitError => e
          data[ :error ] = e.class

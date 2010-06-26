@@ -65,7 +65,9 @@ module Fuwatto
    CACHE_TIME = 60 * 60 * 24 * 3   # 3日経つまで、キャッシュは有効
    MAX_PAGE = 19 # ページネイションに表示されるアイテム数
    PRF_TOP_K = 10
-   
+   PRF_ALPHA = 0.5	# 元クエリベクトルに対する相対的な重み
+   			# （元ベクトルの重み最大値に対する比を指定する）
+
    # Bag of Words による文書表現
    class Document < Array
       include Fuwatto
@@ -989,6 +991,7 @@ module Fuwatto
          end
          #STDERR.puts vector1.inspect
          if opts[ :prf ]	# Rocchio-based blind query expantion
+            # STDERR.puts :prf
             prf_top_k = single_entries.map do |e|
                begin
                   Document.new( [ e[:title], e[:description] ].join("\n"),
@@ -1000,14 +1003,26 @@ module Fuwatto
                e.sim( vector )
             end.reverse[ 0, PRF_TOP_K ]
             prf_weight = Hash.new( 0 )
+            total_words = 0
             prf_top_k.each do |d|
+               total_words += d.size
+            end
+            avg_words = total_words.to_f / PRF_TOP_K
+            # STDERR.puts "avg_words: #{ avg_words }"
+            prf_top_k.each do |d|
+               words_factor = d.size / avg_words
                d.each do |k, v|
-                  prf_weight[ k ] += v.to_f / PRF_TOP_K
+                  prf_weight[ k ] += v.to_f * words_factor / PRF_TOP_K
                end
             end
-            #p prf_weight
-            #STDERR.puts vector.inspect
+            # $KCODE="u"
+            # STDERR.puts prf_weight.map{|k,v| [k,v] }.sort_by{|e| e[1] }.reverse[0,20].inspect
+            # STDERR.puts vector.inspect
+            max_weight =  prf_weight.map{|k,v| v }.max
+            prf_factor = max_weight / vector[0][1]
+            # STDERR.puts "prf_factor: #{ prf_factor }"
             prf_weight.each do |k, v|
+               v /= prf_factor / PRF_ALPHA # Magic-number "4"
                w = vector.assoc( k )
                if w
                   w[ 1 ] += v
@@ -1017,6 +1032,7 @@ module Fuwatto
             end
             #STDERR.puts vector.inspect
             vector.sort!{|a,b| b[1] <=> a[1] }
+            #STDERR.puts vector[0,20].inspect
          end
          #p vector
          #vector[0..20].each do |e|
