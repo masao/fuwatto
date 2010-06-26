@@ -247,9 +247,14 @@ class TestCinii < Test::Unit::TestCase
    def test_execute_prf2
       @cgi.params[ "text" ] = [ "入力したテキストまたはウェブページに関連した論文をCiNiiで検索します。 長いテキストやURLで指定したページからでも関連キーワードを自動的に抜き出して論文検索できるのが特徴です。 " ]
       cinii = Fuwatto::CiniiApp.new( @cgi )
-      result = cinii.execute( :cinii_search, Fuwatto::CiniiApp::TERMS,
-                              { :reranking => true, :combination => true,
-                                :prf => true } )
+      result1 = cinii.execute( :cinii_search, Fuwatto::CiniiApp::TERMS,
+                               { :reranking => true, :combination => true,
+                                 :prf => true } )
+      result2 = cinii.execute( :cinii_search, Fuwatto::CiniiApp::TERMS,
+                               { :reranking => true, :combination => true,
+                                 :prf => true, :prf_alpha => 2.0 } )
+      assert_not_equal( result1[ :keywords ], result2[ :keywords ] )
+      assert( result1[ :keywords ][ "検索" ] < result2[ :keywords ][ "検索" ] )
       @cgi.params[ "text" ] = [ "wiki" ]
       cinii = Fuwatto::CiniiApp.new( @cgi )
       result = cinii.execute( :cinii_search, Fuwatto::CiniiApp::TERMS,

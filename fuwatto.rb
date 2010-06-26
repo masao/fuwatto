@@ -177,7 +177,7 @@ module Fuwatto
 
    # Supports redirect
    def http_get( uri, limit = 3 )
-      #STDERR.puts uri
+      #STDERR.puts uri.to_s
       raise "Too many redirects: #{ uri }" if limit < 0
       http_proxy = ENV[ "http_proxy" ]
       proxy, proxy_port = nil
@@ -914,6 +914,7 @@ module Fuwatto
       def execute( search_method, terms, opts = {} )
          data = {}
          opts[ :use_df ] = true if not opts.has_key?( :use_df )
+         opts[ :prf_alpha ] = PRF_ALPHA if opts[ :prf ] and not opts.has_key?( :prf_alpha )
          if not query?
             return data
          end
@@ -921,7 +922,7 @@ module Fuwatto
          search_opts = {}
          opts.each do |k, v|
             case k
-            when :term_weight, :term_weight_position, :use_df, :reranking, :combination, :prf
+            when :term_weight, :term_weight_position, :use_df, :reranking, :combination, :prf, :prf_alpha
                # skip document weighting params
             else
                search_opts[ k ] = v
@@ -1022,7 +1023,7 @@ module Fuwatto
             prf_factor = max_weight / vector[0][1]
             # STDERR.puts "prf_factor: #{ prf_factor }"
             prf_weight.each do |k, v|
-               v /= prf_factor / PRF_ALPHA # Magic-number "4"
+               v /= prf_factor / opts[ :prf_alpha ] # Magic-number "4"
                w = vector.assoc( k )
                if w
                   w[ 1 ] += v
