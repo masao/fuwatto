@@ -271,12 +271,119 @@ module Fuwatto
          end
          pubdate = e.find( "./prism:publicationDate", "prism:http://prismstandard.org/namespaces/basic/2.0/" )[0] #.content
          pubdate = pubdate.nil? ? "" : pubdate.content
+         description = e.find( "./atom:content", "atom:http://www.w3.org/2005/Atom" )[0]
+         description = description.nil? ? "" : description.content
          data[ :entries ] << {
             :title => title,
             :url => url,
             :author => author,
             :publicationName => pubname,
             :publicationDate => pubdate,
+            :description => description,
+         }
+      end
+      data
+   end
+
+   # CiNii (Author) Opensearch API
+   def cinii_author_search( keyword, opts = {} )
+      base_uri = "http://ci.nii.ac.jp/opensearch/author"
+      q = URI.escape( keyword )
+      cont = nil
+      cache_file = cache_xml( "cinii_author", q, opts[:start] )
+      #p File.mtime( cache_file )
+      if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
+         cont = open( cache_file ){|io| io.read }
+      else
+         # TODO: Atom/RSSの双方を対象にできるようにすること（現状は Atom のみ）
+         opts[ :format ] = "atom"
+         opts[ :sortorder ] ||= 3
+         if not opts.empty?
+            opts_s = opts.keys.map do |e|
+               "#{ e }=#{ URI.escape( opts[e].to_s ) }"
+            end.join( "&" )
+         end
+         opensearch_uri = URI.parse( "#{ base_uri }?q=#{ q }&#{ opts_s }" )
+         response = http_get( opensearch_uri )
+         cont = response.body
+         open( cache_file, "w" ){|io| io.print cont }
+      end
+      data = {}
+      parser = LibXML::XML::Parser.string( cont )
+      doc = parser.parse
+      # ref. http://ci.nii.ac.jp/info/ja/if_opensearch_auth.html
+      data[ :q ] = keyword
+      data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.sub( /&format=atom\b/, "" )
+      data[ :totalResults ] = doc.find( "//opensearch:totalResults" )[0].content.to_i
+      entries = doc.find( "//atom:entry", "atom:http://www.w3.org/2005/Atom" )
+      data[ :entries ] = []
+      entries.each do |e|
+         title = e.find( "./atom:title", "atom:http://www.w3.org/2005/Atom" )[0].content
+         url = e.find( "./atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content
+         affliation = e.find( "./atom:content", "atom:http://www.w3.org/2005/Atom" )[0]
+         affiliation = affiliation ? affliation.content : ""
+         data[ :entries ] << {
+            :title => title,
+            :url => url,
+            :affiliation => affiliation,
+         }
+      end
+      data
+   end
+
+   # CiNii (Author:NRID) Opensearch API
+   def cinii_nrid_search( nrid, opts = {} )
+      q = URI.escape( nrid )
+      base_uri = "http://ci.nii.ac.jp/opensearch/nrid/"
+      cont = nil
+      cache_file = cache_xml( "cinii_nrid", q, opts[:start] )
+      #p File.mtime( cache_file )
+      if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
+         cont = open( cache_file ){|io| io.read }
+      else
+         # TODO: Atom/RSSの双方を対象にできるようにすること（現状はAtom のみ）
+         opts[ :format ] = "atom"
+         opts[ :sortorder ] ||= 3
+         if not opts.empty?
+            opts_s = opts.keys.map do |e|
+               "#{ e }=#{ URI.escape( opts[e].to_s ) }"
+            end.join( "&" )
+         end
+         opensearch_uri = URI.parse( "#{ base_uri }/#{ q }?#{ opts_s }" )
+         response = http_get( opensearch_uri )
+         cont = response.body open( cache_file, "w" ){|io| io.print cont }
+      end
+      data = {}
+      parser = LibXML::XML::Parser.string( cont )
+      doc = parser.parse
+      # ref. http://ci.nii.ac.jp/info/ja/if_opensearch_auth.html
+      data[ :q ] = nrid
+      data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.sub( /&format=atom\b/, "" )
+      data[ :totalResults ] = doc.find( "//opensearch:totalResults" )[0].content.to_i
+      entries = doc.find( "//atom:entry", "atom:http://www.w3.org/2005/Atom" )
+      data[ :entries ] = []
+      entries.each do |e|
+         title = e.find( "./atom:title", "atom:http://www.w3.org/2005/Atom" )[0].content
+         url = e.find( "./atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content
+         author = e.find( ".//atom:author/atom:name", "atom:http://www.w3.org/2005/Atom" ).to_a.map{|name| name.content }.join( "; " )
+         pubname = e.find( "./prism:publicationName", "prism:http://prismstandard.org/namespaces/basic/2.0/" )[0]
+         if pubname.nil?
+            pubname = e.find( "./dc:publisher", "dc:http://purl.org/dc/elements/1.1/" )[0]
+            pubname = pubname.content if pubname
+         else
+            pubname = pubname.content
+         end
+         pubdate = e.find( "./prism:publicationDate", "prism:http://prismstandard.org/namespaces/basic/2.0/" )[0] #.content
+         pubdate = pubdate.nil? ? "" : pubdate.content
+         description = e.find( "./atom:content", "atom:http://www.w3.org/2005/Atom" )[0]
+         description = description.nil? ? "" : description.content
+         data[ :entries ] << {
+            :title => title,
+            :url => url,
+            :author => author,
+            :publicationName => pubname,
+            :publicationDate => pubdate,
+            :description => description,
          }
       end
       data
