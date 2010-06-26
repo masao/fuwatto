@@ -92,6 +92,10 @@ div.cinii_headline a img {
 .ndl_dpid {
   font-size: smaller;
 }
+span.score {
+  font-size: smaller;
+  color: maroon;
+}
 
 .pagination {
   font-size: 1.1;
