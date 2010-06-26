@@ -234,5 +234,8 @@ class TestCinii < Test::Unit::TestCase
       result4 = cinii.execute( :cinii_search, Fuwatto::CiniiApp::TERMS,
                                { :reranking => true, :combination => true,
                                  :prf => true, :term_weight => :tf } )
+      [ result2, result3, result4 ].each do |result|
+         assert( result[ :entries ][0][ :score ] > result[ :entries ][1][ :score ] )
+      end
    end
 end

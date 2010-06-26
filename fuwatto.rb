@@ -981,19 +981,20 @@ module Fuwatto
             end
          end
          if opts[ :reranking ]
-            entries = entries.sort_by do |e|
-               begin
-                  sim = vector.sim( Document.new( [ e[:title], e[:description], e[:publicationName] ].join("\n"), mode, opts ) )
-                  if sim.nan?
-                     #STDERR.puts sim
-                     #STDERR.puts e[:url]
-                     sim = 0
-                  end
-                  sim
-               rescue Fuwatto::NoKeywordExtractedError
-                  0.0
-               end
-            end.reverse
+            entries.each do |e|
+               e[ :score ] = begin
+                                sim = vector.sim( Document.new( [ e[:title], e[:description], e[:publicationName] ].join("\n"), mode, opts ) )
+                                if sim.nan?
+                                   #STDERR.puts sim
+                                   #STDERR.puts e[:url]
+                                   sim = 0
+                                end
+                                sim
+                             rescue Fuwatto::NoKeywordExtractedError
+                                0.0
+                             end
+            end
+            entries = entries.sort_by{|e| e[ :score ] }.reverse
          end
          #p entries[ 0, 5 ]
          data[ :keywords ] = keywords
