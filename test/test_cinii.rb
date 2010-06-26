@@ -213,6 +213,12 @@ class TestCinii < Test::Unit::TestCase
                         result2[ :entries ][0][ :url ] )
       assert_not_equal( result1[ :entries ][-1][ :url ],
                         result2[ :entries ][-1][ :url ] )
+      assert_nothing_raised do
+         @cgi.params[ "text" ] = [ "来春に迫った九州新幹線の全線開業について、発着点となる福岡、鹿児島両県に比べ、中間地点となる熊本で、企業活動へ「マイナス」と予測する企業の割合が高いことが九州経済調査協会がまとめたアンケート結果で分かった。同協会は「顧客が他都市へ流れることや、同業者間の競争激化を不安視しているのではないか」と分析している。" ]
+         cinii = Fuwatto::CiniiApp.new( @cgi )
+         cinii.execute( :cinii_search, Fuwatto::CiniiApp::TERMS,
+                        { :reranking => true } )
+      end
    end
    def test_execute_prf
       @cgi.params[ "text" ] = [ "自分は本からの理窟でなく、日常の生活から、体でそれを学んだ。 宮本百合子『若者の言葉（『新しきシベリアを横切る』）』 " ]
@@ -237,5 +243,18 @@ class TestCinii < Test::Unit::TestCase
       [ result2, result3, result4 ].each do |result|
          assert( result[ :entries ][0][ :score ] > result[ :entries ][1][ :score ] )
       end
+   end
+   def test_execute_prf2
+      @cgi.params[ "text" ] = [ "入力したテキストまたはウェブページに関連した論文をCiNiiで検索します。 長いテキストやURLで指定したページからでも関連キーワードを自動的に抜き出して論文検索できるのが特徴です。 " ]
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      result = cinii.execute( :cinii_search, Fuwatto::CiniiApp::TERMS,
+                              { :reranking => true, :combination => true,
+                                :prf => true } )
+      @cgi.params[ "text" ] = [ "wiki" ]
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      result = cinii.execute( :cinii_search, Fuwatto::CiniiApp::TERMS,
+                              { :reranking => true, :combination => true,
+                                :prf => true } )
+      cinii.output( "cinii", data )
    end
 end
