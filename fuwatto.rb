@@ -801,6 +801,67 @@ module Fuwatto
       data
    end
 
+   # JSTAGE API
+   def jstage_search( keyword, opts = {} )
+      base_uri = "http://api.jstage.jst.go.jp/searchapi/do"
+      client_base_uri = "http://www.jstage.jst.go.jp/search/-char/ja?d6=te&typer=on&searchtype=1"
+      q = URI.escape( keyword.split.join( " AND " ) )
+      cont = nil
+      cache_file = cache_xml( "jstage", q, opts[:start] )
+      #p File.mtime( cache_file )
+      if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
+         cont = open( cache_file ){|io| io.read }
+      else
+         opts[ :service ] = 3
+         opts[ :text ] = keyword
+         #p opts
+         params = [ :service, :system, :start, :count ].map do |e|
+            opts[ e ] ? "#{ e }=#{ URI.escape( opts[e].to_s ) }" : nil
+         end.compact.join( "&" )
+         #p params
+         sru_uri = URI.parse( "#{ base_uri }?text=#{ q }&#{ params }" )
+         response = http_get( sru_uri )
+         cont = response.body
+         open( cache_file, "w" ){|io| io.print cont }
+      end
+      data = {}
+      parser = LibXML::XML::Parser.string( cont )
+      doc = parser.parse
+      #p [ q, cont ]
+      data[ :q ] = keyword
+      data[ :link ] = client_base_uri + "&dp6=#{ q }"
+      data[ :entries ] = []
+      data[ :totalResults ] = doc.find( "//srw:numberOfRecords", "srw:http://www.loc.gov/zing/srw/" )[0].content.to_i
+      #p data[ :totalResults ]
+      #if data[ :totalResults ]
+      #   data[ :totalResults ] = data[ :totalResults ].content.to_i
+      #else
+      #   data[ :totalResults ] = 0
+      #   return data
+      #end
+      entries = doc.find( "//srw:record", "srw:http://www.loc.gov/zing/srw/" )
+      #p entries.to_a
+      entries.each do |e|
+         title = e.find( "./srw:recordData/xml/title", "srw:http://www.loc.gov/zing/srw/" )[0]
+         title = title.nil? ? "(無題)" : title.content
+         bibid = e.find( "./srw:recordData/xml/bibid", "srw:http://www.loc.gov/zing/srw/" )[0].content
+         url = client_base_uri + "?keyword=bibid%20exact%20#{ bibid }"
+         author = e.find( "./srw:recordData/xml/author", "srw:http://www.loc.gov/zing/srw/" )[0]
+         author = author ? author.content : "" 
+         pubname = e.find( "./srw:recordData/xml/journal", "srw:http://www.loc.gov/zing/srw/" )[0].content
+         pubdate = e.find( "./srw:recordData/xml/pubdate", "srw:http://www.loc.gov/zing/srw/" )[0]
+         pubdate = pubdate ? pubdate.content : ""
+         data[ :entries ] << {
+            :title => title,
+            :url => url,
+            :author => author,
+            :publicationName => pubname,
+            :publicationDate => pubdate,
+         }
+      end
+      data
+   end
+
    # 一橋大学 OPAC Opensearch (not API)
    def opac_hit_u_search( keyword, opts = {} )
       require "htmlentities"
