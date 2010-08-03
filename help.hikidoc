@@ -1,6 +1,6 @@
 title: ふわっと関連検索とは
 date.available: 2010-03-14
-date.modified: 2010-05-16
+date.modified: 2010-08-04
 
 {{include 'links.hikidoc'}}
 
@@ -32,7 +32,10 @@ date.modified: 2010-05-16
 !!いま使っているデータベースでも、「ふわっと○○関連検索」してみたい
 
 [[OpenSearch|wikipedia:OpenSearch]]や[[SRU|http://kaede.nier.go.jp/wiki/?SRU+Version+1.2+Specifications]]などの検索用APIに対応したものでしたら、すぐに追加できます。
-ご相談いただければ幸いです。
+追加したいデータベースの検索方式などの情報を添えて、ご連絡いただければ幸いです。
+
+また、一橋大学OPACなどのように、API非対応システムであっても、スクレイピングなどの手法によって対応させることも可能です。
+まずはご相談いただければ幸いです。
 
 !!検索結果の並び順は？
 
