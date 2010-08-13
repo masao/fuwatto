@@ -1,0 +1,24 @@
+<div class="cinii_search">
+<div class="cinii_headline">
+<strong><%=h data[:q] %>
+<span class="additional_keywords"><%=h data[ :additional_keywords ].join("\n") %></span></strong>
+<a class="cinii" href="<%=h data[:link] %>"><img src="./cinii.png" alt="[CiNii]" title="CiNii検索"></a>
+&nbsp;
+<%=h data[ :totalResults ] %>件中
+<%=h data[ :count ] * data[ :page ] + 1 %>
+- <%=h data[ :page ] * data[ :count ] + data[ :count ] %>件目・・
+検索にかかった時間<%= sprintf( '%.02f', data[ :searchTime ] ) %>秒
+</div>
+<ol start="<%=h data[:count] * data[:page] + 1 %>">
+<% data[ :entries ][ data[:count] * data[:page], data[:count] ].each do |entry| %>
+<li><div class="cinii_title"><a href="<%=h entry[:url] %>"><%=h entry[:author] %></a>
+<span class="score" title="score">
+<% if entry[ :score ] %>
+<%=h "(%.02f)" % entry[ :score ] %>
+<% end %>
+</span>
+</div>
+<% end %>
+</ol>
+<div class="cinii_frame"></div>
+</div>

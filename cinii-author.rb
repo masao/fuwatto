@@ -8,7 +8,7 @@ require "cinii.rb"
 module Fuwatto
    class CiniiAuthorApp < CiniiApp
       TERMS = 10
-      TITLE = "ふわっとCiNii著者検索"
+      TITLE = "ふわっとCiNii関連著者検索"
       HELP_TEXT = <<-EOF
 	<p>
 	入力したテキストまたはウェブページに関連した論文著者を<a href="http://ci.nii.ac.jp">CiNii</a>から検索します。
@@ -21,17 +21,25 @@ module Fuwatto
 	</p>
       EOF
       def execute( method = :cinii_author_search, terms = TERMS, opts = {} )
+         opts[ :reranking ] = true
          data = super( :cinii_search, terms, opts )
+         return data if data.empty?
          authors = {}
-         data[ :entries ].each do |entry|
+         data[ :entries ].each_with_index do |entry, i|
+            score = entry[ :score ]
+            # score = i if score.nil?
             entry[ :author ].split( /; / ).each do |a|
                authors[ a ] ||= 0
-               authors[ a ] += entry[ :score ]
+               authors[ a ] += score
             end
          end
          entries = []
          authors.keys.sort_by{|e| authors[ e ] }.reverse.each do |a|
-            entries << { :author => a, :score => authors[ a ] }
+            entries << {
+               :author => a,
+               :url => "http://ci.nii.ac.jp/opensearch/search?author=#{ CGI.escape( a ) }",
+               :score => authors[ a ]
+            }
          end
          data[ :entries ] = entries
          data

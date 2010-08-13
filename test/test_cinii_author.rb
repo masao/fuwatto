@@ -28,7 +28,13 @@ class TestCiniiAuthor < Test::Unit::TestCase
    end
    def test_execute2
       @cgi.params[ "text" ] = [ "児童虐待と相談所の運営" ]
-      cinii = Fuwatto::CiniiApp.new( @cgi )
+      cinii = Fuwatto::CiniiAuthorApp.new( @cgi )
+      result = cinii.execute
+      assert( result )
+      assert( result[ :totalResults ] > 0 )
+      # assert( result[ :totalResults ] > 20 )
+      @cgi.params[ "text" ] = [ "Z39.50" ]
+      cinii = Fuwatto::CiniiAuthorApp.new( @cgi )
       result = cinii.execute
       assert( result )
       assert( result[ :totalResults ] > 0 )
@@ -36,10 +42,10 @@ class TestCiniiAuthor < Test::Unit::TestCase
    end
    def test_execute_page
       @cgi.params["url"] = [ "http://yahoo.co.jp" ]
-      cinii = Fuwatto::CiniiApp.new( @cgi )
+      cinii = Fuwatto::CiniiAuthorApp.new( @cgi )
       result1 = cinii.execute
       @cgi.params["page"] = [ 1 ]
-      cinii = Fuwatto::CiniiApp.new( @cgi )
+      cinii = Fuwatto::CiniiAuthorApp.new( @cgi )
       result2 = cinii.execute
       assert( result1 )
       assert( result1[ :totalResults ] > 0 )
