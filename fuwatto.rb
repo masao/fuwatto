@@ -801,11 +801,11 @@ module Fuwatto
       data
    end
 
-   # JSTAGE API
+   # JSTAGE API (Opensearch-based?)
    def jstage_search( keyword, opts = {} )
       base_uri = "http://api.jstage.jst.go.jp/searchapi/do"
       client_base_uri = "http://www.jstage.jst.go.jp/search/-char/ja?d6=te&typer=on&searchtype=1"
-      q = URI.escape( keyword.split.join( " AND " ) )
+      q = URI.escape( keyword )
       cont = nil
       cache_file = cache_xml( "jstage", q, opts[:start] )
       #p File.mtime( cache_file )
@@ -831,32 +831,26 @@ module Fuwatto
       data[ :q ] = keyword
       data[ :link ] = client_base_uri + "&dp6=#{ q }"
       data[ :entries ] = []
-      data[ :totalResults ] = doc.find( "//srw:numberOfRecords", "srw:http://www.loc.gov/zing/srw/" )[0].content.to_i
-      #p data[ :totalResults ]
-      #if data[ :totalResults ]
-      #   data[ :totalResults ] = data[ :totalResults ].content.to_i
-      #else
-      #   data[ :totalResults ] = 0
-      #   return data
-      #end
-      entries = doc.find( "//srw:record", "srw:http://www.loc.gov/zing/srw/" )
-      #p entries.to_a
+      data[ :totalResults ] = doc.find( "//opensearch:totalResults" )[0].content.to_i
+      return data if data[ :totalResults ] == 0
+      entries = doc.find( "//atom:entry", "atom:http://www.w3.org/2005/Atom" )
+      data[ :entries ] = []
       entries.each do |e|
-         title = e.find( "./srw:recordData/xml/title", "srw:http://www.loc.gov/zing/srw/" )[0]
-         title = title.nil? ? "(無題)" : title.content
-         bibid = e.find( "./srw:recordData/xml/bibid", "srw:http://www.loc.gov/zing/srw/" )[0].content
-         url = client_base_uri + "?keyword=bibid%20exact%20#{ bibid }"
-         author = e.find( "./srw:recordData/xml/author", "srw:http://www.loc.gov/zing/srw/" )[0]
-         author = author ? author.content : "" 
-         pubname = e.find( "./srw:recordData/xml/journal", "srw:http://www.loc.gov/zing/srw/" )[0].content
-         pubdate = e.find( "./srw:recordData/xml/pubdate", "srw:http://www.loc.gov/zing/srw/" )[0]
-         pubdate = pubdate ? pubdate.content : ""
+         title = e.find( "./atom:title", "atom:http://www.w3.org/2005/Atom" )[0].content
+         url = e.find( "./atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content
+         author = e.find( "./atom:author/atom:ja/atom:name", "atom:http://www.w3.org/2005/Atom" )
+         author = e.find( "./atom:author/atom:en/atom:name", "atom:http://www.w3.org/2005/Atom" ) if author[0].nil?
+         author = author.to_a.map{|name| name.content }.join( "; " )
+         material_title = e.find( "./atom:material_title/atom:ja", "atom:http://www.w3.org/2005/Atom" )
+         material_title = e.find( "./atom:material_title/atom:en", "atom:http://www.w3.org/2005/Atom" ) if material_title[0].nil?
+         material_title = material_title[0].content
+         pubyear = e.find( "./atom:pubyear", "atom:http://www.w3.org/2005/Atom" )[0].content
          data[ :entries ] << {
             :title => title,
             :url => url,
             :author => author,
-            :publicationName => pubname,
-            :publicationDate => pubdate,
+            :publicationName => material_title,
+            :publicationDate => pubyear,
          }
       end
       data

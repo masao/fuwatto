@@ -1,22 +1,22 @@
 #!/usr/bin/env ruby
-# -*- coding: euc-jp -*-
+# -*- coding: utf-8 -*-
 # $Id$
 
 require "fuwatto.rb"
 
 module Fuwatto
    class JStageApp < BaseApp
-      TERMS = 10
-      TITLE = "�դ�ä�J-Stage��Ϣ����"
+      TERMS = 5
+      TITLE = "ふわっとJ-STAGE関連検索"
       HELP_TEXT = <<-EOF
 	<p>
-	���Ϥ����ƥ����Ȥޤ��ϥ����֥ڡ����˴�Ϣ������ʸ��<a href="http://www.jstage.jst.go.jp/browse/-char/ja">J-STAGE</a>�Ǹ������ޤ���
-	Ĺ���ƥ����Ȥ�URL�ǻ��ꤷ���ڡ�������Ǥ��Ϣ������ɤ�ưŪ��ȴ���Ф�����ʸ�����Ǥ���Τ���ħ�Ǥ���
+	学術雑誌プラットフォーム<a href="http://www.jstage.jst.go.jp/browse/-char/ja">J-STAGE</a>および<a href="http://www.journalarchive.jst.go.jp/japanese/top_ja.php">Journal@rchive</a>から、入力したテキストまたはウェブページに関連した論文を検索します。
+	長いテキストやURLで指定したページからでも関連キーワードを自動的に抜き出して論文検索できるのが特徴です。
 	</p>
 	<p>
-	��:
-	<a href="?url=http://www.asahi.com/paper/editorial.html">ī����ʹ����</a> <span style="font-size:smaller;">��<a href="http://www.asahi.com/paper/editorial.html">������(asahi.com)</a>��</span>, 
-	<a href="?url=http://mainichi.jp/select/opinion/eye/">������ʹ�ֵ��Ԥ��ܡ�</a> <span style="font-size:smaller;">��<a href="http://mainichi.jp/select/opinion/eye/">������(mainichi.jp)</a>��</span>
+	例:
+	<a href="?url=http://www.asahi.com/paper/editorial.html">朝日新聞社説</a> <span style="font-size:smaller;">（<a href="http://www.asahi.com/paper/editorial.html">元記事(asahi.com)</a>）</span>, 
+	<a href="?url=http://mainichi.jp/select/opinion/eye/">毎日新聞「記者の目」</a> <span style="font-size:smaller;">（<a href="http://mainichi.jp/select/opinion/eye/">元記事(mainichi.jp)</a>）</span>
 	</p>
       EOF
       def execute( method = :jstage_search, terms = TERMS, opts = {} )
@@ -26,7 +26,7 @@ module Fuwatto
 end
 
 if $0 == __FILE__
-   # �����˻��Ѥ�����祭����ɿ�
+   # 検索に使用する最大キーワード数
    @cgi = CGI.new
    case @cgi.host
    when "kagaku.nims.go.jp"
