@@ -17,7 +17,7 @@
   <li><a href="history.html">更新履歴</a></li>
 </ul>
 <!-- hhmts start -->
-<div class="last-update">最終更新日: 2010年06月26日</div>
+<div class="last-update">最終更新日: 2010年08月14日</div>
 <!-- hhmts end -->
 <h1><%= self.class::TITLE %></h1>
 <% if data[ :error ] %>
@@ -36,7 +36,7 @@
 <form action="<%=h @cgi.script_name %>" method="post" name="text1">
 <textarea rows="4" cols="45"  name="text"><%=h content.to_s.toutf8 %></textarea>
 <input type="submit" value="  論 文 検 索  <%=h " (Search) " if self.class.to_s == "Fuwatto::WorldcatApp" %>" />
-<% if self.class.to_s == "Fuwatto::CiniiApp" %>
+<% if /\AFuwatto::(Cinii|JStage)App\Z/ =~ self.class.to_s %>
 <input type="checkbox" name="combination" title="関連度順ソート"
 <% if not @cgi.params["combination"].empty? %>
 checked="checked"
@@ -49,7 +49,7 @@ checked="checked"
 <form action="<%=h @cgi.script_name %>" method="get" name="url1">
 <input type="text" name="url" value="<%=h( url || "http://" ) %>" size="70" />
 <input type="submit" value="  論 文 検 索  <%=h " (Search) " if self.class.to_s == "Fuwatto::WorldcatApp" %>" />
-<% if self.class.to_s == "Fuwatto::CiniiApp" %>
+<% if /\AFuwatto::(Cinii|JStage)App\Z/ =~ self.class.to_s %>
 <input type="checkbox" name="combination" title="関連度順ソート"
 <% if not @cgi.params["combination"].empty? %>
 checked="checked"
