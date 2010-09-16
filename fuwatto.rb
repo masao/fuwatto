@@ -950,6 +950,8 @@ module Fuwatto
          @page = @cgi.params["page"][0].to_i
          @mode = @cgi.params["mode"][0] || "mecab"
          @callback = @cgi.params["callback"][0]
+
+         raise( "Crawler access is limited to the first page." ) if @page > 0 and @cgi.user_agent =~ /bot|slurp|craw|spid/i
       end
 
       def query_url?
