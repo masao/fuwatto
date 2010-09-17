@@ -8,7 +8,7 @@ TOHTML_EN=$(TOHTML) ./tohtml.conf.en ./template.html.en
 
 all: $(HTML)
 
-%.html: %.hikidoc $(TOHTML_JA)
+%.html: %.hikidoc links.hikidoc $(TOHTML_JA)
 	./tohtml.rb $< > $@
 
 %.shtml: %.hikidoc $(TOHTML_JA)
