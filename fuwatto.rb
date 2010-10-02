@@ -59,7 +59,7 @@ class Array
 end
 
 module Fuwatto
-   VERSION = '2.1'
+   VERSION = '2.2'
    BASE_URI = 'http://fuwat.to/'
    USER_AGENT = "Fuwatto Search/#{ VERSION }; #{ BASE_URI }"
    CACHE_TIME = 60 * 60 * 24 * 3   # 3日経つまで、キャッシュは有効
@@ -263,7 +263,10 @@ module Fuwatto
       entries.each do |e|
          title = e.find( "./atom:title", "atom:http://www.w3.org/2005/Atom" )[0].content
          url = e.find( "./atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content
-         author = e.find( ".//atom:author/atom:name", "atom:http://www.w3.org/2005/Atom" ).to_a.map{|name| name.content }.join( "; " )
+         author = e.find( ".//atom:author/atom:name", "atom:http://www.w3.org/2005/Atom" ).to_a.map{|name|
+            a = name.content
+            /^\s*\W/.match( a ) ? a.gsub( /\s*,\s*/, " " ) : a
+         }.join( "; " )
          pubname = e.find( "./prism:publicationName", "prism:http://prismstandard.org/namespaces/basic/2.0/" )[0]
          if pubname.nil?
             pubname = e.find( "./dc:publisher", "dc:http://purl.org/dc/elements/1.1/" )[0]
@@ -297,7 +300,6 @@ module Fuwatto
       if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
          cont = open( cache_file ){|io| io.read }
       else
-         # TODO: Atom/RSSの双方を対象にできるようにすること（現状は Atom のみ）
          opts[ :format ] = "atom"
          opts[ :sortorder ] ||= 3
          if not opts.empty?
@@ -343,7 +345,6 @@ module Fuwatto
       if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
          cont = open( cache_file ){|io| io.read }
       else
-         # TODO: Atom/RSSの双方を対象にできるようにすること（現状はAtom のみ）
          opts[ :format ] = "atom"
          opts[ :sortorder ] ||= 3
          if not opts.empty?

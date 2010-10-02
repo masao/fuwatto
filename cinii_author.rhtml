@@ -17,6 +17,13 @@
 <%=h "(%.02f)" % entry[ :score ] %>
 <% end %>
 </span>
+<ul class="article_example">
+<% entry[ :articles ][ 0...3 ].each do |article| %>
+<li><span class="cini_title"><a href="<%=h article[ :url ] %>"><%=h article[ :title ] %></a></span>
+(<%=h article[ :author ] %>)
+</li>
+<% end %>
+</ul>
 </div>
 <% end %>
 </ol>

@@ -11,7 +11,7 @@ module Fuwatto
       TITLE = "ふわっとCiNii関連著者検索"
       HELP_TEXT = <<-EOF
 	<p>
-	入力したテキストまたはウェブページに関連した論文著者を<a href="http://ci.nii.ac.jp">CiNii</a>から検索します。
+	入力したテキストまたはウェブページに関連する論文著者を<a href="http://ci.nii.ac.jp">CiNii</a>から検索します。
 	長いテキストやURLで指定したページからでも関連キーワードを自動的に抜き出して関連する人物を検索できるのが特徴です。
 	</p>
 	<p>
@@ -22,23 +22,34 @@ module Fuwatto
       EOF
       def execute( method = :cinii_author_search, terms = TERMS, opts = {} )
          opts[ :reranking ] = true
+         opts[ :combination ] = true
          data = super( :cinii_search, terms, opts )
          return data if data.empty?
          authors = {}
          data[ :entries ].each_with_index do |entry, i|
             score = entry[ :score ]
             # score = i if score.nil?
-            entry[ :author ].split( /; / ).each do |a|
-               authors[ a ] ||= 0
-               authors[ a ] += score
+            author_list = entry[ :author ].split( /; / )
+            author_list.each_with_index do |a, order|
+               authors[ a ] ||= { :score => 0, :entry => [] }
+               # authors[ a ] += score / Math.log2( order + 2 )
+               if order == 0
+                  authors[ a ][ :score ] += score
+               else
+                  authors[ a ][ :score ] += score / Math.log2( author_list.size + 1 )
+               end
+               authors[ a ][ :entry ] << entry
             end
+            break if authors.size > 500
          end
          entries = []
-         authors.keys.sort_by{|e| authors[ e ] }.reverse.each do |a|
+         authors.keys.sort_by{|e| authors[ e ][ :score ] }.reverse.each do |a|
+            # p authors[ a ][ :entry ]
             entries << {
                :author => a,
-               :url => "http://ci.nii.ac.jp/opensearch/search?author=#{ CGI.escape( a ) }",
-               :score => authors[ a ]
+               :url => "http://ci.nii.ac.jp/opensearch/search?author=%2f#{ CGI.escape( a.gsub( /\s*,\s*/, " " ) ) }%2f",
+               :score => authors[ a ][ :score ],
+               :articles => authors[ a ][ :entry ],
             }
          end
          data[ :entries ] = entries
