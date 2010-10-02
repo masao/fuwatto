@@ -58,4 +58,16 @@ class TestCiniiAuthor < Test::Unit::TestCase
          assert_equal( result2[ :totalResults ], result2[ :entries ].size )
       end
    end
+
+   def test_execute_masao
+      @cgi.params["url"] = [ "http://masao.jpn.org/profile.html" ]
+      cinii = Fuwatto::CiniiAuthorApp.new( @cgi )
+      result = cinii.execute
+      assert( result )
+      assert( result[ :totalResults ] > 0 )
+      assert( result[ :totalResults ] > 20 )      
+      assert( result[ :entries ].size > 20 )
+      #p result[ :entries ].map{|e| e[:author] }
+      assert( result[ :entries ].find{|e| e[ :author ] === "高久 雅生" } )
+   end
 end

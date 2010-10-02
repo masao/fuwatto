@@ -261,4 +261,13 @@ class TestCinii < Test::Unit::TestCase
                               { :reranking => true, :combination => true,
                                 :prf => true } )
    end
+
+   def test_link_atom_appid
+      @cgi.params["url"] = [ "http://yahoo.co.jp" ]
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      result = cinii.execute
+      assert_no_match( /appid/, result[ :link ] )
+      assert_no_match( /format/, result[ :link ] )
+      assert_no_match( /atom/, result[ :link ] )
+   end
 end
