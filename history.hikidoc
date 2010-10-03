@@ -5,6 +5,8 @@ css.content: dt { margin-top: 5px; }
 
 {{include 'links.hikidoc'}}
 
+:2010年10月2日:
+::[News] 新たに「[[ふわっと CiNii 関連著者検索|http://fuwat.to/cinii-author]]」を公開。 (fuwatto.rb 2.2)
 :2010年9月16日:
 ::[News] 「[[ふわっと J-Stage 関連検索|http://fuwat.to/jstage]]」を公開。 (fuwatto.rb 2.1)
 :2010年8月4日
