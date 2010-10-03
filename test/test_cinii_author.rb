@@ -20,7 +20,6 @@ class TestFuwatto < Test::Unit::TestCase
    end
 end
 
-
 class TestCiniiAuthor < Test::Unit::TestCase
    def setup
       ENV[ "REQUEST_METHOD" ] = "GET"
@@ -42,7 +41,7 @@ class TestCiniiAuthor < Test::Unit::TestCase
       assert( result )
       assert( result[ :totalResults ] > 0 )
       # assert( result[ :totalResults ] > 20 )
-      @cgi.params[ "text" ] = [ "Z39.50" ]
+      @cgi.params[ "text" ] = [ "情報検索プロトコル Z39.50 sru srw" ]
       cinii = Fuwatto::CiniiAuthorApp.new( @cgi )
       result = cinii.execute
       assert( result )
