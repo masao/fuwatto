@@ -48,23 +48,33 @@ class TestCiniiAuthor < Test::Unit::TestCase
       assert( result[ :totalResults ] > 0 )
       # assert( result[ :totalResults ] > 20 )
    end
+
    def test_execute_page
       @cgi.params["url"] = [ "http://yahoo.co.jp" ]
       cinii = Fuwatto::CiniiAuthorApp.new( @cgi )
       result1 = cinii.execute
+      $stdout = StringIO.new
+      assert_nothing_raised do
+         cinii.output( "cinii", result1 )
+      end
+      $stdout.rewind
+      output1 = $stdout.read
+
       @cgi.params["page"] = [ 1 ]
       cinii = Fuwatto::CiniiAuthorApp.new( @cgi )
       result2 = cinii.execute
+      $stdout = StringIO.new
+      assert_nothing_raised do
+         cinii.output( "cinii", result2 )
+      end
+      $stdout.rewind
+      output2 = $stdout.read
+
       assert( result1 )
       assert( result1[ :totalResults ] > 0 )
       assert( result1[ :totalResults ] > 20 )      
       assert( result2[ :entries ].size > 20 )
-      assert_not_equal( result1[ :entries ], result2[ :entries ] )
-      if result1[ :totalResults ] >= 40
-         assert_equal( 40, result2[ :entries ].size )
-      else
-         assert_equal( result2[ :totalResults ], result2[ :entries ].size )
-      end
+      assert_not_equal( output1, output2 )
    end
 
    def test_execute_masao
