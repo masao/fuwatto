@@ -43,6 +43,15 @@ class TestCinii < Test::Unit::TestCase
       assert( result[ :totalResults ] > 0 )
       # assert( result[ :totalResults ] > 20 )
    end
+   def test_execute_z39
+      @cgi.params[ "text" ] = [ "Z39.50" ]
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      #assert( result )
+      #assert( result[ :totalResults ] > 0 )
+      assert_raise( Fuwatto::NoHitError ) do
+         cinii.execute
+      end
+   end
    def test_execute_page
       @cgi.params["url"] = [ "http://yahoo.co.jp" ]
       cinii = Fuwatto::CiniiApp.new( @cgi )
