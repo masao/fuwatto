@@ -10,7 +10,16 @@ require "cinii-author.rb"
 
 class TestFuwatto < Test::Unit::TestCase
    include Fuwatto
+   def test_cinii_author_search
+      #p cinii_author_search( "a" )
+      result = cinii_author_search( "高久雅生" )
+      assert_not_equal( "", result[ :entries ].first[ :affiliation ] )
+      result[ :entries ].each do |au|
+         assert_match( /\/nrid\/\w+$/, au[ :url ] )
+      end
+   end
 end
+
 
 class TestCiniiAuthor < Test::Unit::TestCase
    def setup
@@ -24,7 +33,7 @@ class TestCiniiAuthor < Test::Unit::TestCase
       assert( result )
       assert( result[ :totalResults ] > 0 )
       assert( result[ :totalResults ] > 20 )
-      assert_equal( 20, result[ :entries ].size )
+      assert( result[ :entries ].size >= 20 )
    end
    def test_execute2
       @cgi.params[ "text" ] = [ "児童虐待と相談所の運営" ]
