@@ -229,6 +229,7 @@ module Fuwatto
       end
    end
 
+   CINII_APPID = "CiNii10-281c60b8055e2d850686566dedb7c922"
    # CiNii Opensearch API
    def cinii_search( keyword, opts = {} )
       base_uri = "http://ci.nii.ac.jp/opensearch/search"
@@ -246,7 +247,7 @@ module Fuwatto
                "#{ e }=#{ URI.escape( opts[e].to_s ) }"
             end.join( "&" )
          end
-         opensearch_uri = URI.parse( "#{ base_uri }?q=#{ q }&#{ opts_s }" )
+         opensearch_uri = URI.parse( "#{ base_uri }?q=#{ q }&appid=#{ CINII_APPID }&#{ opts_s }" )
          response = http_get( opensearch_uri )
          cont = response.body
          open( cache_file, "w" ){|io| io.print cont }
@@ -256,7 +257,7 @@ module Fuwatto
       doc = parser.parse
       # ref. http://ci.nii.ac.jp/info/ja/if_opensearch.html
       data[ :q ] = keyword
-      data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.sub( /&format=atom\b/, "" )
+      data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.gsub( /&(format=atom|appid=#{ CINII_APPID })\b/, "" )
       data[ :totalResults ] = doc.find( "//opensearch:totalResults" )[0].content.to_i
       entries = doc.find( "//atom:entry", "atom:http://www.w3.org/2005/Atom" )
       data[ :entries ] = []
@@ -307,7 +308,7 @@ module Fuwatto
                "#{ e }=#{ URI.escape( opts[e].to_s ) }"
             end.join( "&" )
          end
-         opensearch_uri = URI.parse( "#{ base_uri }?q=#{ q }&#{ opts_s }" )
+         opensearch_uri = URI.parse( "#{ base_uri }?q=#{ q }&appid=#{ CINII_APPID }&#{ opts_s }" )
          response = http_get( opensearch_uri )
          cont = response.body
          open( cache_file, "w" ){|io| io.print cont }
@@ -317,7 +318,7 @@ module Fuwatto
       doc = parser.parse
       # ref. http://ci.nii.ac.jp/info/ja/if_opensearch_auth.html
       data[ :q ] = keyword
-      data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.sub( /&format=atom\b/, "" )
+      data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.gsub( /&(format=atom|appid=#{ CINII_APPID })\b/, "" )
       data[ :totalResults ] = doc.find( "//opensearch:totalResults" )[0].content.to_i
       entries = doc.find( "//atom:entry", "atom:http://www.w3.org/2005/Atom" )
       data[ :entries ] = []
@@ -346,22 +347,23 @@ module Fuwatto
          cont = open( cache_file ){|io| io.read }
       else
          opts[ :format ] = "atom"
-         opts[ :sortorder ] ||= 3
+         # opts[ :sortorder ] ||= 3
          if not opts.empty?
             opts_s = opts.keys.map do |e|
                "#{ e }=#{ URI.escape( opts[e].to_s ) }"
             end.join( "&" )
          end
-         opensearch_uri = URI.parse( "#{ base_uri }/#{ q }?#{ opts_s }" )
+         opensearch_uri = URI.parse( "#{ base_uri }#{ q }?appid=#{ CINII_APPID }&#{ opts_s }" )
          response = http_get( opensearch_uri )
-         cont = response.body open( cache_file, "w" ){|io| io.print cont }
+         cont = response.body
+         open( cache_file, "w" ){|io| io.print cont }
       end
       data = {}
       parser = LibXML::XML::Parser.string( cont )
       doc = parser.parse
       # ref. http://ci.nii.ac.jp/info/ja/if_opensearch_auth.html
       data[ :q ] = nrid
-      data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.sub( /&format=atom\b/, "" )
+      data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.gsub( /&(format=atom|appid=#{ CINII_APPID })\b/, "" )
       data[ :totalResults ] = doc.find( "//opensearch:totalResults" )[0].content.to_i
       entries = doc.find( "//atom:entry", "atom:http://www.w3.org/2005/Atom" )
       data[ :entries ] = []
@@ -392,6 +394,25 @@ module Fuwatto
       data
    end
 
+   def cinii_author_nrid_search( name, naid = [] )
+      data = cinii_author_search( name )
+      result = data
+      if not naid.empty?
+         entries = []
+         result[ :entries ].each do |author|
+            #p author[ :url ]
+            if /nrid\/(.+)\Z/ =~ author[ :url ]
+               nrid = $1
+               if cinii_nrid_search( nrid )[ :entries ].find{|e| naid.include?( e[ :url ] ) }
+                  entries << author
+               end
+            end
+         end
+         result[ :entries ] = entries
+      end
+      result
+   end
+   
    # NDL Porta Opensearch
    def ndl_search( keyword, opts = {} )
       base_uri = "http://api.porta.ndl.go.jp/servicedp/opensearch"
