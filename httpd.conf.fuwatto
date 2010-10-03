@@ -5,6 +5,7 @@ DirectoryIndex index.html index.cgi
 Options All MultiViews
 AllowOverride All
 </Directory>
+
 ScriptAlias /cinii /home/masao/cvswork/fuwatto/cinii.rb
 ScriptAlias /cinii-author /home/masao/cvswork/fuwatto/cinii-author.rb
 ScriptAlias /worldcat /home/masao/cvswork/fuwatto/worldcat.rb
