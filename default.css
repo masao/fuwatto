@@ -123,3 +123,6 @@ span.score {
 .article_example {
   font-size: smaller;
 }
+.nrid a img {
+  border: none;
+}
