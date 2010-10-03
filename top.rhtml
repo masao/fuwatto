@@ -14,7 +14,7 @@
 <% end %>
 <title><%= self.class::TITLE %></title>
 </head>
-<body onload="seltab('box', 'head', 10, <%= query_url? ? 2 : 1 %>)">
+<body>
 <ul id="navi">
   <li><a href="help.html">ふわっと関連検索とは</a></li>
   <li><a href="history.html">更新履歴</a></li>
@@ -77,6 +77,9 @@ checked="checked"
 </div>
 </div>
 </div>
+<script type="text/javascript">
+seltab( 'box', 'head', 10, <%= query_url? ? 2 : 1 %> )
+</script>
 <% if result %>
 <%= result %>
 <p class="pagination">ページ:
