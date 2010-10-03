@@ -8,7 +8,7 @@ css.content: dt { margin-top: 5px; }
 :2010年9月16日:
 ::[News] 「[[ふわっと J-Stage 関連検索|http://fuwat.to/jstage]]」を公開。 (fuwatto.rb 2.1)
 :2010年8月4日
-::[[第150回データベースシステム・第99回情報基礎とアクセス技術 合同研究発表会|http://www.ipsj.or.jp/katsudou/sig/sighp/fi/cfp/20100804/]]にて、研究発表を行いました。[[予稿論文|http://masao.jpn.org/pub/2010/IPSJ-IFAT10099014.pdf]]および[[発表スライド|http://masao.jpn.org/pub/2010/ifat99-fuwatto-slides.pdf]]を公開しています。
+::[News] [[第150回データベースシステム・第99回情報基礎とアクセス技術 合同研究発表会|http://www.ipsj.or.jp/katsudou/sig/sighp/fi/cfp/20100804/]]にて、研究発表を行いました。[[予稿論文|http://masao.jpn.org/pub/2010/IPSJ-IFAT10099014.pdf]]および[[発表スライド|http://masao.jpn.org/pub/2010/ifat99-fuwatto-slides.pdf]]を公開しています。
 :2010年6月26日:
 ::[News] 「ふわっと CiNii 関連検索」において検索結果を関連度順にソートする機能を追加しました。 (fuwatto.rb 2.0)
 :2010年6月26日:
@@ -34,7 +34,7 @@ css.content: dt { margin-top: 5px; }
 :2010年3月9日:
 ::[News] NDL Portaを検索対象とした「[[ふわっとNDL関連検索|http://fuwat.to/ndl]]」を追加公開。
 :2010年3月8日
-::[News] [[第38回ディジタル図書館ワークショップ|http://www.dl.slis.tsukuba.ac.jp/DLjournal/No_38/]]にて研究発表を行いました。発表スライドは http://masao.jpn.org/pub/2010/dlw38-fuwatto-slides.pdf にあります。
+::[News] [[第38回ディジタル図書館ワークショップ|http://www.dl.slis.tsukuba.ac.jp/DLjournal/No_38/]]にて研究発表を行いました。[[予稿論文|http://www.dl.slis.tsukuba.ac.jp/DLjournal/No_38/5-takaku/5-takaku.pdf]]および[[発表スライド|http://masao.jpn.org/pub/2010/dlw38-fuwatto-slides.pdf]]も公開。
 :2010年2月22日:
 ::[News] 稼働サイトを fuwat.to ドメインに移動。
 ::→ 「[[ふわっとCiNii関連検索|http://fuwat.to/cinii]]」
