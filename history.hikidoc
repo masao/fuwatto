@@ -1,10 +1,12 @@
 title: 更新履歴 - ふわっと関連検索
 date.available: 2010-01-17
-date.modified: 2010-10-03
+date.modified: 2010-10-20
 css.content: dt { margin-top: 5px; }
 
 {{include 'links.hikidoc'}}
 
+:2010年10月20日:
+::[News] 関連検索サービスから「[[ふわっと CiNii 関連著者検索|http://fuwat.to/cinii-author]]」への相互リンクを追加しました。 (fuwatto.rb 2.3)
 :2010年10月2日:
 ::[News] 新たに「[[ふわっと CiNii 関連著者検索|http://fuwat.to/cinii-author]]」を公開。 (fuwatto.rb 2.2)
 :2010年9月16日:
