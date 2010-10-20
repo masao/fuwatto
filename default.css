@@ -126,3 +126,19 @@ span.score {
 .nrid a img {
   border: none;
 }
+
+#cinii_author {
+  float: right;
+  width: 16%;
+  color: #222;
+  padding: 2px;
+  border: 1px solid gray;
+  margin-left: 1em;
+}
+#cinii_author * {
+  font-size: 0.9em;
+  margin: 0;
+}
+#cinii_author ul {
+  padding-left: 1em;
+}
