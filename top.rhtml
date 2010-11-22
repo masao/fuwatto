@@ -42,7 +42,7 @@ $.ajax({
   dataType : 'jsonp',
   error : function(request, status){
     $("#cinii_author img").hide();
-    $("#cinii_author").after('<div>load error.</div>')
+    $("#cinii_author").append('<div>load error.</div>');
   },
   success : function(data, status){
     $("#cinii_author img").hide();
@@ -76,7 +76,7 @@ $.ajax({
   <li><a href="history.html">更新履歴</a></li>
 </ul>
 <!-- hhmts start -->
-<div class="last-update">最終更新日: 2010年10月20日</div>
+<div class="last-update">最終更新日: 2010年10月21日</div>
 <!-- hhmts end -->
 <h1><%= self.class::TITLE %></h1>
 <% if data[ :error ] %>
