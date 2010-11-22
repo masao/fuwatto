@@ -161,7 +161,7 @@ class TestJStage < Test::Unit::TestCase
       # assert( result[ :totalResults ] > 20 )
    end
    def test_nohit
-      @cgi.params[ "text" ] = [ "testtesttest testtesttest" ]
+      @cgi.params[ "text" ] = [ "testtesttesttest hogehogehogehoge" ]
       jstage = Fuwatto::JStageApp.new( @cgi )
       data = {}
       assert_raise( Fuwatto::NoHitError ) do
