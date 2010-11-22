@@ -59,7 +59,7 @@ class Array
 end
 
 module Fuwatto
-   VERSION = '2.3'
+   VERSION = '2.3.1'
    BASE_URI = 'http://fuwat.to/'
    USER_AGENT = "Fuwatto Search/#{ VERSION }; #{ BASE_URI }"
    CACHE_TIME = 60 * 60 * 24 * 3   # 3日経つまで、キャッシュは有効
