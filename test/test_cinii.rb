@@ -78,6 +78,13 @@ class TestCinii < Test::Unit::TestCase
       assert( result[ :totalResults ] > 0 )
       assert_equal( 20, result[ :entries ].size )
    end
+   def test_protected_pdf
+      @cgi.params["url"] = [ "http://repository.kulib.kyoto-u.ac.jp/dspace/bitstream/2433/68924/1/cue20_03.pdf" ]
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      assert_nothing_raised( Fuwatto::NoHitError ) do
+         result = cinii.execute
+      end
+   end
 
    def test_json
       @cgi.params["url"] = [ "http://yahoo.co.jp" ]
