@@ -219,12 +219,13 @@ module Fuwatto
       File.join( CACHE_DIR, prefix, xml_fname )
    end
 
+   PDFTOTEXT = "/usr/bin/pdftotext"
    def pdftotext( pdf_str )
       pdf_file = Tempfile.new( [ "pdf", ".pdf" ] )
       pdf_file.print pdf_str
       pdf_file.flush
       #p pdf_file.size
-      IO.popen( "/usr/local/bin/pdftotext -raw -enc EUC-JP #{ pdf_file.path } -" ) do |io|
+      IO.popen( "#{ PDFTOTEXT } -raw -enc EUC-JP #{ pdf_file.path } -" ) do |io|
          io.read
       end
    end
