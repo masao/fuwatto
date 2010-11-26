@@ -38,7 +38,7 @@ if $0 == __FILE__
    case @cgi.host
    when "kagaku.nims.go.jp"
       ENV[ 'http_proxy' ] = 'http://wwwout.nims.go.jp:8888'
-   when "fuwat.to", "kaede.nier.go.jp"
+   when "kaede.nier.go.jp"
       ENV[ 'http_proxy' ] = 'http://ifilter2.nier.go.jp:12080/'
    end
    begin
