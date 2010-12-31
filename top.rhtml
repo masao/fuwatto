@@ -56,11 +56,13 @@ $.ajax({
 				     +'</a></li>' );
     });
 <% if url.nil? %>
-    $("#cinii_author ul").after('<div style="text-align:right"><a href="http://fuwat.to/cinii-author">[ 詳細 ]</a></div>').click( function(){
+    $("#cinii_author ul").after('<div class="link-cinii-author"><a href="http://fuwat.to/cinii-author"> 詳細 &raquo;</a></div>');
+    $("#cinii_author div.link-cinii-author a").click( function(){
       $("form#text1").attr("action","http://fuwat.to/cinii-author").submit();
+      return false;
     });
 <% else %>
-    $("#cinii_author ul").after('<div style="text-align:right"><a href="http://fuwat.to/cinii-author?url=<%=h url %>"> 詳細 &raquo;</a></div>');
+    $("#cinii_author ul").after('<div class="link-cinii-author"><a href="http://fuwat.to/cinii-author?url=<%=h url %>"> 詳細 &raquo;</a></div>');
 <% end %>
   },
 });
@@ -76,7 +78,7 @@ $.ajax({
   <li><a href="history.html">更新履歴</a></li>
 </ul>
 <!-- hhmts start -->
-<div class="last-update">最終更新日: 2010年10月21日</div>
+<div class="last-update">最終更新日: 2010年12月31日</div>
 <!-- hhmts end -->
 <h1><%= self.class::TITLE %></h1>
 <% if data[ :error ] %>
@@ -92,7 +94,7 @@ $.ajax({
 <div class="tabheader"><div id="head1"><a href="javascript:seltab('box', 'head', 10, 1)">文章から検索<%=h " (by Text)" if self.class.to_s == "Fuwatto::WorldcatApp" %></a></div><div class="space">&nbsp;</div><div id="head2"><a href="javascript:seltab('box', 'head', 10, 2)">ウェブページから検索<%=h " (by URL)" if self.class.to_s == "Fuwatto::WorldcatApp" %></a></div><div class="space">&nbsp;</div></div>
 <div class="tabbody">
 <div id="box1">
-<form action="<%=h @cgi.script_name %>" method="post" name="text1">
+<form action="<%=h @cgi.script_name %>" method="post" name="text1" id="text1">
 <textarea rows="4" cols="45"  name="text"><%=h content.to_s.toutf8 %></textarea>
 <% case self.class.to_s %>
 <% when "Fuwatto::CiniiAuthorApp" %>
@@ -112,7 +114,7 @@ checked="checked"
 </form>
 </div>
 <div id="box2">
-<form action="<%=h @cgi.script_name %>" method="get" name="url1">
+<form action="<%=h @cgi.script_name %>" method="get" name="url1" id="url1">
 <input type="text" name="url" value="<%=h( url || "http://" ) %>" size="70" />
 <% case self.class.to_s %>
 <% when "Fuwatto::CiniiAuthorApp" %>
