@@ -659,12 +659,15 @@ module Fuwatto
          end
          pubdate = e.find( "./crd:CRT-DATE", "crd:http://crd.ndl.go.jp/refapi/servlet/refapi.RSearchAPI" )[0]
          pubdate = pubdate ? pubdate.content : e.find( "./crd:REG-DATE", "crd:http://crd.ndl.go.jp/refapi/servlet/refapi.RSearchAPI" )[0].content
+         solution = e.find( "./crd:SOLUTION", "crd:http://crd.ndl.go.jp/refapi/servlet/refapi.RSearchAPI" )[0]
+         solution = solution ? solution.content : nil
          data[ :entries ] << {
             :title => title,
             :url => url,
             :author => author,
             :description => description,
             :publicationDate => pubdate,
+            :solution => solution,
          }
       end
       data
