@@ -19,8 +19,8 @@ module Fuwatto
 <a href="?url=http://mainichi.jp/select/opinion/eye/">毎日新聞「記者の目」</a> <span style="font-size:smaller;">（<a href="http://mainichi.jp/select/opinion/eye/">元記事(mainichi.jp)</a>）</span>
 </p>
 EOF
-      def execute
-         super( :crd_search, TERMS )
+      def execute( method = :crd_search, terms = TERMS, opts = {} )
+         super( method, terms, opts )
       end
    end
 end
@@ -38,7 +38,12 @@ if $0 == __FILE__
       app = Fuwatto::CRDApp.new( @cgi )
       data = {}
       begin
-         data = app.execute
+         opts = {}
+	 if not @cgi[ "combination" ].empty?
+	    opts[ :combination ] = true 
+	    opts[ :reranking ] = true 
+	 end
+         data = app.execute( :crd_search, Fuwatto::CRDApp::TERMS, opts )
       rescue Fuwatto::NoHitError => e
          data[ :error ] = e.class
       end

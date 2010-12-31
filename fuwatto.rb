@@ -634,8 +634,13 @@ module Fuwatto
       begin
          doc = parser.parse
       rescue LibXML::XML::Error => e
-         File.unlink( cache_file )
-         raise e
+         begin
+            parser = LibXML::XML::Parser.string( NKF.nkf( "-Ww", cont ) )
+            doc = parser.parse
+         rescue
+            File.unlink( cache_file )
+            raise e
+         end
       end
       # ref. http://ci.nii.ac.jp/info/ja/if_opensearch.html
       data[ :q ] = keyword
