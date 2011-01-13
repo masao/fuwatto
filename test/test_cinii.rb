@@ -47,6 +47,23 @@ class TestCinii < Test::Unit::TestCase
          assert( result[ :entries ].size >= count, "Results size(#{ result[:entries].size }) is smaller than count(#{count})." )
       end
    end
+   def test_execute_count2
+      @cgi.params["text"] = [ "理論 検証" ]
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      stderr_sv = STDERR.dup
+      stderr_new = Tempfile.new( "test_cinii" )
+      STDERR.reopen( stderr_new )
+      result = cinii.execute
+      stderr_new.rewind
+      executed_str = stderr_new.read
+      #p executed_str
+      STDERR.reopen( stderr_sv )
+      STDERR.puts executed_str
+      assert( executed_str.match( /^(理論|検証)$/ ) )
+      assert( result )
+      assert( result[ :totalResults ] > 0 )
+      assert( result[ :totalResults ] >= 20 )
+   end
    def test_execute2
       @cgi.params[ "text" ] = [ "児童虐待と相談所の運営" ]
       cinii = Fuwatto::CiniiApp.new( @cgi )
