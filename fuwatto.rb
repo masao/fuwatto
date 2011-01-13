@@ -260,6 +260,9 @@ module Fuwatto
       data[ :q ] = keyword
       data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.gsub( /&(format=atom|appid=#{ CINII_APPID })\b/, "" )
       data[ :totalResults ] = doc.find( "//opensearch:totalResults" )[0].content.to_i
+      if data[ :totalResults ] > 0
+         data[ :itemsPerPage ] = doc.find( "//opensearch:itemsPerPage" )[0].content.to_i
+      end
       entries = doc.find( "//atom:entry", "atom:http://www.w3.org/2005/Atom" )
       data[ :entries ] = []
       entries.each do |e|
@@ -1176,7 +1179,8 @@ module Fuwatto
                         #p additional_keywords
                         next
                      else
-                        start = count + 1
+                        start = 1 + count
+                        start = 1 + data[ :itemsPerPage ] if data[ :itemsPerPage ]
                         #p [ :start, data[ :totalResults ], start ]
                         while data[ :totalResults ] >= start and entries.size < count * ( page + 1 ) do
                            #p [ entries.size, start ]
@@ -1184,7 +1188,11 @@ module Fuwatto
                            search_opts[ :key ] = data[ :opac_hit_u_key ] if data[ :opac_hit_u_key ]
                            data = send( search_method, keyword, search_opts )
                            entries = ( entries + data[ :entries ] ).uniq
-                           start += count
+                           if data[ :itemsPerPage ]
+                              start += data[ :itemsPerPage ]
+                           else
+                              start += count
+                           end
                         end
                      end
                   end

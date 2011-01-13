@@ -35,6 +35,18 @@ class TestCinii < Test::Unit::TestCase
       assert( result[ :totalResults ] > 20 )
       assert_equal( 20, result[ :entries ].size )
    end
+   def test_execute_count
+      @cgi.params["url"] = [ "http://yahoo.co.jp" ]
+      [ 5, 100, 200, 201 ].each do |count|
+         @cgi.params["count"] = [ count ]
+         cinii = Fuwatto::CiniiApp.new( @cgi )
+         result = cinii.execute
+         assert( result )
+         assert( result[ :totalResults ] > 0 )
+         assert( result[ :totalResults ] > count )
+         assert( result[ :entries ].size >= count, "Results size(#{ result[:entries].size }) is smaller than count(#{count})." )
+      end
+   end
    def test_execute2
       @cgi.params[ "text" ] = [ "児童虐待と相談所の運営" ]
       cinii = Fuwatto::CiniiApp.new( @cgi )
