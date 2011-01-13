@@ -59,7 +59,7 @@ class TestCinii < Test::Unit::TestCase
       #p executed_str
       STDERR.reopen( stderr_sv )
       STDERR.puts executed_str
-      assert( executed_str.match( /^(理論|検証)$/ ) )
+      assert_no_match( /^(理論|検証)$/, executed_str )
       assert( result )
       assert( result[ :totalResults ] > 0 )
       assert( result[ :totalResults ] >= 20 )

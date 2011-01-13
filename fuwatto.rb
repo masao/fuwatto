@@ -1147,7 +1147,7 @@ module Fuwatto
                   entries = ( entries + data[ :entries ] ).uniq_by{|e| e[:url] }
                end
             end
-            if entries.size < count and entries.size <= count * ( page + 1 )
+            if entries.size < count and entries.size < count * ( page + 1 )
                vector[ 0..(terms-1) ].map{|k| k[0] }.combination(2) do |v|
                   keyword = v.join( " " )
                   STDERR.puts keyword
@@ -1157,7 +1157,7 @@ module Fuwatto
                   end
                end
             end
-            if entries.size < count and entries.size <= count * ( page + 1 )
+            if entries.size < count and entries.size < count * ( page + 1 )
                entries = ( entries + single_entries ).uniq
             end
 	    data[ :q ] = vector[ 0..(terms-1) ].map{|k| k[0] }.join( " " )
@@ -1171,29 +1171,30 @@ module Fuwatto
                if data[ :totalResults ] > 0
                   entries = ( entries + data[ :entries ] ).uniq
                   #p [ entries.size, count, page, count * ( page + 1 ) ]
-                  if entries.size < count or entries.size <= count * ( page + 1 )
-                     #p [ vector.size, terms, i ]
+                  #p [ vector.size, terms, i ]
+                  if entries.size < count or entries.size < count * ( page + 1 )
+                     start = 1 + count
+                     start = 1 + data[ :itemsPerPage ] if data[ :itemsPerPage ]
+                     #p [ :start, data[ :totalResults ], start ]
+                     while data[ :totalResults ] > start and entries.size < count * ( page + 1 ) do
+                        #p [ entries.size, start ]
+                        search_opts[ :start ] = start
+                        search_opts[ :key ] = data[ :opac_hit_u_key ] if data[ :opac_hit_u_key ]
+                        data = send( search_method, keyword, search_opts )
+                        entries = ( entries + data[ :entries ] ).uniq
+                        if data[ :itemsPerPage ]
+                           start += data[ :itemsPerPage ]
+                        else
+                           start += count
+                        end
+                     end
+                  end
+                  if entries.size < count or entries.size < count * ( page + 1 )
                      if ( terms-i ) > 1
                         #p [ vector, terms - i - 1 ]
                         additional_keywords.unshift( vector[ terms - i - 1 ][0] )
                         #p additional_keywords
                         next
-                     else
-                        start = 1 + count
-                        start = 1 + data[ :itemsPerPage ] if data[ :itemsPerPage ]
-                        #p [ :start, data[ :totalResults ], start ]
-                        while data[ :totalResults ] >= start and entries.size < count * ( page + 1 ) do
-                           #p [ entries.size, start ]
-                           search_opts[ :start ] = start
-                           search_opts[ :key ] = data[ :opac_hit_u_key ] if data[ :opac_hit_u_key ]
-                           data = send( search_method, keyword, search_opts )
-                           entries = ( entries + data[ :entries ] ).uniq
-                           if data[ :itemsPerPage ]
-                              start += data[ :itemsPerPage ]
-                           else
-                              start += count
-                           end
-                        end
                      end
                   end
                   break
