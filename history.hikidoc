@@ -7,6 +7,8 @@ css.content: dt { margin-top: 5px; }
 
 :2011年1月13日:
 ::[Bugfix] 20件を超える検索結果にアクセスする際に、論文情報の取得に漏れがあったミスを修正しました。 (fuwatto.rb 2.3.2)
+:2010年12月31日:
+::[News] 「ふわっとレファ協関連検索」の検索結果をレファ協サイト上に表示するGreasemonkeyスクリプト「[[ふわっと関連レファレンスを表示|http://userscripts.org/scripts/show/93889]]」を公開しました（公開アナウンス[[(Twitter)|http://twitter.com/tmasao/status/20723256029880320]], [[(Blog)|http://masao.jpn.org/d/2011-01-06.html#2011-01-06-1]]）。
 :2010年10月20日:
 ::[News] 関連検索サービスから「[[ふわっと CiNii 関連著者検索|http://fuwat.to/cinii-author]]」への相互リンクを追加しました。 (fuwatto.rb 2.3)
 :2010年10月2日:
