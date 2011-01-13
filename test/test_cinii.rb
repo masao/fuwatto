@@ -307,6 +307,16 @@ class TestCinii < Test::Unit::TestCase
                               { :reranking => true, :combination => true,
                                 :prf => true } )
    end
+   def test_execute_prf3 # test to avoid one single charater for query.
+      @cgi.params[ "url" ] = [ "http://b.hatena.ne.jp/articles/201005/1165" ]
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      result = cinii.execute( :cinii_search, Fuwatto::CiniiApp::TERMS,
+                              {  :reranking => true, :combination => true,
+                                 :prf => true, :prf_alpha => 2.0,
+                                 :term_weight => :cost,
+                              } )
+      assert_nil( result[ :keywords ][ "h" ], "avoid to use one single character keyword ('h')." )
+   end
 
    def test_link_atom_appid
       @cgi.params["url"] = [ "http://yahoo.co.jp" ]

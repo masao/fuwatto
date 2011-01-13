@@ -1093,7 +1093,11 @@ module Fuwatto
                end
             end.sort_by do |e|
                e.sim( vector )
-            end.reverse[ 0, PRF_TOP_K ]
+            end.reverse
+            prf_top_k = prf_top_k.map{|e|
+               e.select{|w| w.first.size > 1 }
+            }
+            prf_top_k = prf_top_k[ 0, PRF_TOP_K ]
             prf_weight = Hash.new( 0 )
             total_words = 0
             prf_top_k.each do |d|
