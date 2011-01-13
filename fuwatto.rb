@@ -145,7 +145,7 @@ module Fuwatto
       score = 0
       lines.each_with_index do |line, idx|
          # Ignore ASCII and other symbol chars
-         next if line[0] =~ /\A[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f、。「『』」・〇〜]+\Z/o
+         next if line[0] =~ /\A[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f、。「『』」・〇〜ー]+\Z/o
          # Ignore one or two digit numbers
          next if line[0] =~ /\A[0-9][0-9]?\Z/o
          # Stop words, derived from Lucene
