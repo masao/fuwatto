@@ -17,7 +17,7 @@
 <%=h "(%.02f)" % entry[ :score ] %>
 <% end %>
 </span>
-<script type="text/javascript" src="./cinii-nrid-json.rb?name=<%=h entry[ :author ] %>&amp;<%=h entry[ :articles ].map{|e| "naid=#{ e[:url] }" }.join("&") %>&amp;callback=fuwatto_show_cinii_nrid"></script>
+<script type="text/javascript" src="./cinii-nrid-json.rb?name=<%=u entry[ :author ] %>&amp;<%=h entry[ :articles ].map{|e| "naid=#{ e[:url] }" }.join("&") %>&amp;callback=fuwatto_show_cinii_nrid"></script>
 <ul class="article_example">
 <% entry[ :articles ][ 0...3 ].each do |article| %>
 <li><span class="cini_title"><a href="<%=h article[ :url ] %>"><%=h article[ :title ] %></a></span>
