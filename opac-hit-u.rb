@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+#!/usr/local/bin/ruby
 # -*- coding: utf-8 -*-
 # $Id$
 
