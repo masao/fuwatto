@@ -969,11 +969,13 @@ module Fuwatto
       if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
          cont = open( cache_file ){|io| io.read }
       else
-         # TODO: Atom/RSSの双方を対象にできるようにすること（現状は Atom のみ）
-         opts[ :format ] = "atom"
          if not opts.empty?
             opts_s = opts.keys.map do |e|
-               "#{ e }=#{ URI.escape( opts[e].to_s ) }"
+               if e == :start
+                  "s=#{ URI.escape( opts[e].to_s ) }"
+               else
+                  "#{ e }=#{ URI.escape( opts[e].to_s ) }"
+               end
             end.join( "&" )
          end
          opensearch_uri = URI.parse( "#{ base_uri }?q=#{ q }&api_key=#{ SPRINGER_METADATA_APIKEY }&#{ opts_s }" )
@@ -1040,7 +1042,7 @@ module Fuwatto
          @html = @cgi.params["html"][0]
          @format = @cgi.params["format"][0] || "html"
          @count = @cgi.params["count"][0].to_i
-         @count = 20 if count < 1
+         @count = 20 if @count < 1
          @page = @cgi.params["page"][0].to_i
          @mode = @cgi.params["mode"][0] || "mecab"
          @callback = @cgi.params["callback"][0]
@@ -1217,12 +1219,12 @@ module Fuwatto
                   STDERR.puts keyword
                   data = send( search_method, keyword, search_opts )
                   if data[ :totalResults ] > 0
-                     entries = ( entries + data[ :entries ] ).uniq
+                     entries = ( entries + data[ :entries ] ).uniq_by{|e| e[:url] }
                   end
                end
             end
             if entries.size < count and entries.size < count * ( page + 1 )
-               entries = ( entries + single_entries ).uniq
+               entries = ( entries + single_entries ).uniq_by{|e| e[:url] }
             end
 	    data[ :q ] = vector[ 0..(terms-1) ].map{|k| k[0] }.join( " " )
 	    data[ :totalResults ] = entries.size
@@ -1233,25 +1235,26 @@ module Fuwatto
                STDERR.puts keyword
                data = send( search_method, keyword, search_opts )
                if data[ :totalResults ] > 0
-                  entries = ( entries + data[ :entries ] ).uniq
-                  #p [ entries.size, count, page, count * ( page + 1 ) ]
+                  entries = ( entries + data[ :entries ] ).uniq_by{|e| e[:url] }
+                  p [ entries.size, count, page, count * ( page + 1 ) ]
                   #p [ vector.size, terms, i ]
                   if entries.size < count or entries.size < count * ( page + 1 )
                      start = 1 + count
                      start = 1 + data[ :itemsPerPage ] if data[ :itemsPerPage ]
                      #p [ :start, data[ :totalResults ], start ]
                      while data[ :totalResults ] > start and entries.size < count * ( page + 1 ) do
-                        #p [ entries.size, start ]
+                        p [ entries.size, start ]
                         search_opts[ :start ] = start
                         search_opts[ :key ] = data[ :opac_hit_u_key ] if data[ :opac_hit_u_key ]
                         data = send( search_method, keyword, search_opts )
-                        entries = ( entries + data[ :entries ] ).uniq
+                        entries = ( entries + data[ :entries ] ).uniq_by{|e| e[:url] }
                         if data[ :itemsPerPage ]
                            start += data[ :itemsPerPage ]
                         else
                            start += count
                         end
                      end
+                     search_opts.delete( :start )
                   end
                   if entries.size < count or entries.size < count * ( page + 1 )
                      if ( terms-i ) > 1
