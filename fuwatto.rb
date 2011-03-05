@@ -957,6 +957,66 @@ module Fuwatto
       data
    end
 
+   SPRINGER_METADATA_APIKEY = "hczcn8hnkx8c2zuzhnkmbz5j"
+   # Springer Metadata API
+   ## cf. http://dev.springer.com/docs
+   def springer_search( keyword, opts = {} )
+      base_uri = "http://api.springer.com/metadata/pam"
+      q = URI.escape( keyword )
+      cont = nil
+      cache_file = cache_xml( "springer", q, opts[:start] )
+      #p File.mtime( cache_file )
+      if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
+         cont = open( cache_file ){|io| io.read }
+      else
+         # TODO: Atom/RSSの双方を対象にできるようにすること（現状は Atom のみ）
+         opts[ :format ] = "atom"
+         if not opts.empty?
+            opts_s = opts.keys.map do |e|
+               "#{ e }=#{ URI.escape( opts[e].to_s ) }"
+            end.join( "&" )
+         end
+         opensearch_uri = URI.parse( "#{ base_uri }?q=#{ q }&api_key=#{ SPRINGER_METADATA_APIKEY }&#{ opts_s }" )
+         response = http_get( opensearch_uri )
+         cont = response.body
+         open( cache_file, "w" ){|io| io.print cont }
+      end
+      data = {}
+      parser = LibXML::XML::Parser.string( cont )
+      doc = parser.parse
+      data[ :q ] = keyword
+      # data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.gsub( /&(format=atom|apikey=#{ SPRINGER_METADATA_APIKEY })\b/, "" )
+      data[ :totalResults ] = doc.find( "//result/total" )[0].content.to_i
+      if data[ :totalResults ] > 0
+         data[ :itemsPerPage ] = doc.find( "//result/pageLength" )[0].content.to_i
+      end
+      xmlns = [ "dc:http://purl.org/dc/elements/1.1/",
+                "pam:http://prismstandard.org/namespaces/pam/2.0/",
+                "prism:http://prismstandard.org/namespaces/basic/2.0/",
+                "xhtml:http://www.w3.org/1999/xhtml",
+              ]
+      entries = doc.find( "//pam:message", xmlns )
+      data[ :entries ] = []
+      entries.each do |e|
+         title = e.find( "./xhtml:head/pam:article/dc:title", xmlns )[0].content 
+         url = e.find( "./xhtml:head/pam:article/prism:url", xmlns )[0].content
+         author = e.find( "./xhtml:head/pam:article/dc:creator", xmlns ).to_a.map{|au| au.content }.join( "; " )
+         pubname = e.find( "./xhtml:head/pam:article/prism:publicationName", xmlns )[0].content
+         pubdate = e.find( "./xhtml:head/pam:article/prism:publicationDate", xmlns )[0].content
+         description = e.find( "./xhtml:body/p", xmlns )[0]
+         description = description.nil? ? "" : description.content
+         data[ :entries ] << {
+            :title => title,
+            :url => url,
+            :author => author,
+            :publicationName => pubname,
+            :publicationDate => pubdate,
+            :description => description,
+         }
+      end
+      data
+   end
+
    class NoHitError < Exception; end
    class NoKeywordExtractedError < Exception; end
    class UnsupportedURI < Exception; end
