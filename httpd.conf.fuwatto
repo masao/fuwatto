@@ -14,6 +14,7 @@ ScriptAlias /opac-hit-u /home/masao/cvswork/fuwatto/opac-hit-u.rb
 ScriptAlias /crd /home/masao/cvswork/fuwatto/crd.rb
 ScriptAlias /epi /home/masao/cvswork/fuwatto/epi.rb
 ScriptAlias /jstage /home/masao/cvswork/fuwatto/jstage.rb
+ScriptAlias /springer /home/masao/cvswork/fuwatto/springer.rb
 
 # conf.d/welcome.conf disabled
 <LocationMatch "^/+$">
