@@ -1005,9 +1005,10 @@ module Fuwatto
          author = e.find( "./xhtml:head/pam:article/dc:creator", xmlns ).to_a.map{|au| au.content }.join( "; " )
          pubname = e.find( "./xhtml:head/pam:article/prism:publicationName", xmlns )[0].content
          pubdate = e.find( "./xhtml:head/pam:article/prism:publicationDate", xmlns )[0].content
+         doi = e.find( "./xhtml:head/pam:article/prism:doi" )[0].content
          description = e.find( "./xhtml:body/p", xmlns )[0]
          description = description.nil? ? "" : description.content
-         data[ :entries ] << {
+         bibdata = {
             :title => title,
             :url => url,
             :author => author,
@@ -1015,6 +1016,11 @@ module Fuwatto
             :publicationDate => pubdate,
             :description => description,
          }
+         [ :doi, :isbn, :issn, :volume, :number, :startingPage ].each do |type|
+            cont = e.find( "./xhtml:head/pam:article/prism:#{ type }" )[0]
+            bibdata[ type ] = cont.content if cont
+         end
+         data[ :entries ] << bibdata
       end
       data
    end

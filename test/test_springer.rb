@@ -17,6 +17,11 @@ class TestFuwatto < Test::Unit::TestCase
       assert_equal( result[:q], "keyword" )
       assert( result[:totalResults] > 0 )
       assert( result[:entries].size > 0 )
+      result[ :entries ].each do |e|
+         p e[:title]
+         assert( e[ :doi ] )
+         assert( e[:isbn] || e[:volume] )
+      end
    end
 end
 
