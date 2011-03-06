@@ -23,6 +23,7 @@ module Fuwatto
 	<a href="?url=http://www.asahi.com/paper/editorial.html">朝日新聞社説</a> <span style="font-size:smaller;">（<a href="http://www.asahi.com/paper/editorial.html">元記事(asahi.com)</a>）</span>, 
 	<a href="?url=http://mainichi.jp/select/opinion/eye/">毎日新聞「記者の目」</a> <span style="font-size:smaller;">（<a href="http://mainichi.jp/select/opinion/eye/">元記事(mainichi.jp)</a>）</span>
 	</p>
+	<div id="feed"></div>
       EOF
       def execute( method = :springer_metadata_search, terms = TERMS, opts = {} )
          super( method, terms, opts )
