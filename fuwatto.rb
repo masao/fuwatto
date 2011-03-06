@@ -59,7 +59,7 @@ class Array
 end
 
 module Fuwatto
-   VERSION = '2.3.2'
+   VERSION = '2.3.3'
    BASE_URI = 'http://fuwat.to/'
    USER_AGENT = "Fuwatto Search/#{ VERSION }; #{ BASE_URI }"
    CACHE_TIME = 60 * 60 * 24 * 3   # 3日経つまで、キャッシュは有効
@@ -960,7 +960,7 @@ module Fuwatto
    SPRINGER_METADATA_APIKEY = "hczcn8hnkx8c2zuzhnkmbz5j"
    # Springer Metadata API
    ## cf. http://dev.springer.com/docs
-   def springer_search( keyword, opts = {} )
+   def springer_metadata_search( keyword, opts = {} )
       base_uri = "http://api.springer.com/metadata/pam"
       q = URI.escape( keyword )
       cont = nil
@@ -1005,7 +1005,11 @@ module Fuwatto
          author = e.find( "./xhtml:head/pam:article/dc:creator", xmlns ).to_a.map{|au| au.content }.join( "; " )
          pubname = e.find( "./xhtml:head/pam:article/prism:publicationName", xmlns )[0].content
          pubdate = e.find( "./xhtml:head/pam:article/prism:publicationDate", xmlns )[0].content
-         doi = e.find( "./xhtml:head/pam:article/prism:doi" )[0].content
+         if pubdate
+            pubdate.gsub!( /-01-01\Z/, "" )
+            pubdate.gsub!( /-01\Z/, "" )
+         end
+         doi = e.find( "./xhtml:head/pam:article/prism:doi", xmlns )[0].content
          description = e.find( "./xhtml:body/p", xmlns )[0]
          description = description.nil? ? "" : description.content
          bibdata = {
@@ -1015,10 +1019,83 @@ module Fuwatto
             :publicationName => pubname,
             :publicationDate => pubdate,
             :description => description,
+            :doi => doi,
          }
-         [ :doi, :isbn, :issn, :volume, :number, :startingPage ].each do |type|
-            cont = e.find( "./xhtml:head/pam:article/prism:#{ type }" )[0]
-            bibdata[ type ] = cont.content if cont
+         [ :isbn, :issn, :volume, :number, :startingPage ].each do |type|
+            cont = e.find( "./xhtml:head/pam:article/prism:#{ type }", xmlns )[0]
+            bibdata[ type ] = cont.content if cont and not cont.empty?
+         end
+         data[ :entries ] << bibdata
+      end
+      data
+   end
+
+   SPRINGER_IMAGES_APIKEY = "uwud8n4tbkmr4bqw6zfq8ab8"
+   # Springer Images API
+   ## cf. http://dev.springer.com/docs
+   def springer_images_search( keyword, opts = {} )
+      base_uri = "http://api.springer.com/images/xml"
+      q = CGI.escape( keyword )
+      cont = nil
+      cache_file = cache_xml( "springer-images", q )
+      if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
+         cont = open( cache_file ){|io| io.read }
+      else
+         if not opts.empty?
+            opts_s = opts.keys.map do |e|
+               if e == :start
+                  "s=#{ URI.escape( opts[e].to_s ) }"
+               else
+                  "#{ e }=#{ URI.escape( opts[e].to_s ) }"
+               end
+            end.join( "&" )
+         end
+         uri = URI.parse( "#{ base_uri }?q=#{ q }&api_key=#{ SPRINGER_IMAGES_APIKEY }&#{ opts_s }" )
+         response = http_get( uri )
+         cont = response.body
+         open( cache_file, "w" ){|io| io.print cont }
+      end
+      data = {}
+      parser = LibXML::XML::Parser.string( cont )
+      doc = parser.parse
+      data[ :q ] = keyword
+      # data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.gsub( /&(format=atom|apikey=#{ SPRINGER_METADATA_APIKEY })\b/, "" )
+      data[ :totalResults ] = doc.find( "//result/total" )[0].content.to_i
+      if data[ :totalResults ] > 0
+         data[ :itemsPerPage ] = doc.find( "//result/pageLength" )[0].content.to_i
+      end
+      xmlns = [ "dc:http://purl.org/dc/elements/1.1/",
+                "pam:http://prismstandard.org/namespaces/pam/2.0/",
+                "prism:http://prismstandard.org/namespaces/basic/2.0/",
+                "xhtml:http://www.w3.org/1999/xhtml",
+              ]
+      entries = doc.find( "//pam:message", xmlns )
+      data[ :entries ] = []
+      entries.each do |e|
+         title = e.find( "./xhtml:head/pam:article/dc:title", xmlns )[0].content 
+         url = e.find( "./xhtml:head/pam:article/prism:url", xmlns )[0].content
+         author = e.find( "./xhtml:head/pam:article/dc:creator", xmlns ).to_a.map{|au| au.content }.join( "; " )
+         pubname = e.find( "./xhtml:head/pam:article/prism:publicationName", xmlns )[0].content
+         pubdate = e.find( "./xhtml:head/pam:article/prism:publicationDate", xmlns )[0].content
+         if pubdate
+            pubdate.gsub!( /-01-01\Z/, "" )
+            pubdate.gsub!( /-01\Z/, "" )
+         end
+         doi = e.find( "./xhtml:head/pam:article/prism:doi", xmlns )[0].content
+         description = e.find( "./xhtml:body/p", xmlns )[0]
+         description = description.nil? ? "" : description.content
+         bibdata = {
+            :title => title,
+            :url => url,
+            :author => author,
+            :publicationName => pubname,
+            :publicationDate => pubdate,
+            :description => description,
+            :doi => doi,
+         }
+         [ :isbn, :issn, :volume, :number, :startingPage ].each do |type|
+            cont = e.find( "./xhtml:head/pam:article/prism:#{ type }", xmlns )[0]
+            bibdata[ type ] = cont.content if cont and not cont.empty?
          end
          data[ :entries ] << bibdata
       end

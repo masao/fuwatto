@@ -1,10 +1,12 @@
 title: 更新履歴 - ふわっと関連検索
 date.available: 2010-01-17
-date.modified: 2011-01-13
+date.modified: 2011-03-06
 css.content: dt { margin-top: 5px; }
 
 {{include 'links.hikidoc'}}
 
+:2011年3月6日:
+::[News] 「ふわっとSpringer関連検索」を公開しました。
 :2011年1月13日:
 ::[Bugfix] 20件を超える検索結果にアクセスする際に、論文情報の取得に漏れがあったミスを修正しました。 (fuwatto.rb 2.3.2)
 :2010年12月31日:
