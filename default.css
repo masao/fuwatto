@@ -83,8 +83,24 @@ div.cinii_headline a img {
   padding: 2px;
   margin-right: 1ex;
 }
-.cinii_author, .cinii_publicationName, .cinii_publicationDate, .cinii_publisher, .cinii_date {
+.cinii_author,
+.cinii_publicationName,
+.cinii_publicationDate,
+.cinii_publisher,
+.cinii_date,
+.cinii_volume,
+.cinii_number {
   font-size: smaller;
+}
+.cinii_isbn {
+  font-size: smaller;
+  border: dashed #ccc 1px;
+  background-color: #ffc;
+}
+.cinii_doi {
+  font-size: smaller;
+  border: dashed #ccc 1px;
+  background-color: #fcc;
 }
 .cinii_description {
   font-size: x-small;
