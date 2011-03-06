@@ -13,7 +13,7 @@
 <% data[ :entries ][ data[:count] * data[:page], data[:count] ].each do |entry| %>
   <li><div class="cinii_title"><a href="<%=h entry[:url] %>"><%=h entry[:title] %></a></div>
       <div class="gbs-link">
-      <script>GBS_insertPreviewButtonPopup('ISBN:<%=h entry[ :isbn ] %>');</script>
+      <script>GBS_insertPreviewButtonLink('ISBN:<%=h entry[ :isbn ] %>');</script>
       </div>
       <div class="cinii_author"><%=h entry[ :author ] %></div>
       <%= [ :publicationName, :volume, :number, :publicationDate ].select{|e| entry[e] }.map{|e| ( entry[e] and not entry[e].empty? ) ? "<span class=\"cinii_#{ e }\">#{ CGI.escapeHTML entry[e] }</span>" : nil }.compact.join(",\n") %>

@@ -14,7 +14,7 @@
   <li><div class="cinii_title"><a href="<%=h entry[:url] %>"><%=h entry[:title] %></a></div>
       <% if entry[ :isbn ] %>
       <div class="gbs-link">
-      <script>GBS_insertPreviewButtonPopup('ISBN:<%=h entry[ :isbn ] %>');</script>
+      <script>GBS_insertPreviewButtonLink('ISBN:<%=h entry[ :isbn ] %>');</script>
       </div>
       <% end %>
   <div class="cinii_author"><%=h entry[ :author ] %></div>
