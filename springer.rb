@@ -7,10 +7,15 @@ require "fuwatto.rb"
 module Fuwatto
    class SpringerApp < BaseApp
       TERMS = 10
-      TITLE = "ふわっとSpringer関連検索"
+      TITLE = "Fuwatto Springer Search / ふわっとSpringer関連検索"
       HELP_TEXT = <<-EOF
+	<p style="text-align:center;padding:1ex;font-weight:bolder">
+	Enjoy quick hack at Code4Lib JAPAN 2011 Camp of <a href="http://dev.springer.com">Springer API</a>!
+	<br/>
+	<small>Note: This service is just for demonstration purpose and it is very slow, 20sec. per search request.</small>
+	</p>
 	<p>
-	入力したテキストまたはウェブページに関連した論文を<a href="http://ci.nii.ac.jp">Springer</a>で検索します。
+	入力したテキストまたはウェブページに関連した文献を<a href="http://springerlink.com">Springer社発行の学術論文・電子ブック</a>から検索します。
 	長いテキストやURLで指定したページからでも関連キーワードを自動的に抜き出して論文検索できるのが特徴です。
 	</p>
 	<p>

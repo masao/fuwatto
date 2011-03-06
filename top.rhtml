@@ -78,7 +78,7 @@ $.ajax({
   <li><a href="history.html">更新履歴</a></li>
 </ul>
 <!-- hhmts start -->
-<div class="last-update">最終更新日: 2010年12月31日</div>
+<div class="last-update">最終更新日: 2011年03月06日</div>
 <!-- hhmts end -->
 <h1><%= self.class::TITLE %></h1>
 <% if data[ :error ] %>
@@ -91,7 +91,7 @@ $.ajax({
 </p>
 <% end %>
 <div class="form">
-<div class="tabheader"><div id="head1"><a href="javascript:seltab('box', 'head', 10, 1)">文章から検索<%=h " (by Text)" if self.class.to_s == "Fuwatto::WorldcatApp" %></a></div><div class="space">&nbsp;</div><div id="head2"><a href="javascript:seltab('box', 'head', 10, 2)">ウェブページから検索<%=h " (by URL)" if self.class.to_s == "Fuwatto::WorldcatApp" %></a></div><div class="space">&nbsp;</div></div>
+<div class="tabheader"><div id="head1"><a href="javascript:seltab('box', 'head', 10, 1)">文章から検索<%=h " (by Text)" if self.class.to_s =~ /\AFuwatto::(Springer|Worldcat)App\Z/ %></a></div><div class="space">&nbsp;</div><div id="head2"><a href="javascript:seltab('box', 'head', 10, 2)">ウェブページから検索<%=h " (by URL)" if self.class.to_s =~ /\AFuwatto::(Springer|Worldcat)App\Z/ %></a></div><div class="space">&nbsp;</div></div>
 <div class="tabbody">
 <div id="box1">
 <form action="<%=h @cgi.script_name %>" method="post" name="text1" id="text1">
@@ -99,7 +99,7 @@ $.ajax({
 <% case self.class.to_s %>
 <% when "Fuwatto::CiniiAuthorApp" %>
 <input type="submit" value="  著 者 検 索  "/>
-<% when "Fuwatto::WorldcatApp" %>
+<% when /\AFuwatto::(Springer|Worldcat)App\Z/ %>
 <input type="submit" value="  論 文 検 索  (Search) "/>
 <% else %>
 <input type="submit" value="  論 文 検 索  "/>
@@ -119,7 +119,7 @@ checked="checked"
 <% case self.class.to_s %>
 <% when "Fuwatto::CiniiAuthorApp" %>
 <input type="submit" value="  著 者 検 索  "/>
-<% when "Fuwatto::WorldcatApp" %>
+<% when /\AFuwatto::(Springer|Worldcat)App\Z/ %>
 <input type="submit" value="  論 文 検 索  (Search) "/>
 <% else %>
 <input type="submit" value="  論 文 検 索  "/>
