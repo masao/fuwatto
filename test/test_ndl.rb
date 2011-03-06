@@ -63,10 +63,26 @@ class TestNDL < Test::Unit::TestCase
    def test_execute_page
       @cgi.params["url"] = [ "http://yahoo.co.jp" ]
       @cgi.params["page"] = [ 1 ]
-      cinii = Fuwatto::NDLApp.new( @cgi )
-      result = cinii.execute
+      app = Fuwatto::NDLApp.new( @cgi )
+      result = app.execute
       assert( result )
       assert( result[ :totalResults ] > 0 )
       assert( result[ :totalResults ] > 20 )
+   end
+   def test_execute_page2
+      @cgi.params[ "text" ] = [ "イレッサ 承認" ]
+      @cgi.params["page"] = [ 2 ]
+      app = Fuwatto::NDLApp.new( @cgi )
+      result = app.execute
+      assert( result )
+      assert( result[ :totalResults ] > 20 )
+      assert( result[ :entries ].size > 0 )
+
+      @cgi.params["page"] = [ 12 ]
+      app = Fuwatto::NDLApp.new( @cgi )
+      result = app.execute
+      assert( result )
+      assert( result[ :totalResults ] > 0 )
+      assert( result[ :entries ].size > app.count * app.page, "result[:entries] size (#{ result[ :entries ].size }) should be greater than count(#{ app.count }) * page(#{ app.page })." )
    end
 end

@@ -1350,8 +1350,8 @@ module Fuwatto
                   if entries.size < count or entries.size < count * ( page + 1 )
                      start = 1 + count
                      start = 1 + data[ :itemsPerPage ] if data[ :itemsPerPage ]
-                     #p [ :start, data[ :totalResults ], start ]
-                     while data[ :totalResults ] > start and entries.size < count * ( page + 1 ) do
+                     #p [ :start, data[ :totalResults ], start, count * (page+1) ]
+                     while data[ :totalResults ] > start and entries.size < count * ( page + 1 )
                         #p [ entries.size, start ]
                         search_opts[ :start ] = start
                         search_opts[ :key ] = data[ :opac_hit_u_key ] if data[ :opac_hit_u_key ]
