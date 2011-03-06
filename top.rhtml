@@ -27,6 +27,7 @@ $("#cinii_author").css( "width", "auto" );
 });
 </script>
 <% else %>
+<% if self.class.to_s !~ /\AFuwatto::(Worldcat|Springer)App\Z/ %>
 <% if query? %>
 <script type="text/javascript">
 $(document).ready(function(){
@@ -69,6 +70,7 @@ $.ajax({
 });
 });
 </script>
+<% end %>
 <% end %>
 <% end %>
 <title><%= self.class::TITLE %></title>
