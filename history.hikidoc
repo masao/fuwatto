@@ -7,6 +7,7 @@ css.content: dt { margin-top: 5px; }
 
 :2011年3月6日:
 ::[News] 「ふわっとSpringer関連検索」を公開しました。 (fuwatto.rb 2.3.3)
+::[News] [[Google Books|http://books.google.com]]へのリンクを張るようにしました。
 :2011年1月13日:
 ::[Bugfix] 20件を超える検索結果にアクセスする際に、論文情報の取得に漏れがあったミスを修正しました。 (fuwatto.rb 2.3.2)
 :2010年12月31日:
