@@ -966,6 +966,7 @@ module Fuwatto
    end
 
    SPRINGER_METADATA_APIKEY = "hczcn8hnkx8c2zuzhnkmbz5j"
+   SPRINGER_INTERVAL = 0.5
    # Springer Metadata API
    ## cf. http://dev.springer.com/docs
    def springer_metadata_search( keyword, opts = {} )
@@ -979,6 +980,7 @@ module Fuwatto
       else
          if not opts.empty?
             opts_s = opts.keys.map do |e|
+               next if e.to_s =~ /\A_/
                if e == :start
                   "s=#{ URI.escape( opts[e].to_s ) }"
                else
@@ -986,10 +988,17 @@ module Fuwatto
                end
             end.join( "&" )
          end
+         if opts[ :_prev_time ]
+            elapsed = Time.now - opts[ :_prev_time ]
+            if SPRINGER_INTERVAL < elapsed
+               sleep( elapsed - SPRINGER_INTERVAL )
+            end
+         end
          opensearch_uri = URI.parse( "#{ base_uri }?q=#{ q }&api_key=#{ SPRINGER_METADATA_APIKEY }&#{ opts_s }" )
          response = http_get( opensearch_uri )
          cont = response.body
          open( cache_file, "w" ){|io| io.print cont }
+         opts[ :_prev_time ] = Time.now
       end
       data = {}
       parser = LibXML::XML::Parser.string( cont )
@@ -1159,6 +1168,9 @@ module Fuwatto
          data = {}
          opts[ :use_df ] = true if not opts.has_key?( :use_df )
          opts[ :prf_alpha ] = PRF_ALPHA if opts[ :prf ] and not opts.has_key?( :prf_alpha )
+         prev_time = nil
+         interval = nil
+         interval =  opts[ :_interval ] if opts[ :_interval ]
          if not query?
             return data
          end

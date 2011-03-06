@@ -10,7 +10,7 @@ module Fuwatto
       TITLE = "Fuwatto Springer Search / ふわっとSpringer関連検索"
       HELP_TEXT = <<-EOF
 	<p style="text-align:center;padding:1ex;font-weight:bolder">
-	Enjoy quick hack at Code4Lib JAPAN 2011 Camp of <a href="http://dev.springer.com">Springer API</a>!
+	Enjoy quick hack of <a href="http://dev.springer.com">Springer API</a> at Code4Lib JAPAN 2011 Camp!
 	<br/>
 	<small>Note: This service is just for demonstration purpose and it is very slow, 20sec. per search request.</small>
 	</p>
