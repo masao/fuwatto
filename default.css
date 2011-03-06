@@ -112,6 +112,10 @@ span.score {
   font-size: smaller;
   color: maroon;
 }
+div.gbs-link {
+  float: left;
+  margin-right: 10px;
+}
 
 .pagination {
   font-size: 1.1;
