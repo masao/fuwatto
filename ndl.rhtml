@@ -12,6 +12,11 @@
 <ol start="<%=h data[:count] * data[:page] + 1 %>">
 <% data[ :entries ][ data[:count] * data[:page], data[:count] ].each do |entry| %>
   <li><div class="cinii_title"><a href="<%=h entry[:url] %>"><%=h entry[:title] %></a></div>
+      <% if entry[ :isbn ] %>
+      <div class="gbs-link">
+      <script>GBS_insertPreviewButtonLink('ISBN:<%=h entry[ :isbn ] %>');</script>
+      </div>
+      <% end %>
   <div class="cinii_author"><%=h entry[ :author ] %></div>
   <span class="ndl_dpid">(<%=h Fuwatto::NDLApp::DPID_LABEL[ entry[:dpid] ] %>)</span>
   <%= [ :publicationName, :source, :publisher, :date ].select{|e| entry[e] and not entry[e].empty? }.map{|e| "<span class=\"cinii_#{ e }\">#{ CGI.escapeHTML entry[e] }</span>" }.join( ", " ) %>

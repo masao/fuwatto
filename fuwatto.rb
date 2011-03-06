@@ -492,10 +492,15 @@ module Fuwatto
             description = ""
          end
          if publicationName.nil? or publicationName.empty?
-            publicationName = [ source, publisher ].select{|e|
-               not e.nil? and not e.empty?
+            publicationName = [ source, publisher ].select{|type|
+               not type.nil? and not type.empty?
             }.join( "; " )
          end
+         isbn = e.find( "./dc:identifier[@xsi:type='dcndl:ISBN']",
+                        [ "dc:http://purl.org/dc/elements/1.1/",
+                          "xsi:http://www.w3.org/2001/XMLSchema-instance",
+                          "dcndl:http://ndl.go.jp/dcndl/terms/" ] )[0]
+         isbn = isbn.content if isbn
          data[ :entries ] << {
             :title => title,
             :url => url,
@@ -507,6 +512,7 @@ module Fuwatto
             :publicationName => publicationName,
             :description => description,
             :dpid => dpid,
+            :isbn => isbn,
          }
       end
       data

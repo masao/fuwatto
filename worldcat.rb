@@ -24,7 +24,7 @@ Enjoy my quick hack of WorldCat Basic API at Code4Lib 2010 Conference!<br/>
 <a href="?url=http://www.asahi.com/paper/editorial.html">朝日新聞社説</a> <span style="font-size:smaller;">（<a href="http://www.asahi.com/paper/editorial.html">元記事(asahi.com)</a>）</span>, 
 <a href="?url=http://mainichi.jp/select/opinion/eye/">毎日新聞「記者の目」</a> <span style="font-size:smaller;">（<a href="http://mainichi.jp/select/opinion/eye/">元記事(mainichi.jp)</a>）</span>
 </p>
-</div>
+<div id="feed"></div>
       EOF
       def execute
          super( :worldcat_search, TERMS, { :count => count } )

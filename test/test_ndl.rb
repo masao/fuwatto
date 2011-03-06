@@ -19,6 +19,17 @@ class TestFuwatto < Test::Unit::TestCase
       assert( result[:totalResults] > 0 )
       assert( result[:entries].size > 0 )
    end
+   def test_ndl_search_isbn
+      result = ndl_search( "yahoo" )
+      assert( result )
+      assert( result[:entries].size > 0 )
+      isbncount = 0
+      result[:entries].each do |e|
+         isbncount += 1 if e[ :isbn ]
+      end
+      assert( isbncount > 0, "there is no isbn entry." )
+      #p [ result[:entries].size, isbncount ]
+   end
 end
 
 class TestNDL < Test::Unit::TestCase
