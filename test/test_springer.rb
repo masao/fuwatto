@@ -42,7 +42,7 @@ class TestSpringer < Test::Unit::TestCase
          result = springer.execute
          assert( result )
          assert( result[ :totalResults ] > 0 )
-         assert( result[ :totalResults ] > count )
+         assert( result[ :totalResults ] >= count )
          assert( result[ :entries ].size >= count, "Results size(#{ result[:entries].size }) is smaller than count(#{count})." )
       end
    end

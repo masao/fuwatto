@@ -1236,14 +1236,14 @@ module Fuwatto
                data = send( search_method, keyword, search_opts )
                if data[ :totalResults ] > 0
                   entries = ( entries + data[ :entries ] ).uniq_by{|e| e[:url] }
-                  p [ entries.size, count, page, count * ( page + 1 ) ]
+                  #p [ entries.size, count, page, count * ( page + 1 ) ]
                   #p [ vector.size, terms, i ]
                   if entries.size < count or entries.size < count * ( page + 1 )
                      start = 1 + count
                      start = 1 + data[ :itemsPerPage ] if data[ :itemsPerPage ]
                      #p [ :start, data[ :totalResults ], start ]
                      while data[ :totalResults ] > start and entries.size < count * ( page + 1 ) do
-                        p [ entries.size, start ]
+                        #p [ entries.size, start ]
                         search_opts[ :start ] = start
                         search_opts[ :key ] = data[ :opac_hit_u_key ] if data[ :opac_hit_u_key ]
                         data = send( search_method, keyword, search_opts )
