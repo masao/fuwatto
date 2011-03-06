@@ -713,12 +713,20 @@ module Fuwatto
          url = e.find( "./atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content
          author = e.find( ".//atom:author/atom:name", "atom:http://www.w3.org/2005/Atom" ).to_a.map{|name| name.content }.join( "; " )
          content = e.find( "./atom:content", "atom:http://www.w3.org/2005/Atom" )[0]
+         isbn = nil
+         e.find( "./dc:identifier", "dc:http://purl.org/dc/elements/1.1/" ).each do |identifier|
+            if identifier.content =~ /\Aurn:ISBN:(\d{9,12}[\dx])\Z/o
+               isbn = $1
+               break
+            end
+         end
          data[ :entries ] << {
             :title => title,
             :url => url,
             :author => author,
             :content => content,
             :publicationName => content,
+            :isbn => isbn,
          }
       end
       data

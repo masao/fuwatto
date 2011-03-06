@@ -18,6 +18,16 @@ class TestFuwatto < Test::Unit::TestCase
       assert( result[:q] == "keyword" )
       assert( result[:totalResults] > 0 )
       assert( result[:entries].size > 0 )
+      result[ :entries ].each do |e|
+         assert( e[ :title ] )
+         case e[:url]
+         when /\/(315888140|635341692)/o
+            next
+         else
+            #p e[:title]
+            assert( e[:isbn] )
+         end
+      end
    end
 end
 
