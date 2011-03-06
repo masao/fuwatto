@@ -10,15 +10,26 @@ require "springer.rb"
 
 class TestFuwatto < Test::Unit::TestCase
    include Fuwatto
-   def test_springer_search
-      result = springer_search( "keyword" )
+   def test_springer_metadata_search
+      result = springer_metadata_search( "keyword" )
       assert( result )
       assert( result[:q] )
       assert_equal( result[:q], "keyword" )
       assert( result[:totalResults] > 0 )
       assert( result[:entries].size > 0 )
       result[ :entries ].each do |e|
-         p e[:title]
+         assert( e[ :doi ] )
+         assert( e[:isbn] || e[:volume] )
+      end
+   end
+   def test_springer_images_search
+      result = springer_images_search( "doi:10.1007/s11276-008-0131-4" )
+      assert( result )
+      assert( result[:q] )
+      assert_equal( result[:q], "doi:10.1007/s11276-008-0131-4" )
+      assert( result[:totalResults] > 0 )
+      assert( result[:entries].size > 0 )
+      result[ :entries ].each do |e|
          assert( e[ :doi ] )
          assert( e[:isbn] || e[:volume] )
       end

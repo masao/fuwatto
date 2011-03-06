@@ -24,7 +24,7 @@ module Fuwatto
 	<a href="?url=http://mainichi.jp/select/opinion/eye/">毎日新聞「記者の目」</a> <span style="font-size:smaller;">（<a href="http://mainichi.jp/select/opinion/eye/">元記事(mainichi.jp)</a>）</span>
 	</p>
       EOF
-      def execute( method = :springer_search, terms = TERMS, opts = {} )
+      def execute( method = :springer_metadata_search, terms = TERMS, opts = {} )
          super( method, terms, opts )
       end
    end
@@ -48,7 +48,7 @@ if $0 == __FILE__
 	    opts[ :combination ] = true 
 	    opts[ :reranking ] = true 
 	 end
-         data = app.execute( :springer_search, Fuwatto::SpringerApp::TERMS, opts )
+         data = app.execute( :springer_metadata_search, Fuwatto::SpringerApp::TERMS, opts )
       rescue Fuwatto::NoHitError => e
          data[ :error ] = e.class
       end
