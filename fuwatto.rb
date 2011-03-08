@@ -430,7 +430,11 @@ module Fuwatto
          opts[ :dpgroupid ] = "ndl"
          if not opts.empty?
             opts_s = opts.keys.map do |e|
-               "#{ e }=#{ URI.escape( opts[e].to_s ) }"
+               if e == :start
+                  "idx=#{ URI.escape( opts[e].to_s ) }"
+               else
+                  "#{ e }=#{ URI.escape( opts[e].to_s ) }"
+               end
             end.join( "&" )
          end
          opensearch_uri = URI.parse( "#{ base_uri }?any=#{ q }&#{ opts_s }" )
@@ -996,8 +1000,8 @@ module Fuwatto
          end
          if opts[ :_prev_time ]
             elapsed = Time.now - opts[ :_prev_time ]
-            if SPRINGER_INTERVAL < elapsed
-               sleep( elapsed - SPRINGER_INTERVAL )
+            if SPRINGER_INTERVAL > elapsed
+               sleep( SPRINGER_INTERVAL - elapsed )
             end
          end
          opensearch_uri = URI.parse( "#{ base_uri }?q=#{ q }&api_key=#{ SPRINGER_METADATA_APIKEY }&#{ opts_s }" )
