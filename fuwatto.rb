@@ -176,7 +176,7 @@ module Fuwatto
    end
 
    # Supports redirect
-   def http_get( uri, limit = 3 )
+   def http_get( uri, limit = 10 )
       #STDERR.puts uri.to_s
       raise "Too many redirects: #{ uri }" if limit < 0
       http_proxy = ENV[ "http_proxy" ]
