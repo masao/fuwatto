@@ -1418,7 +1418,7 @@ module Fuwatto
             print eval_rhtml( "./top.rhtml", binding )
          when "json"
             print @cgi.header "application/json"
-            result = JSON::generate( data )
+            result = JSON::generate( data, :ascii_only => true )
             if @callback and @callback =~ /^\w+$/
                result = "#{ @callback }(#{ result })"
             end
