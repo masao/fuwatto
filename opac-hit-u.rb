@@ -31,9 +31,11 @@ if $0 == __FILE__
    case @cgi.host
    when "kagaku.nims.go.jp"
       ENV[ 'http_proxy' ] = 'http://wwwout.nims.go.jp:8888'
-   when "kaede.nier.go.jp"
+   when /\.nier\.go\.jp\Z/
       ENV[ 'http_proxy' ] = 'http://ifilter2.nier.go.jp:12080/'
+      ENV[ 'https_proxy' ] = 'http://ifilter2.nier.go.jp:12080/'
    end
+   ENV[ 'http_proxy' ] = 'http://ifilter2.nier.go.jp:12080/'
    begin
       app = Fuwatto::OPACHitUApp.new( @cgi )
       data = app.execute
