@@ -715,7 +715,15 @@ module Fuwatto
       data[ :q ] = keyword
       # data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.sub( /&format=atom\b/, "" ).sub( /&wskey=\w+/, "" )
       data[ :link ] = "http://www.worldcat.org/search?q=#{ q }"
-      data[ :totalResults ] = doc.find( "//opensearch:totalResults" )[0].content.to_i
+      #STDERR.puts q.inspect
+      #STDERR.puts doc.find( "//opensearch:totalResults" )[0].inspect
+      #STDERR.puts doc.find( "//opensearch:totalResults" )[0].class
+      totalResults = doc.find( "//opensearch:totalResults" )[0]
+      if totalResults
+         data[ :totalResults ] = doc.find( "//opensearch:totalResults" )[0].content.to_i
+      else
+         data[ :totalResults ] = 0
+      end
       entries = doc.find( "//atom:entry", "atom:http://www.w3.org/2005/Atom" )
       data[ :entries ] = []
       entries.each do |e|
