@@ -14,7 +14,7 @@ css.content: dt { margin-top: 5px; }
 :2010年12月31日:
 ::[News] 「ふわっとレファ協関連検索」の検索結果をレファ協サイト上に表示するGreasemonkeyスクリプト「[[ふわっと関連レファレンスを表示|http://userscripts.org/scripts/show/93889]]」を公開しました（公開アナウンス[[(Twitter)|http://twitter.com/tmasao/status/20723256029880320]], [[(Blog)|http://masao.jpn.org/d/2011-01-06.html#2011-01-06-1]]）。
 :2010年11月22日:
-::[News] 「[[ふわっと CiNii 関連著者検索|http://fuwat.to/cinii-author]]」が第2回CiNiiウェブAPIコンテストで優秀賞を獲得しました。（[[(Twitter)|https://twitter.com/tmasao/status/6693638721511424]], [[賞状と副賞（写真）|http://www.flickr.com/photos/53412454@N05/5209606630]]）
+::[News] 「[[ふわっと CiNii 関連著者検索|http://fuwat.to/cinii-author]]」が第2回CiNiiウェブAPIコンテストで優秀賞を獲得しました。（[[受賞作品一覧|http://ci.nii.ac.jp/info/ja/web_api_contest_2010_results.html]], [[(Twitter)|https://twitter.com/tmasao/status/6693638721511424]], [[賞状と副賞（写真）|http://www.flickr.com/photos/53412454@N05/5209606630]]）
 :2010年10月20日:
 ::[News] 関連検索サービスから「[[ふわっと CiNii 関連著者検索|http://fuwat.to/cinii-author]]」への相互リンクを追加しました。 (fuwatto.rb 2.3)
 :2010年10月2日:
