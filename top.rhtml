@@ -18,7 +18,11 @@
 <script type="text/javascript">
 $(document).ready(function(){
   var feed = new google.feeds.Feed("http://news.google.com/news?output=rss");
+  feed.setNumEntries( 5 );
   feed.load(display_feed_as_examples);
+  var feed_mainichi = new google.feeds.Feed("http://mainichi.jp/rss/etc/opinion.rss");
+  feed_mainichi.setNumEntries( 5 );
+  feed_mainichi.load(display_feed_mainichi_opinion);
 });
 </script>
 <% end %>
