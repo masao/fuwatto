@@ -28,6 +28,7 @@ class TestFuwatto < Test::Unit::TestCase
       assert( result[:q] )
       assert_equal( result[:q], "doi:10.1007/s11276-008-0131-4" )
       assert( result[:totalResults] > 0 )
+      p result[:entries]
       assert( result[:entries].size > 0 )
       result[ :entries ].each do |e|
          assert( e[ :doi ] )

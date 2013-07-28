@@ -21,11 +21,12 @@ class TestFuwatto < Test::Unit::TestCase
       result[ :entries ].each do |e|
          assert( e[ :title ] )
          case e[:url]
-         when /\/(315888140|635341692)/o
+         when /\/(315888140|635341692|472167216|2507168)/o
             next
          else
-            #p e[:title]
-            assert( e[:isbn] )
+            assert( e[:title] )
+            assert( e[:author] )
+            # assert( e[:isbn] )
          end
       end
    end
@@ -62,12 +63,13 @@ class TestWorldcat < Test::Unit::TestCase
    # jawp:É´Î¤Èô¹Ô¾ì
    def test_count
       # @cgi.params["url"] = [ "http://ja.wikipedia.org/wiki/%E7%99%BE%E9%87%8C%E9%A3%9B%E8%A1%8C%E5%A0%B4" ]
-      @cgi.params["text"] = [ "wiktionary" ]
+      @cgi.params["text"] = [ "ukima" ]
       app = Fuwatto::WorldcatApp.new( @cgi )
       result = app.execute
+      #p result[ :totalResults ]
       assert( result )
       assert( result[ :totalResults ] > 0 )
-      assert( result[ :totalResults ] < 20 )
+      assert( result[ :totalResults ] < 20, "totalResults for '#{result[:q]}' should be smaller than 20" )
       assert( result[ :totalResults ] < app.count )
       assert_equal( result[ :totalResults ], result[ :entries ].size )
       $stdout = File.open( "/dev/null", "w" )
