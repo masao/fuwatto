@@ -800,8 +800,8 @@ module Fuwatto
 
    # EPI SRU API
    def epi_search( keyword, opts = {} )
-      base_uri = "http://kaede.nier.go.jp/epi"
-      client_base_uri = "http://kaede.nier.go.jp/epi-search/sru-gw.rb"
+      base_uri = "http://dl.nier.go.jp/epi"
+      client_base_uri = "http://dl.nier.go.jp/epi-search/sru-gw.rb"
       q = URI.escape( keyword.split.join( " AND " ) )
       cont = nil
       cache_file = cache_xml( "epi", q, opts[:start] )
