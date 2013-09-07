@@ -1,10 +1,12 @@
 title: 更新履歴 - ふわっと関連検索
 date.available: 2010-01-17
-date.modified: 2012-08-24
+date.modified: 2013-09-07
 css.content: dt { margin-top: 5px; }
 
 {{include 'links.hikidoc'}}
 
+:2013年8月18日:
+::[News] 「ふわっと関連検索」のソースコードをGithubにおいて公開しました。 https://github.com/masao/fuwatto/
 :2011年3月6日:
 ::[News] 「ふわっとSpringer関連検索」を公開しました。 (fuwatto.rb 2.3.3)
 ::[News] ISBNデータが含まれる文献資料からは[[Google Books|http://books.google.com]]へのリンクを張るようにしました。
