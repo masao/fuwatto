@@ -1,6 +1,6 @@
 title: ふわっと関連検索とは
 date.available: 2010-03-14
-date.modified: 2010-10-03
+date.modified: 2013-09-28
 
 {{include 'links.hikidoc'}}
 
@@ -30,6 +30,10 @@ date.modified: 2010-10-03
 今後、API対応されているものを中心に増やしていく予定です。
 ご希望のデータベース等がありましたら、ぜひ[[ご連絡ください|mailto:tmasao@acm.org]]。
 
+!!ソースコードは公開されていますか？
+
+本システム全体のソースコードは https://github.com/masao/fuwatto にて公開されています。
+
 !!いま使っているデータベースでも、「ふわっと○○関連検索」してみたい
 
 [[OpenSearch|wikipedia:OpenSearch]]や[[SRU|http://kaede.nier.go.jp/wiki/?SRU+Version+1.2+Specifications]]などの検索用APIに対応したものでしたら、すぐに追加できます。
@@ -37,6 +41,8 @@ date.modified: 2010-10-03
 
 また、一橋大学OPACなどのように、API非対応システムであっても、スクレイピングなどの手法によって対応させることも可能です。
 まずはご相談いただければ幸いです。
+
+もしくは、[[Github|https://github.com/masao/fuwatto]]にて公開しているコードに改変を入れて使っていただいても構いません。
 
 !!検索結果の並び順は？
 
