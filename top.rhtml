@@ -88,6 +88,9 @@ $.ajax({
 <% end %>
 <% end %>
 <title><%= self.class::TITLE %></title>
+<% if query? %>
+<meta name="robots" content="nofollow" />
+<% end %>
 </head>
 <body>
 <ul id="navi">
