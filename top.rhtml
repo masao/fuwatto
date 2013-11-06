@@ -12,7 +12,10 @@
 <script type="text/javascript" src="http://www.google.com/jsapi"></script>
 <script type="text/javascript">google.load("jquery", "1.4");</script>
 <% if query? %>
-<script src="http://books.google.com/books/previewlib.js"></script>
+<meta name="robots" content="nofollow" />
+<% end %>
+<% if query? %>
+<script src="http://books.google.com/books/previewlib.js" type="text/javascript"></script>
 <% else %>
 <script type="text/javascript">google.load("feeds", "1");</script>
 <script type="text/javascript">
@@ -88,9 +91,6 @@ $.ajax({
 <% end %>
 <% end %>
 <title><%= self.class::TITLE %></title>
-<% if query? %>
-<meta name="robots" content="nofollow" />
-<% end %>
 </head>
 <body>
 <ul id="navi">
