@@ -115,6 +115,7 @@ $.ajax({
 <div class="tabbody">
 <div id="box1">
 <form action="<%=h @cgi.script_name %>" method="post" name="text1" id="text1">
+<div class="form">
 <textarea rows="4" cols="45"  name="text"><%=h content.to_s.toutf8 %></textarea>
 <% case self.class.to_s %>
 <% when "Fuwatto::CiniiAuthorApp" %>
@@ -129,12 +130,14 @@ $.ajax({
 <% if not @cgi.params["combination"].empty? %>
 checked="checked"
 <% end %>
->
+/>
 <% end %>
+</div>
 </form>
 </div>
 <div id="box2">
 <form action="<%=h @cgi.script_name %>" method="get" name="url1" id="url1">
+<div class="form">
 <input type="text" name="url" value="<%=h( url || "http://" ) %>" size="70" />
 <% case self.class.to_s %>
 <% when "Fuwatto::CiniiAuthorApp" %>
@@ -149,8 +152,9 @@ checked="checked"
 <% if not @cgi.params["combination"].empty? %>
 checked="checked"
 <% end %>
->
+/>
 <% end %>
+</div>
 </form>
 </div>
 </div>
