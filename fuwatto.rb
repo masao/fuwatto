@@ -58,6 +58,18 @@ class Array
    end
 end
 
+class Hash
+   def make_uri_params
+      if self.empty?
+         ""
+      else
+         self.keys.map do |e|
+            "#{ e }=#{ URI.escape( self[e].to_s ) }"
+         end.join( "&" )
+      end
+   end
+end
+
 module Fuwatto
    VERSION = '2.3.3'
    BASE_URI = 'http://fuwat.to/'
@@ -243,11 +255,7 @@ module Fuwatto
       else
          # TODO: Atom/RSSの双方を対象にできるようにすること（現状は Atom のみ）
          opts[ :format ] = "atom"
-         if not opts.empty?
-            opts_s = opts.keys.map do |e|
-               "#{ e }=#{ URI.escape( opts[e].to_s ) }"
-            end.join( "&" )
-         end
+         opts_s = opts.make_uri_params
          opensearch_uri = URI.parse( "#{ base_uri }?q=#{ q }&appid=#{ CINII_APPID }&#{ opts_s }" )
          response = http_get( opensearch_uri )
          cont = response.body
@@ -307,11 +315,7 @@ module Fuwatto
       else
          opts[ :format ] = "atom"
          opts[ :sortorder ] ||= 3
-         if not opts.empty?
-            opts_s = opts.keys.map do |e|
-               "#{ e }=#{ URI.escape( opts[e].to_s ) }"
-            end.join( "&" )
-         end
+         opts_s = opts.make_uri_params
          opensearch_uri = URI.parse( "#{ base_uri }?q=#{ q }&appid=#{ CINII_APPID }&#{ opts_s }" )
          response = http_get( opensearch_uri )
          cont = response.body
@@ -352,11 +356,7 @@ module Fuwatto
       else
          opts[ :format ] = "atom"
          # opts[ :sortorder ] ||= 3
-         if not opts.empty?
-            opts_s = opts.keys.map do |e|
-               "#{ e }=#{ URI.escape( opts[e].to_s ) }"
-            end.join( "&" )
-         end
+         opts_s = opts.make_uri_params
          opensearch_uri = URI.parse( "#{ base_uri }#{ q }?appid=#{ CINII_APPID }&#{ opts_s }" )
          response = http_get( opensearch_uri )
          cont = response.body
@@ -416,7 +416,7 @@ module Fuwatto
       end
       result
    end
-   
+
    # NDL Porta Opensearch
    def ndl_search( keyword, opts = {} )
       base_uri = "http://api.porta.ndl.go.jp/servicedp/opensearch"
@@ -428,15 +428,11 @@ module Fuwatto
       else
          opts[ :format ] = "atom"
          opts[ :dpgroupid ] = "ndl"
-         if not opts.empty?
-            opts_s = opts.keys.map do |e|
-               if e == :start
-                  "idx=#{ URI.escape( opts[e].to_s ) }"
-               else
-                  "#{ e }=#{ URI.escape( opts[e].to_s ) }"
-               end
-            end.join( "&" )
+         if opts[ :start ]
+            opts[ :idx ] = opts[ :start ].dup
+            opts.delete( :start )
          end
+         opts_s = opts.make_uri_params
          opensearch_uri = URI.parse( "#{ base_uri }?any=#{ q }&#{ opts_s }" )
          response = http_get( opensearch_uri )
          cont = response.body
@@ -533,11 +529,7 @@ module Fuwatto
       else
          opts[ :format ] = "atom"
          opts[ :dpid ] = "refkyo"
-         if not opts.empty?
-            opts_s = opts.keys.map do |e|
-               "#{ e }=#{ URI.escape( opts[e].to_s ) }"
-            end.join( "&" )
-         end
+         opts_s = opts.make_uri_params
          opensearch_uri = URI.parse( "#{ base_uri }?any=#{ q }&#{ opts_s }" )
          response = http_get( opensearch_uri )
          cont = response.body
@@ -623,12 +615,7 @@ module Fuwatto
       base_uri = "http://crd.ndl.go.jp/refapi/servlet/refapi.RSearchAPI"
       q = URI.escape( keyword )
       opts[ :query_logic ] = "2"
-      opts_s = ""
-      if not opts.empty?
-         opts_s = opts.keys.map do |e|
-            "#{ e }=#{ URI.escape( opts[e].to_s ) }"
-         end.join( "&" )
-      end
+      opts_s = opts.make_uri_params
       query = "01_" + q + ".02_" + q
       opts_s = "&" + opts_s if not opts_s.empty?
       uri = URI.parse( "#{ base_uri }?query=#{ query }#{ opts_s }" )
@@ -698,11 +685,7 @@ module Fuwatto
       else
          opts[ :format ] = "atom"
          opts[ :wskey ] = WORLDCAT_BASIC_WSKEY
-         if not opts.empty?
-            opts_s = opts.keys.map do |e|
-               "#{ e }=#{ URI.escape( opts[e].to_s ) }"
-            end.join( "&" )
-         end
+         opts_s = opts.make_uri_params
          opensearch_uri = URI.parse( "#{ base_uri }?q=#{ q }&#{ opts_s }" )
          response = http_get( opensearch_uri )
          cont = response.body
@@ -762,11 +745,7 @@ module Fuwatto
          opts[ :action ] = "query"
          opts[ :list ] = "search"
          opts[ :format ] = "xml"
-         if not opts.empty?
-            opts_s = opts.keys.map do |e|
-               "#{ e }=#{ URI.escape( opts[e].to_s ) }"
-            end.join( "&" )
-         end
+         opts_s = opts.make_uri_params
          search_uri = URI.parse( "#{ base_uri }?srsearch=#{ q }&#{ opts_s }" )
          response = http_get( search_uri )
          cont = response.body
@@ -921,13 +900,8 @@ module Fuwatto
       require "htmlentities"
       base_uri = "https://opac.lib.hit-u.ac.jp/opac/opac_list.cgi"
       q = URI.escape( keyword )
-      opts_s = ""
       opts[ :amode ] = 9 if opts.key?( :key )
-      if not opts.empty?
-         opts_s = opts.keys.map do |e|
-            "#{ e }=#{ URI.escape( opts[e].to_s ) }"
-         end.join( "&" )
-      end
+      opts_s = opts.make_uri_params
       opts_s = "&" + opts_s if not opts_s.empty?
       uri = URI.parse( "#{ base_uri }?kywd=#{ q }#{ opts_s }" )
       cont = nil
@@ -1076,15 +1050,11 @@ module Fuwatto
       if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
          cont = open( cache_file ){|io| io.read }
       else
-         if not opts.empty?
-            opts_s = opts.keys.map do |e|
-               if e == :start
-                  "s=#{ URI.escape( opts[e].to_s ) }"
-               else
-                  "#{ e }=#{ URI.escape( opts[e].to_s ) }"
-               end
-            end.join( "&" )
+         if opts[ :start ]
+            opts[ :s ] = opts[ :start ].dup
+            opts.delete( :start )
          end
+         opts_s = opts.make_uri_params
          uri = URI.parse( "#{ base_uri }?q=#{ q }&api_key=#{ SPRINGER_IMAGES_APIKEY }&#{ opts_s }" )
          response = http_get( uri )
          cont = response.body
