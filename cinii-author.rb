@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 # $Id$
 
-require "fuwatto.rb"
-require "cinii.rb"
+require_relative "fuwatto.rb"
+require_relative "cinii.rb"
 
 module Fuwatto
    class CiniiAuthorApp < CiniiApp
