@@ -3,7 +3,7 @@
 
 require 'test/unit'
 
-$:.push File.join( File.dirname( $0 ), ".." )
+$:.unshift File.join( File.dirname( __FILE__ ), ".." )
 require "fuwatto.rb"
 
 class TestMecab < Test::Unit::TestCase

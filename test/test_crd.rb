@@ -3,9 +3,8 @@
 # $Id$
 
 require 'test/unit'
-#require 'ftools'
 
-$:.push File.join( File.dirname( __FILE__ ), ".." )
+$:.unshift File.join( File.dirname( __FILE__ ), ".." )
 require "crd.rb"
 
 class TestFuwatto < Test::Unit::TestCase

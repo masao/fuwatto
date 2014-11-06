@@ -2,9 +2,8 @@
 # $Id$
 
 require 'test/unit'
-require 'ftools'
 
-$:.push File.join( File.dirname( $0 ), ".." )
+$:.unshift File.join( File.dirname( __FILE__ ), ".." )
 require "opac-hit-u.rb"
 
 class TestFuwatto < Test::Unit::TestCase

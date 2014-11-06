@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # $Id$
 
+$:.unshift( File.dirname( __FILE__ ) )
 require "fuwatto.rb"
 
 module Fuwatto

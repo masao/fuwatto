@@ -1,21 +1,21 @@
-DocumentRoot /home/masao/cvswork/fuwatto/
+DocumentRoot /project/fuwatto
 DirectoryIndex index.html index.cgi
 
-<Directory /home/masao/cvswork/fuwatto>
+<Directory /project/fuwatto>
 Options All MultiViews
 AllowOverride All
 </Directory>
 
-ScriptAlias /cinii /home/masao/cvswork/fuwatto/cinii.rb
-ScriptAlias /cinii-author /home/masao/cvswork/fuwatto/cinii-author.rb
-ScriptAlias /worldcat /home/masao/cvswork/fuwatto/worldcat.rb
-ScriptAlias /ndl /home/masao/cvswork/fuwatto/ndl.rb
-ScriptAlias /opac-hit-u /home/masao/cvswork/fuwatto/opac-hit-u.rb
-ScriptAlias /crd /home/masao/cvswork/fuwatto/crd.rb
-ScriptAlias /epi /home/masao/cvswork/fuwatto/epi.rb
-ScriptAlias /jstage /home/masao/cvswork/fuwatto/jstage.rb
-ScriptAlias /springer /home/masao/cvswork/fuwatto/springer.rb
-ScriptAlias /wikipedia /home/masao/cvswork/fuwatto/wikipedia.rb
+ScriptAlias /cinii /project/fuwatto//cinii.rb
+ScriptAlias /cinii-author /project/fuwatto/cinii-author.rb
+ScriptAlias /worldcat /project/fuwatto/worldcat.rb
+ScriptAlias /ndl /project/fuwatto/ndl.rb
+ScriptAlias /opac-hit-u /project/fuwatto/opac-hit-u.rb
+ScriptAlias /crd /project/fuwatto/crd.rb
+ScriptAlias /epi /project/fuwatto/epi.rb
+ScriptAlias /jstage /project/fuwatto/jstage.rb
+ScriptAlias /springer /project/fuwatto/springer.rb
+ScriptAlias /wikipedia /project/fuwatto/wikipedia.rb
 
 # conf.d/welcome.conf disabled
 <LocationMatch "^/+$">

@@ -3,9 +3,8 @@
 # $Id$
 
 require 'test/unit'
-require 'ftools'
 
-$:.push File.join( File.dirname( $0 ), ".." )
+$:.push File.join( File.dirname( __FILE__ ), ".." )
 require "cinii-author.rb"
 
 class TestFuwatto < Test::Unit::TestCase
@@ -13,7 +12,7 @@ class TestFuwatto < Test::Unit::TestCase
    def test_cinii_author_search
       #p cinii_author_search( "a" )
       result = cinii_author_search( "高久雅生" )
-      assert_not_equal( "", result[ :entries ].first[ :affiliation ] )
+      assert_not_equal( "", result[ :entries ].first.has_key?( :affiliation ) )
       result[ :entries ].each do |au|
          assert_match( /\/nrid\/\w+$/, au[ :url ] )
       end

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # $Id$
 
-require "fuwatto.rb"
+require_relative "fuwatto.rb"
 
 module Fuwatto
    class JStageApp < BaseApp

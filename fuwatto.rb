@@ -28,6 +28,8 @@ rescue LoadError
    #   require "extractcontent_local.rb"
 end
 
+Encoding.default_external = Encoding::UTF_8
+
 module Math
    def self::log2( n )
       Math.log10( n ) / Math.log10( 2 )
@@ -913,6 +915,7 @@ module Fuwatto
          cont = response.body
          open( cache_file, "w" ){|io| io.print cont }
       end
+      cont.force_encoding( 'UTF-8' )
       data = {}
       # <td class="list_result"><span class="name"><a href="/opac/opac_details.cgi?lang=0&amode=11&place=&bibid=1000258087&key=B126875030611669&start=1&srmode=0"><strong>Take the test : sample questions from OECD's PISA assessments</strong></a></span><div class="other">[Paris] : OECD , c2009.</div></td>
       data[ :opac_hit_u_key ] = $1 if %r[&key=(\w+)&] =~ cont # ad-hoc...

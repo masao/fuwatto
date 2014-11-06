@@ -3,7 +3,7 @@
 
 require 'test/unit'
 
-$:.push File.join( File.dirname( $0 ), ".." )
+$:.unshift File.join( File.dirname( __FILE__ ), ".." )
 require "cinii.rb"
 
 class TestFuwattoHTTP < Test::Unit::TestCase
