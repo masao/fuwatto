@@ -5,6 +5,8 @@ css.content: dt { margin-top: 5px; }
 
 {{include 'links.hikidoc'}}
 
+:2014月12月31日:
+::[News] 「ふわっとNDL関連検索」の検索対象をNDL Portaから[[NDLサーチ|http://iss.ndl.go.jp]]に変更しました。
 :2013年8月18日:
 ::[News] 「ふわっと関連検索」のソースコードをGithubにおいて公開しました。 https://github.com/masao/fuwatto/
 :2011年3月6日:
