@@ -2,15 +2,14 @@
 # -*- coding: euc-jp -*-
 # $Id$
 
-require 'test/unit'
+require 'test-unit'
 
-$:.unshift File.join( File.dirname( __FILE__ ), ".." )
-require "ndl.rb"
+require_relative "../ndl.rb"
 
 class TestFuwatto < Test::Unit::TestCase
    include Fuwatto
    def test_ndl_search
-      result = ndl_search( "keyword" )
+      result = iss_ndl_search( "keyword" )
       assert( result )
       assert( result[:link] )
       assert( result[:q] )
@@ -19,7 +18,7 @@ class TestFuwatto < Test::Unit::TestCase
       assert( result[:entries].size > 0 )
    end
    def test_ndl_search_isbn
-      result = ndl_search( "yahoo" )
+      result = iss_ndl_search( "yahoo" )
       assert( result )
       assert( result[:entries].size > 0 )
       isbncount = 0

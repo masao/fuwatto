@@ -519,6 +519,106 @@ module Fuwatto
       end
       data
    end
+   # NDLサーチ版:
+   def iss_ndl_search( keyword, opts = {} )
+      base_uri = "http://iss.ndl.go.jp/api/opensearch"
+      q = URI.escape( keyword )
+      cont = nil
+      cache_file = cache_xml( "ndl", q, opts[:start] )
+      if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
+         cont = open( cache_file ){|io| io.read }
+      else
+         opts[ :format ] = "atom"
+         opts[ :dpgroupid ] = "ndl"
+         if opts[ :start ]
+            opts[ :idx ] = opts[ :start ]
+            opts.delete( :start )
+         end
+         opts_s = opts.make_uri_params
+         opensearch_uri = URI.parse( "#{ base_uri }?any=#{ q }&#{ opts_s }" )
+         response = http_get( opensearch_uri )
+         cont = response.body
+         open( cache_file, "w" ){|io| io.print cont }
+      end
+      data = {}
+      parser = LibXML::XML::Parser.string( cont )
+      doc = parser.parse
+      data[ :q ] = keyword
+      data[ :link ] = doc.find( "//link" )[0].content.sub( /\/api\/opensearch/, '/books' )
+      data[ :totalResults ] = doc.find( "//openSearch:totalResults", "http://a9.com/-/spec/opensearchrss/1.0/" )[0].content.to_i
+      entries = doc.find( "//item" )
+      data[ :entries ] = []
+      entries.each do |e|
+         #dpid = e.find( "./dcndl:dpid", "http://ndl.go.jp/dcndl/dcndl_porta/" )[0].content
+         title = e.find( "./title" )[0].content
+         url = e.find( "./link" )[0].content
+         author = e.find( ".//author" )
+         if author and author[0]
+            author = author[0].content
+         else
+            author = ""
+         end
+         source = e.find( "./source" )
+         if source and source[0]
+            source = source[0].content
+         else
+            source = ""
+         end
+         publicationName = e.find( "dcterms:bibliographicCitation", "http://purl.org/dc/terms/" )
+         if publicationName and publicationName[0]
+            publicationName = publicationName[0].content
+         else
+            publicationName = nil
+         end
+         date = e.find( "./dcterms:issued", "http://purl.org/dc/terms/" )
+         if date and date[0]
+            date = date[0].content
+         else
+            date = e.find( "./dcterms:modified", "http://purl.org/dc/terms/" )
+            if date and date[0]
+               date = date[0].content
+            else
+               date = nil
+            end
+         end
+         publisher = e.find( "./dc:publisher", "http://purl.org/dc/elements/1.1/" )
+         if publisher and publisher[0]
+            publisher = publisher[0].content
+         else
+            publisher = nil
+         end
+         description = e.find( "./description" )
+         if description and description[0] #and dpid != "zassaku"
+            description = description[0].content
+         else
+            description = ""
+         end
+         if publicationName.nil? or publicationName.empty?
+            publicationName = [ source, publisher ].select{|type|
+               not type.nil? and not type.empty?
+            }.join( "; " )
+         end
+         isbn = e.find( "./dc:identifier[@xsi:type='dcndl:ISBN']",
+                        [ "dc:http://purl.org/dc/elements/1.1/",
+                          "xsi:http://www.w3.org/2001/XMLSchema-instance",
+                          "dcndl:http://ndl.go.jp/dcndl/terms/" ] )[0]
+         isbn = isbn.content if isbn
+         data[ :entries ] << {
+            :title => title,
+            :url => url,
+            :author => author,
+            :source => source,
+            :date => date,
+            :publicationDate => date,
+            :publisher => publisher,
+            :publicationName => publicationName,
+            :description => description,
+            #:dpid => dpid,
+            :isbn => isbn,
+         }
+      end
+      data
+   end
 
    # レファ協API via NDL PORTA Opensearch
    def crd_search2( keyword, opts = {} )
@@ -541,12 +641,12 @@ module Fuwatto
       parser = LibXML::XML::Parser.string( cont )
       doc = parser.parse
       data[ :q ] = keyword
-      data[ :link ] = "http://porta.ndl.go.jp/cgi-bin/openurl.cgi"
+      data[ :link ] = "http://iss.ndl.go.jp/"
       data[ :totalResults ] = doc.find( "//openSearch:totalResults", "http://a9.com/-/spec/opensearchrss/1.0/" )[0].content.to_i
       entries = doc.find( "//item" )
       data[ :entries ] = []
       entries.each do |e|
-         dpid = e.find( "./dcndl_porta:dpid", "http://ndl.go.jp/dcndl/dcndl_porta/" )[0].content
+         dpid = e.find( "./dcndl_porta:dpid", "http://ndl.go.jp/dcndl/terms/" )[0].content
          title = e.find( "./title" )[0].content
          url = e.find( "./link" )[0].content
          author = e.find( ".//author" )

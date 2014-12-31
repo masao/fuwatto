@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # $Id$
 
-require "fuwatto.rb"
+require_relative "fuwatto.rb"
 
 module Fuwatto
    class NDLApp < BaseApp
@@ -53,7 +53,7 @@ WARP,
 </p>
 EOF
       def execute
-         super( :ndl_search, TERMS )
+         super( :iss_ndl_search, TERMS )
       end
    end
 end
