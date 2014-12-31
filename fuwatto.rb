@@ -528,7 +528,6 @@ module Fuwatto
       if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
          cont = open( cache_file ){|io| io.read }
       else
-         opts[ :format ] = "atom"
          opts[ :dpgroupid ] = "ndl"
          if opts[ :start ]
             opts[ :idx ] = opts[ :start ]
@@ -541,6 +540,7 @@ module Fuwatto
          open( cache_file, "w" ){|io| io.print cont }
       end
       data = {}
+      #STDERR.puts cont
       parser = LibXML::XML::Parser.string( cont )
       doc = parser.parse
       data[ :q ] = keyword
@@ -558,17 +558,23 @@ module Fuwatto
          else
             author = ""
          end
+         creators = e.find( ".//dc:creator", "http://purl.org/dc/elements/1.1/" )
+         creator = creators.map{|e| e.content }.join( ", " )
          source = e.find( "./source" )
          if source and source[0]
             source = source[0].content
          else
             source = ""
          end
-         publicationName = e.find( "dcterms:bibliographicCitation", "http://purl.org/dc/terms/" )
+         publicationName = e.find( "./dcndl:publicationName", "dcndl:http://ndl.go.jp/dcndl/terms/" )
          if publicationName and publicationName[0]
             publicationName = publicationName[0].content
          else
-            publicationName = nil
+           publicationName = publicationName[0]
+         end
+         volume = e.find( "./dcndl:publicationVolume", "dcndl:http://ndl.go.jp/dcndl/terms/" )
+         if volume and volume[0]
+            volume = volume[0].content
          end
          date = e.find( "./dcterms:issued", "http://purl.org/dc/terms/" )
          if date and date[0]
@@ -593,11 +599,6 @@ module Fuwatto
          else
             description = ""
          end
-         if publicationName.nil? or publicationName.empty?
-            publicationName = [ source, publisher ].select{|type|
-               not type.nil? and not type.empty?
-            }.join( "; " )
-         end
          isbn = e.find( "./dc:identifier[@xsi:type='dcndl:ISBN']",
                         [ "dc:http://purl.org/dc/elements/1.1/",
                           "xsi:http://www.w3.org/2001/XMLSchema-instance",
@@ -607,6 +608,7 @@ module Fuwatto
             :title => title,
             :url => url,
             :author => author,
+	    :creator => creator,
             :source => source,
             :date => date,
             :publicationDate => date,
@@ -615,6 +617,7 @@ module Fuwatto
             :description => description,
             #:dpid => dpid,
             :isbn => isbn,
+            :volume => volume,
          }
       end
       data

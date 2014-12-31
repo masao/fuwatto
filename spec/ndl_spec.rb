@@ -26,6 +26,13 @@ describe Fuwatto do
       end
       expect( isbncount ).to be > 0
     end
+    #it "should get publicationName" do
+    #  result = iss_ndl_search "ドイツにおける銀行再編基金法の制定"
+    #  metadata = result[ :entries ].first
+    #  p metadata
+    #  expect( metadata ).to has_key? :publicationName
+    #  expect( metadata[ :publicationName ] ).to eq "外国の立法 : 立法情報・翻訳・解説"
+    #end
   end
 end
 
