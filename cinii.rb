@@ -24,12 +24,6 @@ end
 if $0 == __FILE__
    # 検索に使用する最大キーワード数
    @cgi = CGI.new
-   case @cgi.host
-   when "kagaku.nims.go.jp"
-      ENV[ 'http_proxy' ] = 'http://wwwout.nims.go.jp:8888'
-   when "kaede.nier.go.jp"
-      ENV[ 'http_proxy' ] = 'http://ifilter2.nier.go.jp:12080/'
-   end
    begin
       app = Fuwatto::CiniiApp.new( @cgi )
       data = {}

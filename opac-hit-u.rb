@@ -23,14 +23,6 @@ end
 if $0 == __FILE__
    # 検索に使用する最大キーワード数
    @cgi = CGI.new
-   case @cgi.host
-   when "kagaku.nims.go.jp"
-      ENV[ 'http_proxy' ] = 'http://wwwout.nims.go.jp:8888'
-   when /\.nier\.go\.jp\Z/
-      ENV[ 'http_proxy' ] = 'http://ifilter2.nier.go.jp:12080/'
-      ENV[ 'https_proxy' ] = 'http://ifilter2.nier.go.jp:12080/'
-   end
-   ENV[ 'http_proxy' ] = 'http://ifilter2.nier.go.jp:12080/'
    begin
       app = Fuwatto::OPACHitUApp.new( @cgi )
       data = app.execute
