@@ -30,11 +30,6 @@ module Fuwatto
 長いテキストやURLで指定したページからでも関連キーワードを自動的に抜き出して文献検索できるのが特徴です。
 </p>
 <p>
-例:
-<a href="?url=http://www.asahi.com/paper/editorial.html">朝日新聞社説</a> <span style="font-size:smaller;">（<a href="http://www.asahi.com/paper/editorial.html">元記事(asahi.com)</a>）</span>, 
-<a href="?url=http://mainichi.jp/select/opinion/eye/">毎日新聞「記者の目」</a> <span style="font-size:smaller;">（<a href="http://mainichi.jp/select/opinion/eye/">元記事(mainichi.jp)</a>）</span>
-</p>
-<p>
 <a href="http://iss.ndl.go.jp">NDLサーチ</a>において、国立国会図書館が提供している下記の#{ DPID_TARGETS.size }データベースを検索対象としています:
 <div style="font-size:smaller;margin: 0pt 4em;">
 #{ DPID_TARGETS.values.join( ", " ) }

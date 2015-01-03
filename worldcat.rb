@@ -10,6 +10,9 @@ module Fuwatto
       TITLE = "ふわっとWorldCat関連検索 / Fuwatto WorldCat Search"
       HELP_TEXT = <<-EOF
 <p>
+This search tool allows you to search <a href="http://www.worldcat.org">WorldCat</a> just by specifying free text or a web page. The tool automatically extracts feature words from the specified contents, and returns a ranked list of bibliographic information ordered by relevance score.
+</p>
+<p>
 入力したテキストまたはウェブページに関連した文献を<a href="http://www.worldcat.org">WorldCat</a>で検索します。
 長いテキストやURLで指定したページからでも関連キーワードを自動的に抜き出して文献検索できるのが特徴です。
 </p>
@@ -19,13 +22,10 @@ Enjoy my quick hack of WorldCat Basic API at Code4Lib 2010 Conference!<br/>
 <br/>
 <small>Note: This service is just for demonstration purpose and it is very slow, 20sec. per search request.</small>
 </p>
-<p>
-例:
-<a href="?url=http://www.asahi.com/paper/editorial.html">朝日新聞社説</a> <span style="font-size:smaller;">（<a href="http://www.asahi.com/paper/editorial.html">元記事(asahi.com)</a>）</span>, 
-<a href="?url=http://mainichi.jp/select/opinion/eye/">毎日新聞「記者の目」</a> <span style="font-size:smaller;">（<a href="http://mainichi.jp/select/opinion/eye/">元記事(mainichi.jp)</a>）</span>
-</p>
+EOF
+     EXAMPLE_TEXT = <<EOF
 <div id="feed"></div>
-      EOF
+EOF
       def execute
          super( :worldcat_search, TERMS, { :count => count } )
       end

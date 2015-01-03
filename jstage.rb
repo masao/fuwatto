@@ -13,11 +13,6 @@ module Fuwatto
 	学術雑誌プラットフォーム<a href="http://www.jstage.jst.go.jp/browse/-char/ja">J-STAGE</a>および<a href="http://www.journalarchive.jst.go.jp/japanese/top_ja.php">Journal@rchive</a>から、入力したテキストまたはウェブページに関連した論文を検索します。
 	長いテキストやURLで指定したページからでも関連キーワードを自動的に抜き出して論文検索できるのが特徴です。
 	</p>
-	<p>
-	例:
-	<a href="?url=http://www.asahi.com/paper/editorial.html">朝日新聞社説</a> <span style="font-size:smaller;">（<a href="http://www.asahi.com/paper/editorial.html">元記事(asahi.com)</a>）</span>, 
-	<a href="?url=http://mainichi.jp/select/opinion/eye/">毎日新聞「記者の目」</a> <span style="font-size:smaller;">（<a href="http://mainichi.jp/select/opinion/eye/">元記事(mainichi.jp)</a>）</span>
-	</p>
       EOF
       def execute( method = :jstage_search, terms = TERMS, opts = {} )
          super( method, terms, opts )

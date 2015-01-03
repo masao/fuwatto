@@ -1227,8 +1227,16 @@ module Fuwatto
    end
 
    class BaseApp
-      attr_reader :format, :content, :url, :html
-      attr_reader :count, :page, :mode
+     attr_reader :format, :content, :url, :html
+     attr_reader :count, :page, :mode
+     TERMS = 10
+     EXAMPLE_TEXT = <<EOF
+	<p>
+	例:
+	<a href="?url=http://www.asahi.com/paper/editorial.html">朝日新聞社説</a> <span style="font-size:smaller;">（<a href="http://www.asahi.com/paper/editorial.html">元記事(asahi.com)</a>）</span>
+	</p>
+	<div id="feed_mainichi_opinion"></div>
+EOF
       def initialize( cgi )
          @cgi = cgi
          @url = @cgi.params["url"][0]

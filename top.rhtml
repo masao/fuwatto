@@ -186,7 +186,8 @@ seltab( 'box', 'head', 10, <%= query_url? ? 2 : 1 %> )
 </p>
 <% else %>
 <div class="help-text">
-<%= self.class.const_get( :HELP_TEXT ) %>
+<%= self.class::HELP_TEXT %>
+<%= self.class::EXAMPLE_TEXT %>
 </div>
 <% end %>
 <hr />
