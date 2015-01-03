@@ -6,26 +6,27 @@ require_relative "fuwatto.rb"
 
 module Fuwatto
    class NDLApp < BaseApp
-      DPID_LABEL = {
-         "kindai" => "近デジ",
-         "rarebook" => "NDL貴重書",
-         "rarebook-sample" => "貴重書サンプル",
-         "jido-dl" => "児童書DL",
-         "webcont" => "NDL電展",
-         "zomoku" => "NDL和図書/雑誌",
-         "prange" => "プランゲ文庫",
-         "zassaku" => "雑誌記事索引",
-         "jido-somoku" => "児童書総目",
-         "dnavi" => "Dnavi",
-         "warp" => "WARP",
-         "refkyo" => "レファ協",
-         "awareness" => "カレント",
+      DPID_TARGETS = {
+        :zassaku => "NDL雑誌記事索引",
+	:refkyo  => "レファレンス協同データベース",
+	:awareness => "カレントアウェアネス",
+	:webcont => "国立国会図書館電子展示会",
+	:research => "リサーチナビ",
+	:"iss-yunika" => "総合目録ネットワーク（ゆにかねっと）",
+	:"iss-ndl-opac" => "NDL-OPAC",
+	:"iss-shinbun" => "新聞総合目録",
+	:"iss-jido-somoku" => "児童書総合目録",
+	:"ndl-dl" => "国立国会図書館デジタルコレクション",
+	:"ndl-dl-online" => "国立国会図書館デジタルコレクション（電子書籍・電子雑誌）",
+	:tenroku => "点字図書・録音図書全国総合目録",
+	:"ndl-dl-daisy" => "国立国会図書館DAISY資料",
+	:aozora => "青空文庫",
       }
       TERMS = 5
       TITLE = "ふわっと NDL 関連検索"
       HELP_TEXT = <<EOF
 <p>
-入力したテキストまたはウェブページに関連した文献を<a href="http://porta.ndl.go.jp">NDL PORTA</a>で検索します。
+入力したテキストまたはウェブページに関連した文献を<a href="http://iss.ndl.go.jp">NDLサーチ</a>で検索します。
 長いテキストやURLで指定したページからでも関連キーワードを自動的に抜き出して文献検索できるのが特徴です。
 </p>
 <p>
@@ -34,19 +35,10 @@ module Fuwatto
 <a href="?url=http://mainichi.jp/select/opinion/eye/">毎日新聞「記者の目」</a> <span style="font-size:smaller;">（<a href="http://mainichi.jp/select/opinion/eye/">元記事(mainichi.jp)</a>）</span>
 </p>
 <p>
-<a href="http://porta.ndl.go.jp">NDL Porta</a>において、国立国会図書館が提供している下記の12データベースを検索対象としています:<br/>
-近代デジタルライブラリー,
-貴重書サンプル,
-貴重書画像データベース,
-Dnavi,
-NDL蔵書目録（和図書・和雑誌）,
-NDL雑誌記事索引,
-NDLプランゲ文庫雑誌・新聞目録,
-レファレンス協同データベース,
-カレントアウェアネス,
-児童書デジタル・ライブラリー,
-WARP,
-国立国会図書館電子展示会
+<a href="http://iss.ndl.go.jp">NDLサーチ</a>において、国立国会図書館が提供している下記の#{ DPID_TARGETS.size }データベースを検索対象としています:
+<div style="font-size:smaller;margin: 0pt 4em;">
+#{ DPID_TARGETS.values.join( ", " ) }
+</div>
 </p>
 <p>
 注意: 本サービスはデモ用のものです。検索対象が多いため、一回の検索あたり一分程度かかります。検索実行の際はしばらくお待ちください。
