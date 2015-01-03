@@ -544,7 +544,7 @@ module Fuwatto
       parser = LibXML::XML::Parser.string( cont )
       doc = parser.parse
       data[ :q ] = keyword
-      data[ :link ] = doc.find( "//link" )[0].content.sub( /\/api\/opensearch/, '/books' )
+      data[ :link ] = doc.find( "//link" )[0].content.sub( /\/api\/opensearch/, '/books' ).sub( /&dpgroupid=ndl/, "" )
       data[ :totalResults ] = doc.find( "//openSearch:totalResults", "http://a9.com/-/spec/opensearchrss/1.0/" )[0].content.to_i
       entries = doc.find( "//item" )
       data[ :entries ] = []
