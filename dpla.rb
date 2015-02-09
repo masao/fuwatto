@@ -47,7 +47,7 @@ if $0 == __FILE__
       rescue Fuwatto::NoHitError => e
          data[ :error ] = e.class
       end
-      app.output( "springer", data )
+      app.output( "dpla", data )
    rescue Exception
       if @cgi then
          print @cgi.header( 'status' => CGI::HTTP_STATUS['SERVER_ERROR'], 'type' => 'text/html' )
