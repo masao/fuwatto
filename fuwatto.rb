@@ -20,7 +20,11 @@ require "libxml"
 begin
    require "MeCab"
 rescue LoadError
-   require "mecab_local.rb"
+   begin
+      require "mecab"
+   rescue
+      require "mecab_local.rb"
+   end
 end
 begin
    require "extractcontent"
@@ -223,6 +227,37 @@ module Fuwatto
    end
 
    CACHE_DIR = "cache"
+   class Cache
+      CACHE_DIR = "cache"
+      def initialize( prefix )
+         @prefix = prefix
+	 @cache_dir = File.join( CACHE_DIR, @prefix )
+         begin
+            unless File.exist? @cache_dir
+	       Dir.mkdir @cache_dir
+	    end
+         end
+      end
+      def filename( name, page = 0 )
+         xml_fname = name.dup
+         if xml_fname.size > 245
+            xml_fname = Digest::MD5.hexdigest( xml_fname )
+         end
+         xml_fname << ":#{ page }" if not page.nil? and not page == 0
+         xml_fname << ".xml"
+         File.join( @cache_dir, xml_fname )
+      end
+      def fetch( name, page = 0 )
+         fname = filename( name, page )
+         if File.exist?( fname ) and ( Time.now - File.mtime( fname ) ) < CACHE_TIME
+            cont = open( fname ){|io| io.read }
+         else
+            cont = yield
+            open( fname, "w" ){|io| io.print cont }
+	 end
+	 cont
+      end
+   end
    def cache_xml( prefix, name, page = 0 )
       xml_fname = name.dup
       if xml_fname.size > 245
@@ -1141,6 +1176,50 @@ module Fuwatto
             bibdata[ type ] = cont.content if cont and not cont.empty?
          end
          data[ :entries ] << bibdata
+      end
+      data
+   end
+
+   DPLA_APIKEY = "76ac9bd08ecf381128a4da86f49feb95"
+   def dpla_search( keyword, opts = {} )
+      base_uri = "http://api.dp.la/v2/items"
+      q = CGI.escape( keyword )
+      cont = nil
+      cache = Cache.new( "dpla" )
+      cont = cache.fetch( q ) do 
+         if opts[ :start ]
+            opts[ :page ] = opts[ :start ].dup
+            opts.delete( :start )
+         end
+	 if opts[ :count ]
+            opts[ :page_size ] = opts[ :count ]
+	    opts.delete( :count )
+	 end
+         opts_s = opts.make_uri_params
+         uri = URI.parse( "#{ base_uri }?q=#{ q }&api_key=#{ DPLA_APIKEY }&#{ opts_s }" )
+         response = http_get( uri )
+         cont = response.body
+      end
+      data = {}
+      json = JSON.load( cont )
+      data[ :q ] = q
+      data[ :link ] = "http://dp.la/search?#{ q }"
+      data[ :totalResults ] = json[ "count" ]
+      entries = json[ "docs" ]
+      data[ :entries ] = []
+      entries.each do |e|
+         title = e[ "sourceResource" ][ "title" ]
+         url = e[ "@id" ]
+         author = e[ "creator" ]
+         pubdate = e[ "date" ][ "displayDate" ] if e[ "date" ]
+         description = e[ "description" ].join( "\t" ) if e[ "description" ]
+         data[ :entries ] << {
+            :title => title,
+            :url => url,
+            :author => author,
+            :publicationDate => pubdate,
+            :description => description,
+         }
       end
       data
    end
