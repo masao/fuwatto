@@ -1,4 +1,4 @@
-#!/usr/local/bin/ruby
+#!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 # $Id$
 
@@ -35,7 +35,7 @@ if $0 == __FILE__
    # 検索に使用する最大キーワード数
    @cgi = CGI.new
    begin
-      app = Fuwatto::SpringerApp.new( @cgi )
+      app = Fuwatto::DPLAApp.new( @cgi )
       data = {}
       begin
          opts = {}
