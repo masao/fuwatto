@@ -13,7 +13,7 @@
 <% data[ :entries ][ data[:count] * data[:page], data[:count] ].each do |entry| %>
   <li><div class="cinii_title"><a href="<%=h entry[:url] %>"><%=h entry[:title] %></a></div>
       <div class="cinii_author"><%=h entry[ :author ] %></div>
-      <%= [ :publicationDate ].select{|e| entry[e] }.map{|e| ( entry[e] and not entry[e].empty? ) ? "<span class=\"cinii_#{ e }\">#{ CGI.escapeHTML entry[e] }</span>" : nil }.compact.join(",\n") %>
+      <%= [ :publicationDate, :description ].select{|e| entry[e] }.map{|e| ( entry[e] and not entry[e].empty? ) ? "<span class=\"cinii_#{ e }\">#{ CGI.escapeHTML entry[e] }</span>" : nil }.compact.join(",\n") %>
       <% if entry[ :isbn ] %>
       <span class="cinii_isbn">ISBN: <%=h entry[ :isbn ]%></span>
       <% elsif entry[ :doi ] %>
