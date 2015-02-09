@@ -1209,6 +1209,7 @@ module Fuwatto
       data[ :entries ] = []
       entries.each do |e|
          title = e[ "sourceResource" ][ "title" ]
+         title = title.join( "\n" ) if title.respond_to? :join
          url = e[ "@id" ]
          author = e[ "creator" ]
          pubdate = e[ "date" ][ "displayDate" ] if e[ "date" ]
