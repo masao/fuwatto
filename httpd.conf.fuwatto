@@ -16,6 +16,7 @@ ScriptAlias /epi /project/fuwatto/epi.rb
 ScriptAlias /jstage /project/fuwatto/jstage.rb
 ScriptAlias /springer /project/fuwatto/springer.rb
 ScriptAlias /wikipedia /project/fuwatto/wikipedia.rb
+ScriptAlias /dpla /project/fuwatto/dpla.rb
 
 # conf.d/welcome.conf disabled
 <LocationMatch "^/+$">
