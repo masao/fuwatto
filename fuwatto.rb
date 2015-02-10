@@ -1203,7 +1203,7 @@ module Fuwatto
       data = {}
       json = JSON.load( cont )
       data[ :q ] = q
-      data[ :link ] = "http://dp.la/search?#{ q }"
+      data[ :link ] = "http://dp.la/search?q=#{ q }"
       data[ :totalResults ] = json[ "count" ]
       entries = json[ "docs" ]
       data[ :entries ] = []
