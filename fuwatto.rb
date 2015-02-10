@@ -1212,7 +1212,8 @@ module Fuwatto
          title = title.join( "\n" ) if title.respond_to? :join
          url = e[ "@id" ]
          author = e[ "creator" ]
-         pubdate = e[ "date" ][ "displayDate" ] if e[ "date" ]
+         #pubdate = e[ "date" ][ "displayDate" ] if e[ "date" ]
+         pubdate = e[ "sourceResource" ][ "date" ]
          description = e[ "description" ].join( "\t" ) if e[ "description" ]
          data[ :entries ] << {
             :title => title,
