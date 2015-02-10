@@ -1,12 +1,13 @@
 #!/usr/bin/env ruby
 # $Id$
 
-require 'test/unit'
+require "minitest/autorun"
+#require 'test/unit'
 
 $:.unshift File.join( File.dirname( __FILE__ ), ".." )
 require "dpla.rb"
 
-class TestFuwatto < Test::Unit::TestCase
+class TestFuwatto < MiniTest::Test
    include Fuwatto
    def test_dpla_search
       result = dpla_search( "keyword" )
@@ -22,7 +23,7 @@ class TestFuwatto < Test::Unit::TestCase
    end
 end
 
-class TestDPLA < Test::Unit::TestCase
+class TestDPLA < MiniTest::Test
    def setup
       ENV[ "REQUEST_METHOD" ] = "GET"
       @cgi = CGI.new( nil )
