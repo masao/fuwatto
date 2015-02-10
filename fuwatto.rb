@@ -1216,7 +1216,8 @@ module Fuwatto
          #pubdate = e[ "date" ][ "displayDate" ] if e[ "date" ]
          pubdate = e[ "sourceResource" ][ "date" ]
          pubdate = pubdate[ "displayDate" ] if pubdate
-         description = e[ "description" ].join( "\t" ) if e[ "description" ]
+         description = e[ "sourceResource" ][ "description" ]
+	 description = description.join( "\t" ) if description.respond_to? :join
          data[ :entries ] << {
             :title => title,
             :url => url,
