@@ -1186,10 +1186,9 @@ module Fuwatto
       q = CGI.escape( keyword )
       cont = nil
       cache = Cache.new( "dpla" )
-      cont = cache.fetch( q ) do 
-         if opts[ :start ]
-            opts[ :page ] = opts[ :start ].dup
-            opts.delete( :start )
+      cont = cache.fetch( q, opts[ :page ] ) do
+         if opts[ :page ] and opts[ :page ] > 0
+            opts[ :page ] += 1
          end
 	 if opts[ :count ]
             opts[ :page_size ] = opts[ :count ]
@@ -1197,6 +1196,7 @@ module Fuwatto
 	 end
          opts_s = opts.make_uri_params
          uri = URI.parse( "#{ base_uri }?q=#{ q }&api_key=#{ DPLA_APIKEY }&#{ opts_s }" )
+         #p [ opts, uri ]
          response = http_get( uri )
          cont = response.body
       end
@@ -1211,9 +1211,11 @@ module Fuwatto
          title = e[ "sourceResource" ][ "title" ]
          title = title.join( "\n" ) if title.respond_to? :join
          url = e[ "@id" ]
+	 url.sub!( "http://dp.la/api/items/", "http://dp.la/item/" )
          author = e[ "creator" ]
          #pubdate = e[ "date" ][ "displayDate" ] if e[ "date" ]
          pubdate = e[ "sourceResource" ][ "date" ]
+         pubdate = pubdate[ "displayDate" ] if pubdate
          description = e[ "description" ].join( "\t" ) if e[ "description" ]
          data[ :entries ] << {
             :title => title,
@@ -1530,7 +1532,11 @@ EOF
                      #p [ :start, data[ :totalResults ], start, count * (page+1) ]
                      while data[ :totalResults ] > start and entries.size < count * ( page + 1 )
                         #p [ entries.size, start ]
-                        search_opts[ :start ] = start
+			if search_method == :dpla_search
+			   search_opts[ :page ] = start / count
+			else
+                           search_opts[ :start ] = start
+			end
                         search_opts[ :key ] = data[ :opac_hit_u_key ] if data[ :opac_hit_u_key ]
                         data = send( search_method, keyword, search_opts )
                         entries = ( entries + data[ :entries ] ).uniq_by{|e| e[:url] }

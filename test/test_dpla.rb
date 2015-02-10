@@ -2,7 +2,6 @@
 # $Id$
 
 require "minitest/autorun"
-#require 'test/unit'
 
 $:.unshift File.join( File.dirname( __FILE__ ), ".." )
 require "dpla.rb"
@@ -48,6 +47,23 @@ class TestDPLA < MiniTest::Test
          assert( result[ :totalResults ] >= count )
 	 ## TODO
          #assert( result[ :entries ].size >= count, "Results size(#{ result[:entries].size }) is smaller than count(#{count})." )
+      end
+   end
+   def test_execute_page
+      @cgi.params["text"] = [ "keyword text search" ]
+      dpla = Fuwatto::DPLAApp.new( @cgi )
+      result1 = dpla.execute
+      @cgi.params["page"] = [ "1" ]
+      dpla = Fuwatto::DPLAApp.new( @cgi )
+      result2 = dpla.execute
+      assert( result1 )
+      assert( result1[ :totalResults ] > 0 )
+      assert( result2[ :totalResults ] > 0 )
+      assert( result1[ :entries ] != result2[ :entries ] )
+      if result1[ :totalResults ] >= 40
+         assert( result2[ :entries ].size >= 40 )
+      else
+         assert_equal( result2[ :totalResults ], result2[ :entries ].size )
       end
    end
 end
