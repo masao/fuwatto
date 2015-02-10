@@ -1211,6 +1211,7 @@ module Fuwatto
          title = e[ "sourceResource" ][ "title" ]
          title = title.join( "\n" ) if title.respond_to? :join
          url = e[ "@id" ]
+	 url.sub!( "http://dp.la/api/items/", "http://dp.la/item/" )
          author = e[ "creator" ]
          #pubdate = e[ "date" ][ "displayDate" ] if e[ "date" ]
          pubdate = e[ "sourceResource" ][ "date" ]
