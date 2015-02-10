@@ -125,7 +125,7 @@ $.ajax({
 <% else %>
 <input type="submit" value="  論 文 検 索  "/>
 <% end %>
-<% if /\AFuwatto::(Cinii|JStage)App\Z/ =~ self.class.to_s %>
+<% if /\AFuwatto::(Cinii|JStage|DPLA)App\Z/ =~ self.class.to_s %>
 <input type="checkbox" name="combination" title="関連度順ソート"
 <% if not @cgi.params["combination"].empty? %>
 checked="checked"
@@ -143,11 +143,11 @@ checked="checked"
 <% when "Fuwatto::CiniiAuthorApp" %>
 <input type="submit" value="  著 者 検 索  "/>
 <% when /\AFuwatto::(Springer|Worldcat|DPLA)App\Z/ %>
-<input type="submit" value="  論 文 検 索  (Search) "/>
+<input type="submit" value="  検 索  (Search) "/>
 <% else %>
 <input type="submit" value="  論 文 検 索  "/>
 <% end %>
-<% if /\AFuwatto::(Cinii|JStage)App\Z/ =~ self.class.to_s %>
+<% if /\AFuwatto::(Cinii|JStage|DPLA)App\Z/ =~ self.class.to_s %>
 <input type="checkbox" name="combination" title="関連度順ソート"
 <% if not @cgi.params["combination"].empty? %>
 checked="checked"
