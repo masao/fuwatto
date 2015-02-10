@@ -10,7 +10,7 @@ module Fuwatto
       TITLE = "Fuwatto DPLA Search / ふわっとDPLA関連検索"
       HELP_TEXT = <<-EOF
 	<p>
-	This search tool allows you to search <a href="http://dpla.org">DPLA (Digital Public Library of America</a> just by specifying free text or a web page. The tool automatically extracts feature words from the specified contents, and returns a ranked list of bibliographic information ordered by relevance score.
+	This search tool allows you to search <a href="http://dpla.org">DPLA (Digital Public Library of America)</a> just by specifying free text or a web page. The tool automatically extracts feature words from the specified contents, and returns a ranked list of bibliographic information ordered by relevance score.
 	</p>
 	<p style="text-align:center;padding:1ex;font-weight:bolder">
 	Enjoy quick hack of <a href="http://dp.la/info/developers/codex/">DPLA API</a> at Code4Lib 2015 Preconference.
