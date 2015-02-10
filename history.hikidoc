@@ -1,10 +1,12 @@
 title: 更新履歴 - ふわっと関連検索
 date.available: 2010-01-17
-date.modified: 2013-09-07
+date.modified: 2015-02-10
 css.content: dt { margin-top: 5px; }
 
 {{include 'links.hikidoc'}}
 
+:2014月12月31日:
+::[News] 「ふわっとDPLA関連検索」を公開しました。 (fuwatto.rb 3.1.0)
 :2014月12月31日:
 ::[News] 「ふわっとNDL関連検索」の検索対象をNDL Portaから[[NDLサーチ|http://iss.ndl.go.jp]]に変更しました。
 :2013年8月18日:
