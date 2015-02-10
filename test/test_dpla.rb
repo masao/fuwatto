@@ -61,7 +61,7 @@ class TestDPLA < MiniTest::Test
       assert( result2[ :totalResults ] > 0 )
       assert( result1[ :entries ] != result2[ :entries ] )
       if result1[ :totalResults ] >= 40
-         assert_equal( 40, result2[ :entries ].size )
+         assert( result2[ :entries ].size >= 40 )
       else
          assert_equal( result2[ :totalResults ], result2[ :entries ].size )
       end
