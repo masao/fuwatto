@@ -88,6 +88,7 @@ div.cinii_headline a img {
 .cinii_publicationDate,
 .cinii_publisher,
 .cinii_date,
+.cinii_description,
 .cinii_volume,
 .cinii_number {
   font-size: smaller;
@@ -101,9 +102,6 @@ div.cinii_headline a img {
   font-size: smaller;
   border: dashed #ccc 1px;
   background-color: #faa;
-}
-.cinii_description {
-  font-size: x-small;
 }
 .ndl_dpid {
   font-size: smaller;
