@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 # $Id$
 
-require 'test/unit'
+require "minitest/autorun"
 
 $:.unshift File.join( File.dirname( __FILE__ ), ".." )
 require "dpla.rb"
 
-class TestFuwatto < Test::Unit::TestCase
+class TestFuwatto < MiniTest::Test
    include Fuwatto
    def test_dpla_search
       result = dpla_search( "keyword" )
@@ -22,7 +22,7 @@ class TestFuwatto < Test::Unit::TestCase
    end
 end
 
-class TestDPLA < Test::Unit::TestCase
+class TestDPLA < MiniTest::Test
    def setup
       ENV[ "REQUEST_METHOD" ] = "GET"
       @cgi = CGI.new( nil )
@@ -47,6 +47,23 @@ class TestDPLA < Test::Unit::TestCase
          assert( result[ :totalResults ] >= count )
 	 ## TODO
          #assert( result[ :entries ].size >= count, "Results size(#{ result[:entries].size }) is smaller than count(#{count})." )
+      end
+   end
+   def test_execute_page
+      @cgi.params["text"] = [ "keyword text search" ]
+      dpla = Fuwatto::DPLAApp.new( @cgi )
+      result1 = dpla.execute
+      @cgi.params["page"] = [ "1" ]
+      dpla = Fuwatto::DPLAApp.new( @cgi )
+      result2 = dpla.execute
+      assert( result1 )
+      assert( result1[ :totalResults ] > 0 )
+      assert( result2[ :totalResults ] > 0 )
+      assert( result1[ :entries ] != result2[ :entries ] )
+      if result1[ :totalResults ] >= 40
+         assert_equal( 40, result2[ :entries ].size )
+      else
+         assert_equal( result2[ :totalResults ], result2[ :entries ].size )
       end
    end
 end
