@@ -22,4 +22,13 @@ class TestFuwattoHTTP < Test::Unit::TestCase
       assert_equal( :UnsupportedURI, result[ :error ] )
    end
 
+   def test_cookie
+     @cgi.params[ "url" ] = [ "http://www.nytimes.com/2015/02/12/us/obama-war-authorization-congress.html" ]
+      cinii = Fuwatto::CiniiApp.new( @cgi )
+      result = {}
+      assert_nothing_raised do
+         result = cinii.execute
+      end
+   end
+
 end
