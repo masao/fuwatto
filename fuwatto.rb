@@ -1334,6 +1334,7 @@ EOF
          @callback = @cgi.params["callback"][0]
 
          raise( "Crawler access is limited to the first page." ) if @page > 0 and @cgi.user_agent =~ /bot|slurp|craw|spid/i
+         raise( "Crawler access is limited" ) if @cgi.user_agent =~ Regexp.new(Regexp.union(load_robots_txt))
       end
 
       def query_url?
@@ -1347,6 +1348,20 @@ EOF
       end
       def query?
          query_url? or query_text? or query_html?
+      end
+
+      def load_robots_txt
+         robots = []
+         open("robots.txt") do |io|
+	   io.each do |line|
+	     if line =~ /\A\s*User\-Agent\:\s*(.+?)\Z/i
+                bot = $1.dup.strip
+	        next if ( bot.empty? or bot == "*" )
+	        robots << $1
+	     end
+	   end
+	 end
+	 robots
       end
 
       include Fuwatto
