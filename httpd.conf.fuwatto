@@ -7,6 +7,7 @@ AllowOverride All
 </Directory>
 
 ScriptAlias /cinii /project/fuwatto//cinii.rb
+ScriptAlias /cinii_r /project/fuwatto//cinii_r.rb
 ScriptAlias /cinii-author /project/fuwatto/cinii-author.rb
 ScriptAlias /worldcat /project/fuwatto/worldcat.rb
 ScriptAlias /ndl /project/fuwatto/ndl.rb
