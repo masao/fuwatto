@@ -77,10 +77,10 @@ class Hash
 end
 
 module Fuwatto
-   VERSION = '3.1.0'
-   BASE_URI = 'http://fuwat.to/'
+   VERSION = '3.2.0'
+   BASE_URI = 'https://fuwat.to/'
    USER_AGENT = "Fuwatto Search/#{ VERSION }; #{ BASE_URI }"
-   CACHE_TIME = 60 * 60 * 24 * 3   # 3日経つまで、キャッシュは有効
+   CACHE_TIME = 60 * 60 * 24 * 5   # 3日経つまで、キャッシュは有効
    MAX_PAGE = 19 # ページネイションに表示されるアイテム数
    PRF_TOP_K = 10
    PRF_ALPHA = 0.5	# 元クエリベクトルに対する相対的な重み
