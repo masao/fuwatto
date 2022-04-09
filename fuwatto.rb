@@ -340,6 +340,70 @@ module Fuwatto
       data
    end
 
+   def cinii_research_search( keyword, opts = {} )
+      base_uri = "https://cir.nii.ac.jp/opensearch/all"
+      q = URI.escape( keyword )
+      cont = nil
+      cache_file = cache_xml( "cinii_r", q, opts[:start] )
+      #p File.mtime( cache_file )
+      if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
+         cont = open( cache_file ){|io| io.read }
+      else
+         # TODO: Atom/RSSの双方を対象にできるようにすること（現状は Atom のみ）
+         opts[ :format ] = "atom"
+         opts_s = opts.make_uri_params
+         opensearch_uri = URI.parse( "#{ base_uri }?q=#{ q }&appid=#{ CINII_APPID }&#{ opts_s }" )
+         response = http_get( opensearch_uri )
+         cont = response.body
+         open( cache_file, "w" ){|io| io.print cont }
+      end
+      data = {}
+      parser = LibXML::XML::Parser.string( cont )
+      doc = parser.parse
+      # ref. https://support.nii.ac.jp/ja/cir/r_opensearch, (old) http://ci.nii.ac.jp/info/ja/if_opensearch.html
+      data[ :q ] = keyword
+      data[ :link ] = doc.find( "//atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content.gsub( /&(format=atom|appid=#{ CINII_APPID })\b/, "" )
+      data[ :totalResults ] = doc.find( "//opensearch:totalResults" )[0].content.to_i
+      if data[ :totalResults ] > 0
+         data[ :itemsPerPage ] = doc.find( "//opensearch:itemsPerPage" )[0].content.to_i
+      end
+      entries = doc.find( "//atom:entry", "atom:http://www.w3.org/2005/Atom" )
+      data[ :entries ] = []
+      entries.each do |e|
+         title = e.find( "./atom:title", "atom:http://www.w3.org/2005/Atom" )[0]
+         if title
+            title = e.find( "./atom:title", "atom:http://www.w3.org/2005/Atom" )[0].content
+         else
+            title = "(No Title)"
+         end
+         url = e.find( "./atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content
+         author = e.find( ".//atom:author/atom:name", "atom:http://www.w3.org/2005/Atom" ).to_a.map{|name|
+            a = name.content
+            /^\s*\W/.match( a ) ? a.gsub( /\s*,\s*/, " " ) : a
+         }.join( "; " )
+         pubname = e.find( "./prism:publicationName", "prism:http://prismstandard.org/namespaces/basic/2.0/" )[0]
+         if pubname.nil?
+            pubname = e.find( "./dc:publisher", "dc:http://purl.org/dc/elements/1.1/" )[0]
+            pubname = pubname.content if pubname
+         else
+            pubname = pubname.content
+         end
+         pubdate = e.find( "./prism:publicationDate", "prism:http://prismstandard.org/namespaces/basic/2.0/" )[0] #.content
+         pubdate = pubdate.nil? ? "" : pubdate.content
+         description = e.find( "./atom:content", "atom:http://www.w3.org/2005/Atom" )[0]
+         description = description.nil? ? "" : description.content
+         data[ :entries ] << {
+            :title => title,
+            :url => url,
+            :author => author,
+            :publicationName => pubname,
+            :publicationDate => pubdate,
+            :description => description,
+         }
+      end
+      data
+   end
+
    # CiNii (Author) Opensearch API
    def cinii_author_search( keyword, opts = {} )
       base_uri = "http://ci.nii.ac.jp/opensearch/author"
