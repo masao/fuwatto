@@ -11,7 +11,7 @@ module Fuwatto
     TITLE = "ふわっとCiNii関連検索"
     HELP_TEXT = <<EOF
 	<p>
-	入力したテキストまたはウェブページに関連した論文を<a href="http://ci.nii.ac.jp">CiNii</a>で検索します。
+	入力したテキストまたはウェブページに関連した論文を<a href="https://cir.nii.ac.jp">CiNii Research</a>で検索します。
 	長いテキストやURLで指定したページからでも関連キーワードを自動的に抜き出して論文検索できるのが特徴です。
 	</p>
 EOF
