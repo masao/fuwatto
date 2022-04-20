@@ -311,7 +311,8 @@ module Fuwatto
       entries = doc.find( "//atom:entry", "atom:http://www.w3.org/2005/Atom" )
       data[ :entries ] = []
       entries.each do |e|
-         title = e.find( "./atom:title", "atom:http://www.w3.org/2005/Atom" )[0].content
+         title = e.find( "./atom:title", "atom:http://www.w3.org/2005/Atom" )[0]
+         title = title ? title.content : "(No Title)"
          url = e.find( "./atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content
          author = e.find( ".//atom:author/atom:name", "atom:http://www.w3.org/2005/Atom" ).to_a.map{|name|
             a = name.content
@@ -371,11 +372,7 @@ module Fuwatto
       data[ :entries ] = []
       entries.each do |e|
          title = e.find( "./atom:title", "atom:http://www.w3.org/2005/Atom" )[0]
-         if title
-            title = e.find( "./atom:title", "atom:http://www.w3.org/2005/Atom" )[0].content
-         else
-            title = "(No Title)"
-         end
+         title = title ? title.content : "(No Title)"
          url = e.find( "./atom:id", "atom:http://www.w3.org/2005/Atom" )[0].content
          author = e.find( ".//atom:author/atom:name", "atom:http://www.w3.org/2005/Atom" ).to_a.map{|name|
             a = name.content
