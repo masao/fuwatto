@@ -2,7 +2,7 @@
  * Fuwatto Search Widget
  * written by Masao Takaku
  */
-var BASEURL = 'http://fuwat.to/';
+var BASEURL = 'https://fuwat.to/';
 //var BASEURL = 'http://localhost/~masao/private/cvswork/fuwatto/cinii.rb';
 function fuwatto_widget( opt ){
   var url = opt.url || document.location.href;
