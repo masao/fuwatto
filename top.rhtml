@@ -178,9 +178,9 @@ seltab( 'box', 'head', 10, <%= query_url? ? 2 : 1 %> )
 <%    if i == data[ :page ] %>
          <span class="idx"><%= i + 1 %></span>
 <%    elsif i == 0 %>
-         <a href="<%=h href %>"<%= onclick %>>1</a>
+         <a href="<%=h href %>"<%= onclick %> rel="nofollow">1</a>
 <%    else %>
-         <a href="<%=h href %>;page=<%=h i %>"<%= onclick %>><%=h i+1 %></a>
+         <a href="<%=h href %>;page=<%=h i %>"<%= onclick %> rel="nofollow"><%=h i+1 %></a>
 <%    end %>
 <% end %>
 </p>
