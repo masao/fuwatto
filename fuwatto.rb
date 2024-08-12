@@ -1,4 +1,4 @@
-#!/usr/local/bin/ruby
+#!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 # $Id$
 
@@ -70,7 +70,7 @@ class Hash
          ""
       else
          self.keys.map do |e|
-            "#{ e }=#{ URI.escape( self[e].to_s ) }"
+            "#{ e }=#{ URI.encode_www_form_component( self[e].to_s ) }"
          end.join( "&" )
       end
    end
@@ -125,13 +125,13 @@ module Fuwatto
    YAHOO_KEYWORD_BASEURI = "http://jlp.yahooapis.jp/KeyphraseService/V1/extract"
    YAHOO_APPID = "W11oHSWxg65mAdRwjBT4ylIdfS9PkHPjVvtJzx9Quwy.um8e1LPf_b.4usSBcmI-"
    def extract_keywords_yahooapi( str )
-      #cont = open( "?appid=#{ YAHOO_APPID }&sentence=#{ URI.escape( str ) }&output=xml" ){|io| io.read }
+      #cont = open( "?appid=#{ YAHOO_APPID }&sentence=#{ URI.encode_www_form_component( str ) }&output=xml" ){|io| io.read }
       uri = URI.parse( YAHOO_KEYWORD_BASEURI )
       #response = http_get( uri )
       http = Net::HTTP.new( uri.host, uri.port )
       xml = nil
       http.start do |conn|
-         data = "appid=#{ YAHOO_APPID }&sentence=#{ URI.escape( str ) }&output=xml"
+         data = "appid=#{ YAHOO_APPID }&sentence=#{ URI.encode_www_form_component( str ) }&output=xml"
          # p data
          res, = conn.post( uri.path, data )
          xml = res.body
@@ -149,9 +149,9 @@ module Fuwatto
    def extract_keywords_mecab( str, opts )
       return [] if str.strip.empty?
       mecab = MeCab::Tagger.new( '--node-format=%m\t%H\t%c\n --unk-format=%m\tUNK\t%c\n' )
-      lines = mecab.parse( str.toeuc )
+      lines = mecab.parse( str )
       #puts lines
-      lines = lines.toutf8.split( /\n/ ).map{|l| l.split(/\t/) }
+      lines = lines.split( /\n/ ).map{|l| l.split(/\t/) }
       lines = lines.select{|l| l[2] and l[1] =~ /^名詞|UNK|形容詞/o and l[1] !~ /接[頭尾]|非自立|代名詞/o }
       #p lines
       if lines.empty?
@@ -184,7 +184,7 @@ module Fuwatto
          count[ line[0] ] += score
          #count[ line[0] ] += 1
       end
-      # p count
+      #p count
       ranks = count.keys.sort_by{|e| count[e] }.reverse.map{|e| [e,count[e]] }
       #pp ranks
       #3.times do |i|
@@ -283,7 +283,7 @@ module Fuwatto
    # CiNii Opensearch API
    def cinii_search( keyword, opts = {} )
       base_uri = "http://ci.nii.ac.jp/opensearch/search"
-      q = URI.escape( keyword )
+      q = URI.encode_www_form_component( keyword )
       cont = nil
       cache_file = cache_xml( "cinii", q, opts[:start] )
       #p File.mtime( cache_file )
@@ -343,7 +343,7 @@ module Fuwatto
 
    def cinii_research_search( keyword, opts = {} )
       base_uri = "https://cir.nii.ac.jp/opensearch/all"
-      q = URI.escape( keyword )
+      q = URI.encode_www_form_component( keyword )
       cont = nil
       cache_file = cache_xml( "cinii_r", q, opts[:start] )
       #p File.mtime( cache_file )
@@ -404,7 +404,7 @@ module Fuwatto
    # CiNii (Author) Opensearch API
    def cinii_author_search( keyword, opts = {} )
       base_uri = "http://ci.nii.ac.jp/opensearch/author"
-      q = URI.escape( keyword )
+      q = URI.encode_www_form_component( keyword )
       cont = nil
       cache_file = cache_xml( "cinii_author", q, opts[:start] )
       #p File.mtime( cache_file )
@@ -444,7 +444,7 @@ module Fuwatto
 
    # CiNii (Author:NRID) Opensearch API
    def cinii_nrid_search( nrid, opts = {} )
-      q = URI.escape( nrid )
+      q = URI.encode_www_form_component( nrid )
       base_uri = "http://ci.nii.ac.jp/opensearch/nrid/"
       cont = nil
       cache_file = cache_xml( "cinii_nrid", q, opts[:start] )
@@ -518,7 +518,7 @@ module Fuwatto
    # NDL Porta Opensearch
    def ndl_search( keyword, opts = {} )
       base_uri = "http://api.porta.ndl.go.jp/servicedp/opensearch"
-      q = URI.escape( keyword )
+      q = URI.encode_www_form_component( keyword )
       cont = nil
       cache_file = cache_xml( "ndl", q, opts[:start] )
       if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
@@ -618,7 +618,7 @@ module Fuwatto
    # NDLサーチ版:
    def iss_ndl_search( keyword, opts = {} )
       base_uri = "http://iss.ndl.go.jp/api/opensearch"
-      q = URI.escape( keyword )
+      q = URI.encode_www_form_component( keyword )
       cont = nil
       cache_file = cache_xml( "ndl", q, opts[:start] )
       if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
@@ -722,7 +722,7 @@ module Fuwatto
    # レファ協API via NDL PORTA Opensearch
    def crd_search2( keyword, opts = {} )
       base_uri = "http://api.porta.ndl.go.jp/servicedp/opensearch"
-      q = URI.escape( keyword )
+      q = URI.encode_www_form_component( keyword )
       cont = nil
       cache_file = cache_xml( "crd2", q, opts[:start] )
       if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
@@ -814,7 +814,7 @@ module Fuwatto
    def crd_search( keyword, opts = {} )
       require "htmlentities"
       base_uri = "http://crd.ndl.go.jp/refapi/servlet/refapi.RSearchAPI"
-      q = URI.escape( keyword )
+      q = URI.encode_www_form_component( keyword )
       opts[ :query_logic ] = "2"
       opts_s = opts.make_uri_params
       query = "01_" + q + ".02_" + q
@@ -878,7 +878,7 @@ module Fuwatto
    WORLDCAT_BASIC_WSKEY = "5lIR8i5bSQQNg4Xb3ro6QbOzXiGSs6PrGGJ02BKolP9qTUQRcui2Ze9AsQIlM8IzV0E9XMcrWWieWvrM"
    def worldcat_search( keyword, opts = {} )
       base_uri = "http://worldcat.org/webservices/catalog/search/opensearch"
-      q = URI.escape( keyword )
+      q = URI.encode_www_form_component( keyword )
       cont = nil
       cache_file = cache_xml( "worldcat", q, opts[:start] )
       if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
@@ -937,7 +937,7 @@ module Fuwatto
    # JAWikipedia API
    def wikipedia_ja_search( keyword, opts = {} )
       base_uri = "http://ja.wikipedia.org/w/api.php"
-      q = URI.escape( keyword )
+      q = URI.encode_www_form_component( keyword )
       cont = nil
       cache_file = cache_xml( "jawikipedia", q, opts[:start] )
       if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME
@@ -964,7 +964,7 @@ module Fuwatto
       data[ :entries ] = []
       entries.each do |e|
          title = e.attributes[ "title" ]
-         url = "http://ja.wikipedia.org/wiki/#{ URI.escape( title ) }"
+         url = "http://ja.wikipedia.org/wiki/#{ URI.encode_www_form_component( title ) }"
          content = e.attributes[ "snippet" ]
          timestamp = e.attributes[ "timestamp" ]
          data[ :entries ] << {
@@ -982,7 +982,7 @@ module Fuwatto
    def epi_search( keyword, opts = {} )
       base_uri = "http://dl.nier.go.jp/epi"
       client_base_uri = "http://dl.nier.go.jp/epi-search/sru-gw.rb"
-      q = URI.escape( keyword.split.join( " AND " ) )
+      q = URI.encode_www_form_component( keyword.split.join( " AND " ) )
       cont = nil
       cache_file = cache_xml( "epi", q, opts[:start] )
       #p File.mtime( cache_file )
@@ -995,7 +995,7 @@ module Fuwatto
          opts[ :startRecord ] ||= opts[ :start ] if opts[ :start ]
          #p opts
          params = [ :operation, :version, :query, :startRecord, :maximumRecords, :recordPacking, :recordSchema, :recordXPath, :resultSetTTL, :sortKeys, :stylesheet, :extraRequestData ].map do |e|
-            opts[ e ] ? "#{ e }=#{ URI.escape( opts[e].to_s ) }" : nil
+            opts[ e ] ? "#{ e }=#{ URI.encode_www_form_component( opts[e].to_s ) }" : nil
          end.compact.join( "&" )
          #p params
          sru_uri = URI.parse( "#{ base_uri }?query=#{ q }&#{ params }" )
@@ -1045,7 +1045,7 @@ module Fuwatto
    def jstage_search( keyword, opts = {} )
       base_uri = "http://api.jstage.jst.go.jp/searchapi/do"
       client_base_uri = "http://www.jstage.jst.go.jp/search/-char/ja?d6=te&typer=on&searchtype=1"
-      q = URI.escape( keyword )
+      q = URI.encode_www_form_component( keyword )
       cont = nil
       cache_file = cache_xml( "jstage", q, opts[:start] )
       #p File.mtime( cache_file )
@@ -1056,7 +1056,7 @@ module Fuwatto
          opts[ :text ] = keyword
          #p opts
          params = [ :service, :system, :start, :count ].map do |e|
-            opts[ e ] ? "#{ e }=#{ URI.escape( opts[e].to_s ) }" : nil
+            opts[ e ] ? "#{ e }=#{ URI.encode_www_form_component( opts[e].to_s ) }" : nil
          end.compact.join( "&" )
          #p params
          sru_uri = URI.parse( "#{ base_uri }?text=#{ q }&#{ params }" )
@@ -1100,7 +1100,7 @@ module Fuwatto
    def opac_hit_u_search( keyword, opts = {} )
       require "htmlentities"
       base_uri = "https://opac.lib.hit-u.ac.jp/opac/opac_list.cgi"
-      q = URI.escape( keyword )
+      q = URI.encode_www_form_component( keyword )
       opts[ :amode ] = 9 if opts.key?( :key )
       opts_s = opts.make_uri_params
       opts_s = "&" + opts_s if not opts_s.empty?
@@ -1165,7 +1165,7 @@ module Fuwatto
    ## cf. http://dev.springer.com/docs
    def springer_metadata_search( keyword, opts = {} )
       base_uri = "http://api.springer.com/metadata/pam"
-      q = URI.escape( keyword )
+      q = URI.encode_www_form_component( keyword )
       cont = nil
       cache_file = cache_xml( "springer", q, opts[:start] )
       #p File.mtime( cache_file )
@@ -1176,9 +1176,9 @@ module Fuwatto
             opts_s = opts.keys.map do |e|
                next if e.to_s =~ /\A_/
                if e == :start
-                  "s=#{ URI.escape( opts[e].to_s ) }"
+                  "s=#{ URI.encode_www_form_component( opts[e].to_s ) }"
                else
-                  "#{ e }=#{ URI.escape( opts[e].to_s ) }"
+                  "#{ e }=#{ URI.encode_www_form_component( opts[e].to_s ) }"
                end
             end.join( "&" )
          end
@@ -1244,7 +1244,7 @@ module Fuwatto
    DPLA_APIKEY = "76ac9bd08ecf381128a4da86f49feb95"
    def dpla_search( keyword, opts = {} )
       base_uri = "http://api.dp.la/v2/items"
-      q = CGI.escape( keyword )
+      q = CGI.encode_www_form_component( keyword )
       cont = nil
       cache = Cache.new( "dpla" )
       cont = cache.fetch( q, opts[ :page ] ) do
@@ -1295,7 +1295,7 @@ module Fuwatto
    ## cf. http://dev.springer.com/docs
    def springer_images_search( keyword, opts = {} )
       base_uri = "http://api.springer.com/images/xml"
-      q = CGI.escape( keyword )
+      q = CGI.encode_www_form_component( keyword )
       cont = nil
       cache_file = cache_xml( "springer-images", q )
       if File.exist?( cache_file ) and ( Time.now - File.mtime( cache_file ) ) < CACHE_TIME

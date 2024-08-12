@@ -1,13 +1,23 @@
+LogLevel info
+<VirtualHost *:80>
+#ServerName fuwat.to
+ServerName fuwatto.edudata.jp
+
 DocumentRoot /project/fuwatto
 DirectoryIndex index.html index.cgi
 
+AddHandler cgi-script .cgi .rb
+AddHandler cgi-script .rb
+
 <Directory /project/fuwatto>
+Require all granted
 Options All MultiViews
 AllowOverride All
 </Directory>
 
-ScriptAlias /cinii /project/fuwatto//cinii.rb
-ScriptAlias /cinii_r /project/fuwatto//cinii_r.rb
+#ScriptLog cgi.log
+ScriptAlias /cinii /project/fuwatto/cinii.rb
+ScriptAlias /cinii_r /project/fuwatto/cinii_r.rb
 ScriptAlias /cinii-author /project/fuwatto/cinii-author.rb
 ScriptAlias /worldcat /project/fuwatto/worldcat.rb
 ScriptAlias /ndl /project/fuwatto/ndl.rb
@@ -23,3 +33,4 @@ ScriptAlias /dpla /project/fuwatto/dpla.rb
 <LocationMatch "^/+$">
 Options Indexes
 </LocationMatch>
+</VirtualHost>

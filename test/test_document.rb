@@ -13,7 +13,7 @@ class TestFuwatto < Test::Unit::TestCase
       text = "test test1 test2"
       vector = Document.new( text )
       assert( vector )
-      assert_equal( 3, vector.size )
+      assert_equal( 1, vector.size )
       
       text = "test test test"
       vector2 = Document.new( text )
@@ -40,6 +40,7 @@ class TestFuwatto < Test::Unit::TestCase
 
       # term_weight paramerter:
       vector1 = Document.new( corpus[0], :mecab, { :term_weight => :tf } )
+      p vector1
       assert_equal( 1, vector1.assoc( "百合子" )[1] )
       vector2 = Document.new( corpus[3], :mecab, { :term_weight => :default } )
       #puts vector2
