@@ -1,7 +1,7 @@
-LogLevel info
+NameVirtualHost *:80
 <VirtualHost *:80>
-#ServerName fuwat.to
-ServerName fuwatto.edudata.jp
+ServerAdmin tmasao@acm.org
+ServerName fuwat.to
 
 DocumentRoot /project/fuwatto
 DirectoryIndex index.html index.cgi
