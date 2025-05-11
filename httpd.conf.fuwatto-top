@@ -1,0 +1,9 @@
+NameVirtualHost *:80
+<VirtualHost *:80>
+Include /project/fuwatto/httpd.conf.fuwatto
+</VirtualHost>
+
+NameVirtualHost *:443
+<VirtualHost *:443>
+Include /project/fuwatto/httpd.conf.fuwatto
+</VirtualHost>

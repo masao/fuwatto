@@ -1,5 +1,3 @@
-NameVirtualHost *:80
-<VirtualHost *:80>
 ServerAdmin tmasao@acm.org
 ServerName fuwat.to
 
@@ -33,4 +31,3 @@ ScriptAlias /dpla /project/fuwatto/dpla.rb
 <LocationMatch "^/+$">
 Options Indexes
 </LocationMatch>
-</VirtualHost>
