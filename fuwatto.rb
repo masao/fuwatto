@@ -16,7 +16,7 @@ require "kconv"
 
 require "rubygems"
 require "json"
-require "libxml"
+require "libxml-ruby"
 begin
    require "MeCab"
 rescue LoadError
