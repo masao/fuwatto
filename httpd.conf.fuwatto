@@ -7,9 +7,10 @@ DirectoryIndex index.html index.cgi
 AddHandler cgi-script .cgi .rb
 AddHandler cgi-script .rb
 
-<Directory /project/fuwatto>
+<Directory /project/fuwatto/>
 Require all granted
-Options All MultiViews
+Options All
+Options +MultiViews +FollowSymLinks
 AllowOverride All
 </Directory>
 

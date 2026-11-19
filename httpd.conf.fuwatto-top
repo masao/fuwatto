@@ -1,9 +1,20 @@
 NameVirtualHost *:80
 <VirtualHost *:80>
 Include /project/fuwatto/httpd.conf.fuwatto
+RewriteEngine on
+RewriteCond %{HTTPS} !=on
+RewriteCond %{SERVER_NAME} =fuwat.to
+RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
 </VirtualHost>
 
 NameVirtualHost *:443
 <VirtualHost *:443>
 Include /project/fuwatto/httpd.conf.fuwatto
+SSLCertificateFile /etc/letsencrypt/live/fuwat.to/fullchain.pem
+SSLCertificateKeyFile /etc/letsencrypt/live/fuwat.to/privkey.pem
+Include /etc/letsencrypt/options-ssl-apache.conf
+RewriteEngine on
+RewriteCond %{SERVER_NAME} =fuwat.to
+RewriteCond %{REQUEST_URI} ^/$
+RewriteRule ^$ https://%{SERVER_NAME}/cinii_r [R=301,L]
 </VirtualHost>

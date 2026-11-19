@@ -2,6 +2,3 @@ AddHandler cgi-script .rb
 AddHandler cgi-script .cgi
 Options -Indexes
 Options +ExecCGI
-
-#RedirectMatch ^/$ http://fuwat.to/cinii
-RedirectMatch ^/$ http://fuwat.to/cinii_r
